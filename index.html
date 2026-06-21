@@ -1,0 +1,1343 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Kimvie — Kết nối di sản · Lan tỏa tinh hoa</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,600;0,700;0,800;0,900;1,600&family=Be+Vietnam+Pro:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<!-- ===== full-page lacquer video ground ===== -->
+<div class="bg-stage" aria-hidden="true">
+  <video class="bg-video" autoplay muted loop playsinline preload="auto" poster="assets/poster.jpg">
+    <source src="assets/dynamic_background.mp4" type="video/mp4">
+  </video>
+  <div class="bg-veil"></div>
+</div>
+
+<!-- ===== SVG SPRITE (minh hoạ nét sepia) ===== -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+    <symbol id="s-logo" viewBox="0 0 64 64">
+      <rect x="3" y="3" width="58" height="58" rx="14" fill="none" stroke="currentColor" stroke-width="4"/>
+      <rect x="10" y="10" width="44" height="44" rx="9" fill="none" stroke="currentColor" stroke-width="1.4"/>
+      <text x="32" y="30" text-anchor="middle" font-family="Playfair Display,serif" font-weight="900" font-size="17" fill="currentColor">KIM</text>
+      <text x="32" y="48" text-anchor="middle" font-family="Playfair Display,serif" font-weight="900" font-size="17" fill="currentColor">VIE</text>
+      <path d="M14 35 q14 7 36 0" fill="none" stroke="currentColor" stroke-width="1.3"/>
+    </symbol>
+    <symbol id="s-cloud" viewBox="0 0 120 44">
+      <path d="M6 30 q0-12 12-12 q11 0 11 9 q0 7-7 7 q-5 0-5-5" fill="none" stroke="currentColor" stroke-width="1.6"/>
+      <path d="M30 30 h84" fill="none" stroke="currentColor" stroke-width="1.6"/>
+      <path d="M40 23 q4-9 14-9 q11 0 12 9" fill="none" stroke="currentColor" stroke-width="1.6"/>
+      <path d="M44 37 h56" fill="none" stroke="currentColor" stroke-width="1.2"/>
+    </symbol>
+    <symbol id="s-vase" viewBox="0 0 100 150">
+      <path d="M40 8 h20 M42 8 c0 8-2 10-2 14 h20 c0-4-2-6-2-14 M40 22 c0 10-18 16-18 50 c0 36 12 56 28 56 c16 0 28-20 28-56 c0-34-18-40-18-50" fill="none" stroke="currentColor" stroke-width="2"/>
+      <path d="M30 56 q10 8 20 0 t20 0" fill="none" stroke="currentColor" stroke-width="1.3"/>
+      <path d="M28 70 q11 8 22 0 t22 0" fill="none" stroke="currentColor" stroke-width="1.3"/>
+      <path d="M34 96 l8-8 m4 14 l10-10 m-2 16 l8-8 m-26-4 l6-6" stroke="currentColor" stroke-width="1" fill="none"/>
+      <ellipse cx="50" cy="128" rx="16" ry="4.5" fill="none" stroke="currentColor" stroke-width="1.3"/>
+    </symbol>
+    <symbol id="s-teaset" viewBox="0 0 140 100">
+      <path d="M45 38 h40 c6 0 8 5 8 12 c0 16-10 28-28 28 c-18 0-28-12-28-28 c0-7 2-12 8-12 z" fill="none" stroke="currentColor" stroke-width="2"/>
+      <path d="M93 46 c10 0 16 4 14 12 c-2 7-8 9-14 8" fill="none" stroke="currentColor" stroke-width="1.7"/>
+      <path d="M37 50 c-10-2-14-8-10-16 c3-6 10-7 16-4" fill="none" stroke="currentColor" stroke-width="1.7"/>
+      <path d="M55 38 c0-8 6-10 10-12 m10 12 c0-8-4-10-6-12" fill="none" stroke="currentColor" stroke-width="1.4"/>
+      <ellipse cx="65" cy="26" rx="9" ry="3.5" fill="none" stroke="currentColor" stroke-width="1.6"/>
+      <path d="M52 56 q13 8 26 0" fill="none" stroke="currentColor" stroke-width="1.1"/>
+      <path d="M14 78 a10 8 0 0 0 20 0 z m92 0 a10 8 0 0 0 20 0 z" fill="none" stroke="currentColor" stroke-width="1.6"/>
+      <path d="M6 92 h128" stroke="currentColor" stroke-width="1.6"/>
+    </symbol>
+    <symbol id="s-scarf" viewBox="0 0 120 130">
+      <path d="M28 10 q34-10 64 4 q-6 26-2 52 q3 22-10 38 q-24 12-52 2 q8-30 2-52 q-4-26-2-44 z" fill="none" stroke="currentColor" stroke-width="2"/>
+      <path d="M38 22 q22-6 44 2 m-46 18 q24-6 46 2 m-44 18 q22-6 42 2 m-44 16 q22-6 42 2" fill="none" stroke="currentColor" stroke-width="1.1"/>
+      <path d="M30 108 l-4 14 m12-12 l-3 13 m13-11 l-2 12 m12-11 l-1 11 m11-12 l1 11 m10-13 l3 12" stroke="currentColor" stroke-width="1.2" fill="none"/>
+      <circle cx="60" cy="56" r="13" fill="none" stroke="currentColor" stroke-width="1.1"/>
+      <path d="M60 47 q5 9 0 18 q-5-9 0-18" fill="none" stroke="currentColor" stroke-width="1.1"/>
+    </symbol>
+    <symbol id="s-lantern" viewBox="0 0 110 140">
+      <path d="M45 12 h20 v8 h-20 z" fill="none" stroke="currentColor" stroke-width="1.8"/>
+      <path d="M55 20 c30 0 40 22 40 44 c0 26-16 44-40 44 c-24 0-40-18-40-44 c0-22 10-44 40-44 z" fill="none" stroke="currentColor" stroke-width="2"/>
+      <path d="M19 46 h72 M15 64 h80 M17 86 h76 M27 102 h56" stroke="currentColor" stroke-width="1.1" fill="none"/>
+      <path d="M37 22 c-12 22-12 64 0 84 m36-84 c12 22 12 64 0 84 M55 20 v88" stroke="currentColor" stroke-width="1.1" fill="none"/>
+      <path d="M55 108 v12 m-7 0 h14 m-11 4 v10 m4-10 v12 m4-12 v10" stroke="currentColor" stroke-width="1.4" fill="none"/>
+    </symbol>
+    <symbol id="s-loom" viewBox="0 0 160 130">
+      <path d="M22 14 v102 m116-102 v102 M14 116 h132" stroke="currentColor" stroke-width="2" fill="none"/>
+      <path d="M22 26 h116 M22 40 h116" stroke="currentColor" stroke-width="1.6" fill="none"/>
+      <path d="M34 40 l18 64 h56 l18-64" fill="none" stroke="currentColor" stroke-width="1.6"/>
+      <path d="M44 40 l14 64 m12-64 l8 64 m12-64 l2 64 m12-64 l-4 64 m14-64 l-10 64" stroke="currentColor" stroke-width="1" fill="none"/>
+      <path d="M40 66 h80 M46 84 h70" stroke="currentColor" stroke-width="1.1" fill="none"/>
+      <circle cx="22" cy="20" r="5" fill="none" stroke="currentColor" stroke-width="1.4"/>
+      <circle cx="138" cy="20" r="5" fill="none" stroke="currentColor" stroke-width="1.4"/>
+    </symbol>
+    <symbol id="s-bamboo" viewBox="0 0 90 210">
+      <path d="M30 6 v198 m12-198 v198" stroke="currentColor" stroke-width="1.8" fill="none"/>
+      <path d="M28 48 h16 m-16 2 h16 M28 104 h16 m-16 2 h16 M28 160 h16 m-16 2 h16" stroke="currentColor" stroke-width="1.6" fill="none"/>
+      <path d="M62 14 v190 m9-190 v190" stroke="currentColor" stroke-width="1.4" fill="none"/>
+      <path d="M60 70 h13 M60 130 h13 M60 186 h13" stroke="currentColor" stroke-width="1.3" fill="none"/>
+      <path d="M42 60 q22-22 36-18 q-12 16-30 22 z" fill="none" stroke="currentColor" stroke-width="1.4"/>
+      <path d="M30 90 q-22-16-26-34 q18 2 30 26 z" fill="none" stroke="currentColor" stroke-width="1.4"/>
+      <path d="M44 132 q20-14 32-12 q-10 14-28 18 z" fill="none" stroke="currentColor" stroke-width="1.4"/>
+    </symbol>
+    <symbol id="s-basket" viewBox="0 0 120 110">
+      <path d="M28 38 h64 l-7 56 c-1 6-4 8-9 8 h-32 c-5 0-8-2-9-8 z" fill="none" stroke="currentColor" stroke-width="2"/>
+      <path d="M30 52 h60 M32 68 h56 M34 84 h52" stroke="currentColor" stroke-width="1.1" fill="none"/>
+      <path d="M36 38 l10 62 m12-62 l2 62 m14-62 l-6 62" stroke="currentColor" stroke-width="1" fill="none"/>
+      <path d="M40 38 c0-18 8-26 20-26 c12 0 20 8 20 26" fill="none" stroke="currentColor" stroke-width="1.7"/>
+    </symbol>
+    <symbol id="s-leaf" viewBox="0 0 60 60">
+      <path d="M30 52 q-2-20 4-34 q16-10 20-8 q2 16-10 28 q-8 8-14 14 z" fill="none" stroke="currentColor" stroke-width="1.8"/>
+      <path d="M30 52 q4-18 18-34" fill="none" stroke="currentColor" stroke-width="1.1"/>
+      <path d="M14 38 q-8-12-6-22 q12 0 16 12" fill="none" stroke="currentColor" stroke-width="1.5"/>
+    </symbol>
+    <symbol id="s-hands" viewBox="0 0 60 60">
+      <path d="M8 36 q10 12 22 12 q12 0 22-12" fill="none" stroke="currentColor" stroke-width="1.8"/>
+      <path d="M12 40 q-4-8 0-16 m36 16 q4-8 0-16" fill="none" stroke="currentColor" stroke-width="1.5"/>
+      <path d="M30 14 l2.6 6 6.4 1 -4.6 4.6 1 6.4 -5.4-3 -5.4 3 1-6.4 -4.6-4.6 6.4-1 z" fill="none" stroke="currentColor" stroke-width="1.5"/>
+    </symbol>
+    <symbol id="s-fire" viewBox="0 0 60 60">
+      <path d="M30 8 c4 10 14 14 14 26 a14 14 0 0 1-28 0 c0-8 6-10 8-18 c2 5 6 6 6 12" fill="none" stroke="currentColor" stroke-width="1.8"/>
+      <path d="M30 52 v-8" stroke="currentColor" stroke-width="1.4"/>
+    </symbol>
+    <symbol id="s-box" viewBox="0 0 60 60">
+      <path d="M10 22 l20-10 20 10 v22 l-20 10 -20-10 z M10 22 l20 10 20-10 M30 32 v22" fill="none" stroke="currentColor" stroke-width="1.8"/>
+      <path d="M20 17 l20 10" stroke="currentColor" stroke-width="1.2"/>
+    </symbol>
+    <symbol id="s-truck" viewBox="0 0 60 60">
+      <path d="M6 18 h28 v22 h-28 z M34 26 h12 l8 8 v6 h-20 z" fill="none" stroke="currentColor" stroke-width="1.8"/>
+      <circle cx="16" cy="44" r="5" fill="none" stroke="currentColor" stroke-width="1.8"/>
+      <circle cx="42" cy="44" r="5" fill="none" stroke="currentColor" stroke-width="1.8"/>
+    </symbol>
+    <symbol id="s-360" viewBox="0 0 60 60">
+      <ellipse cx="30" cy="30" rx="22" ry="9" fill="none" stroke="currentColor" stroke-width="1.7"/>
+      <path d="M30 8 a22 22 0 0 1 0 44" fill="none" stroke="currentColor" stroke-width="1.7"/>
+      <path d="M27 4 l5 4 -5 4" fill="none" stroke="currentColor" stroke-width="1.7"/>
+    </symbol>
+    <symbol id="s-audio" viewBox="0 0 60 60">
+      <path d="M14 24 h8 l10-8 v28 l-10-8 h-8 z" fill="none" stroke="currentColor" stroke-width="1.7"/>
+      <path d="M40 22 q6 8 0 16 M46 17 q9 13 0 26" fill="none" stroke="currentColor" stroke-width="1.7"/>
+    </symbol>
+    <symbol id="s-spark" viewBox="0 0 60 60">
+      <path d="M30 8 q3 16 22 22 q-19 6-22 22 q-3-16-22-22 q19-6 22-22 z" fill="none" stroke="currentColor" stroke-width="1.7"/>
+      <circle cx="46" cy="14" r="3" fill="none" stroke="currentColor" stroke-width="1.4"/>
+    </symbol>
+    <symbol id="s-room" viewBox="0 0 360 250">
+      <path d="M180 18 L330 95 L180 172 L30 95 Z" fill="none" stroke="currentColor" stroke-width="2"/>
+      <path d="M30 95 v44 L180 216 v-44 M330 95 v44 L180 216" fill="none" stroke="currentColor" stroke-width="2"/>
+      <path d="M180 18 v-8 M84 60 L180 110 L276 60" fill="none" stroke="currentColor" stroke-width="1.1"/>
+      <path d="M120 64 L240 126 M240 64 L120 126" fill="none" stroke="currentColor" stroke-width=".8" opacity=".6"/>
+      <path d="M64 78 l36-18 v22 l-36 18 z" fill="none" stroke="currentColor" stroke-width="1.4"/>
+      <path d="M70 80 q12-10 24-14" fill="none" stroke="currentColor" stroke-width=".9"/>
+      <path d="M258 58 l40 20 v22 l-40-20 z" fill="none" stroke="currentColor" stroke-width="1.4"/>
+      <path d="M264 64 q14 2 28 14" fill="none" stroke="currentColor" stroke-width=".9"/>
+      <path d="M124 118 l18-9 9 4.5 v14 l-18 9 -9-4.5 z M124 118 l9 4.5 18-9 M133 122.5 v14" fill="none" stroke="currentColor" stroke-width="1.3"/>
+      <path d="M136 106 c0-5 3-8 6-8 c3 0 6 3 6 8 c0 4-2 6-6 6 c-4 0-6-2-6-6 z" fill="none" stroke="currentColor" stroke-width="1.2"/>
+      <path d="M196 142 l18-9 9 4.5 v14 l-18 9 -9-4.5 z M196 142 l9 4.5 18-9 M205 146.5 v14" fill="none" stroke="currentColor" stroke-width="1.3"/>
+      <ellipse cx="212" cy="128" rx="7" ry="9" fill="none" stroke="currentColor" stroke-width="1.2"/>
+      <path d="M206 128 h12 M212 119 v18" stroke="currentColor" stroke-width=".8" fill="none"/>
+      <path d="M252 112 l16-8 8 4 v12 l-16 8 -8-4 z" fill="none" stroke="currentColor" stroke-width="1.3"/>
+      <path d="M256 104 q4-10 12-6 q6 3 2 10" fill="none" stroke="currentColor" stroke-width="1.1"/>
+      <path d="M96 130 l44 22 m-44-12 l34 17" stroke="currentColor" stroke-width=".9" fill="none" opacity=".7"/>
+      <path d="M180 216 v14 M30 139 v12 M330 139 v12" stroke="currentColor" stroke-width="1.4" fill="none"/>
+    </symbol>
+    <symbol id="s-artisan" viewBox="0 0 60 60">
+      <path d="M6,27 Q30,5 54,27 L52,30 Q30,12 8,30 Z" fill="none" stroke="currentColor" stroke-width="1.6"/>
+      <path d="M30,5 v-2" stroke="currentColor" stroke-width="1.4"/>
+      <circle cx="30" cy="38" r="8" fill="none" stroke="currentColor" stroke-width="1.6"/>
+      <path d="M12,57 q18,-15 36,0" fill="none" stroke="currentColor" stroke-width="1.6"/>
+    </symbol>
+    <symbol id="s-pat-crackle" viewBox="0 0 60 60">
+      <path d="M10,12 L24,20 L20,34 M24,20 L40,16 L48,28 M20,34 L34,42 L30,52 M40,16 L38,6 M34,42 L48,40 M10,12 L8,24 L20,34 M48,28 L40,38" fill="none" stroke="currentColor" stroke-width="1.3"/>
+    </symbol>
+    <symbol id="s-pat-lotus" viewBox="0 0 60 60">
+      <path d="M30,14 q-6,11 0,21 q6,-10 0,-21 z" fill="none" stroke="currentColor" stroke-width="1.4"/>
+      <path d="M30,35 q-13,-9 -21,-6 q5,-12 21,-15" fill="none" stroke="currentColor" stroke-width="1.4"/>
+      <path d="M30,35 q13,-9 21,-6 q-5,-12 -21,-15" fill="none" stroke="currentColor" stroke-width="1.4"/>
+      <path d="M30,37 q-10,1 -14,8 q9,4 18,-1 M30,37 q10,1 14,8 q-9,4 -18,-1" fill="none" stroke="currentColor" stroke-width="1.2"/>
+      <path d="M14,52 q16,6 32,0" fill="none" stroke="currentColor" stroke-width="1.2"/>
+    </symbol>
+    <symbol id="s-pat-wave" viewBox="0 0 60 60">
+      <path d="M4,20 q6,-8 12,0 t12,0 t12,0 t12,0" fill="none" stroke="currentColor" stroke-width="1.3"/>
+      <path d="M4,32 q6,-8 12,0 t12,0 t12,0 t12,0" fill="none" stroke="currentColor" stroke-width="1.3"/>
+      <path d="M4,44 q6,-8 12,0 t12,0 t12,0 t12,0" fill="none" stroke="currentColor" stroke-width="1.3"/>
+    </symbol>
+    <symbol id="s-pat-cloudm" viewBox="0 0 60 60">
+      <path d="M12,34 q0,-13 13,-13 q11,0 11,9 q0,7 -7,7 q-5,0 -5,-4 q0,-3 3,-3" fill="none" stroke="currentColor" stroke-width="1.4"/>
+      <path d="M36,34 h18 M16,42 h32" fill="none" stroke="currentColor" stroke-width="1.2"/>
+    </symbol>
+    <symbol id="s-pat-lattice" viewBox="0 0 60 60">
+      <path d="M20,11 q3.5,4.5 0,9 q-3.5,-4.5 0,-9 z M20,29 q3.5,-4.5 0,-9 q-3.5,4.5 0,9 z M29,20 q-4.5,3.5 -9,0 q4.5,-3.5 9,0 z M11,20 q4.5,3.5 9,0 q-4.5,-3.5 -9,0 z" fill="none" stroke="currentColor" stroke-width="1.2"/>
+      <path d="M40,31 q3.5,4.5 0,9 q-3.5,-4.5 0,-9 z M40,49 q3.5,-4.5 0,-9 q-3.5,4.5 0,9 z M49,40 q-4.5,3.5 -9,0 q4.5,-3.5 9,0 z M31,40 q4.5,3.5 9,0 q-4.5,-3.5 -9,0 z" fill="none" stroke="currentColor" stroke-width="1.2"/>
+      <circle cx="20" cy="20" r="1.6" fill="currentColor"/><circle cx="40" cy="40" r="1.6" fill="currentColor"/>
+      <circle cx="40" cy="20" r="1.4" fill="none" stroke="currentColor" stroke-width="1"/><circle cx="20" cy="40" r="1.4" fill="none" stroke="currentColor" stroke-width="1"/>
+    </symbol>
+    <symbol id="s-pat-w1" viewBox="0 0 60 60">
+      <path d="M14,8 v44 M26,8 v44 M38,8 v44 M50,8 v44" stroke="currentColor" stroke-width="1.3" fill="none"/>
+      <path d="M8,18 h9 m6,0 h9 m6,0 h9 m6,0 h7 M8,30 h3 m6,0 h9 m6,0 h9 m6,0 h9 M8,42 h9 m6,0 h9 m6,0 h9 m6,0 h7" stroke="currentColor" stroke-width="1.3" fill="none"/>
+    </symbol>
+    <symbol id="s-pat-w2" viewBox="0 0 60 60">
+      <path d="M12,8 v44 M20,8 v44 M32,8 v44 M40,8 v44 M52,8 v44" stroke="currentColor" stroke-width="1.1" fill="none"/>
+      <path d="M8,16 h10 m4,0 h14 m4,0 h14 M8,26 h6 m4,0 h14 m4,0 h14 M8,36 h10 m4,0 h14 m4,0 h14 M8,46 h6 m4,0 h14 m4,0 h14" stroke="currentColor" stroke-width="1.1" fill="none"/>
+    </symbol>
+    <symbol id="s-pat-fish" viewBox="0 0 60 60">
+      <path d="M14,10 l8,8 l-8,8 M14,28 l8,8 l-8,8 M30,10 l8,8 l-8,8 M30,28 l8,8 l-8,8 M46,10 l-8,8 l8,8 M46,28 l-8,8 l8,8" fill="none" stroke="currentColor" stroke-width="1.3"/>
+    </symbol>
+    <symbol id="s-arch-mini" viewBox="0 0 80 100">
+      <path d="M10 96 v-50 a30 30 0 0 1 60 0 v50" fill="none" stroke="currentColor" stroke-width="2.2"/>
+      <path d="M18 96 v-48 a22 22 0 0 1 44 0 v48" fill="none" stroke="currentColor" stroke-width="1"/>
+    </symbol>
+    <linearGradient id="g-teal" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#2E7180"/><stop offset="1" stop-color="#0F3F4C"/>
+    </linearGradient>
+    <linearGradient id="g-gold" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#EFCB7E"/><stop offset="1" stop-color="#C9A86A"/>
+    </linearGradient>
+    <symbol id="s-drum" viewBox="0 0 200 200">
+      <circle cx="100" cy="100" r="96" fill="none" stroke="currentColor" stroke-width="2"/>
+      <circle cx="100" cy="100" r="90" fill="none" stroke="currentColor" stroke-width="1" stroke-dasharray="3 4"/>
+      <circle cx="100" cy="100" r="83" fill="none" stroke="currentColor" stroke-width="4" stroke-dasharray="1 6"/>
+      <circle cx="100" cy="100" r="74" fill="none" stroke="currentColor" stroke-width="1.4"/>
+      <circle cx="100" cy="100" r="68" fill="none" stroke="currentColor" stroke-width="1" stroke-dasharray="9 3"/>
+      <circle cx="100" cy="100" r="60" fill="none" stroke="currentColor" stroke-width="1" stroke-dasharray="2 3"/>
+      <circle cx="100" cy="100" r="52" fill="none" stroke="currentColor" stroke-width="1.4"/>
+      <circle cx="100" cy="100" r="46" fill="none" stroke="currentColor" stroke-width="1" stroke-dasharray="4 5"/>
+      <circle cx="100" cy="100" r="40" fill="none" stroke="currentColor" stroke-width="1"/>
+      <path d="M100,66 L103.4,87.4 L117,70.6 L109.2,90.8 L129.4,83 L112.6,96.6 L134,100 L112.6,103.4 L129.4,117 L109.2,109.2 L117,129.4 L103.4,112.6 L100,134 L96.6,112.6 L83,129.4 L90.8,109.2 L70.6,117 L87.4,103.4 L66,100 L87.4,96.6 L70.6,83 L90.8,90.8 L83,70.6 L96.6,87.4 Z" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/>
+      <circle cx="100" cy="100" r="6" fill="none" stroke="currentColor" stroke-width="1.2"/>
+    </symbol>
+    <symbol id="s-lac" viewBox="0 0 160 100">
+      <path d="M4 50 L38 46 L46 34 L60 28 L56 40 L88 20 L80 40 L110 36 L134 44 L152 36 L156 46 L138 54 L112 56 L92 66 L70 62 L50 72 L56 58 L26 62 Z" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/>
+      <path d="M60 28 L64 16 L72 22" fill="none" stroke="currentColor" stroke-width="1.4"/>
+      <circle cx="52" cy="38" r="1.6" fill="currentColor"/>
+      <path d="M96 46 h18 M92 52 h14 M70 50 h12" stroke="currentColor" stroke-width="1" fill="none"/>
+    </symbol>
+    <symbol id="s-lotus" viewBox="0 0 140 180">
+      <path d="M70 36 q-10 22 0 44 q10-22 0-44 z" fill="none" stroke="currentColor" stroke-width="1.6"/>
+      <path d="M70 80 q-22-18 -38-12 q8-22 38-32" fill="none" stroke="currentColor" stroke-width="1.6"/>
+      <path d="M70 80 q22-18 38-12 q-8-22 -38-32" fill="none" stroke="currentColor" stroke-width="1.6"/>
+      <path d="M70 82 q-18 2 -26 14 q16 7 32-2" fill="none" stroke="currentColor" stroke-width="1.4"/>
+      <path d="M70 82 q18 2 26 14 q-16 7 -32-2" fill="none" stroke="currentColor" stroke-width="1.4"/>
+      <path d="M64 70 v-7 M70 68 v-8 M76 70 v-7" stroke="currentColor" stroke-width="1"/>
+      <circle cx="64" cy="61" r="1" fill="currentColor"/><circle cx="70" cy="58" r="1" fill="currentColor"/><circle cx="76" cy="61" r="1" fill="currentColor"/>
+      <path d="M70 96 q-5 38 6 76" fill="none" stroke="currentColor" stroke-width="1.8"/>
+      <path d="M76 172 q-26-8 -34-30 m42 26 q20-14 22-34" fill="none" stroke="currentColor" stroke-width="1.5"/>
+      <path d="M40 150 q-18-2 -24-16" fill="none" stroke="currentColor" stroke-width="1.3"/>
+    </symbol>
+    <symbol id="s-swirl" viewBox="0 0 220 90">
+      <path d="M4 64 q34-36 84-32 q-18 8-24 22 q28-18 66-12 q34 5 56-14" fill="none" stroke="currentColor" stroke-width="1.6"/>
+      <path d="M14 74 q30-26 66-26" fill="none" stroke="currentColor" stroke-width="1.2" opacity=".7"/>
+      <path d="M150 46 q16-14 30-5 q10 7 1 14 q-8 6-12-1 q-3-6 5-7" fill="none" stroke="currentColor" stroke-width="1.4"/>
+      <path d="M58 26 q4-8 10-2 q6-6 8 2 q8-2 3 6 q2 8-6 5 q-6 6-9-2 q-8 1-6-9 z" fill="none" stroke="currentColor" stroke-width="1.1"/>
+      <circle cx="100" cy="20" r="1.6" fill="currentColor"/><circle cx="190" cy="64" r="1.6" fill="currentColor"/><circle cx="30" cy="40" r="1.4" fill="currentColor"/>
+    </symbol>
+    <symbol id="s-mounts" viewBox="0 0 400 160">
+      <path d="M28 150 q20-78 44-86 q24 44 40 86 z" fill="url(#g-teal)" opacity=".88"/>
+      <path d="M44 128 q12-38 24-48 m-14 60 q10-30 20-40" stroke="rgba(255,255,255,.35)" fill="none" stroke-width="1"/>
+      <path d="M96 150 q16-56 34-64 q20 34 30 64 z" fill="url(#g-teal)" opacity=".72"/>
+      <path d="M236 150 q22-92 50-100 q28 48 46 100 z" fill="url(#g-teal)" opacity=".94"/>
+      <path d="M254 122 q14-44 30-56 m-18 70 q12-34 24-46" stroke="rgba(255,255,255,.35)" fill="none" stroke-width="1"/>
+      <path d="M318 150 q14-48 30-54 q18 28 26 54 z" fill="url(#g-teal)" opacity=".66"/>
+      <path d="M0 118 q26-16 56-10 q14 3 10 10 q34-10 70-4 q16 3 10 9 q-40 12-86 6 q-36 6-60-4 z" fill="url(#g-gold)" opacity=".85"/>
+      <path d="M160 132 q30-14 64-8 q16 3 8 10 q36-8 78-2 q14 3 8 8 q-50 12-104 6 q-34 4-54-6 z" fill="url(#g-gold)" opacity=".8"/>
+      <path d="M60 152 h300" stroke="url(#g-gold)" stroke-width="2" opacity=".5" fill="none"/>
+    </symbol>
+  </defs>
+</svg>
+
+<!-- ================= TOPBAR ================= -->
+<div class="topbar">
+  ✦ Mới: <b id="tbPass" style="cursor:pointer;text-decoration:underline dotted">Hộ chiếu di sản</b> — tham quan, sưu tập con dấu, nhận ưu đãi 10% · Triển lãm "Vân Khởi 2026" đang mở cửa
+</div>
+
+<!-- ================= NAV ================= -->
+<header>
+  <div class="wrap nav">
+    <a class="brand" href="#home" data-go="home">
+      <svg class="art" width="44" height="44" style="color:var(--gold)"><use href="#s-logo"/></svg>
+      <span class="name">kimvie</span>
+    </a>
+    <ul class="menu">
+      <li><a href="#home" data-go="home" class="on">Trang chủ</a></li>
+      <li><a href="#expo" data-go="expo">Triển lãm số</a></li>
+      <li><a href="#market" data-go="market">Sàn thương mại</a></li>
+      <li><a href="#lang" data-go="lang">Làng nghề</a></li>
+      <li><a href="#story" data-go="story">Bài viết</a></li>
+      <li><a href="#events" data-go="events">Sự kiện</a></li>
+    </ul>
+    <div class="nav-right">
+      <button class="ic" type="button" title="Tìm kiếm" aria-label="Tìm kiếm"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.4-3.4"/></svg></button>
+      <button class="ic" type="button" title="Tài khoản" aria-label="Tài khoản"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M5 20a7 7 0 0 1 14 0"/></svg></button>
+      <button class="ic" id="ppBtn" type="button" title="Hộ chiếu di sản" aria-label="Hộ chiếu di sản"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="3" width="14" height="18" rx="2"/><circle cx="12" cy="10" r="2.6"/><path d="M9 16h6"/></svg><span class="badge" id="ppBadge">0</span></button>
+      <button class="ic" type="button" title="Giỏ hàng" aria-label="Giỏ hàng"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M5 7h14l-1.2 10.3a2 2 0 0 1-2 1.7H8.2a2 2 0 0 1-2-1.7Z"/><path d="M9 7a3 3 0 0 1 6 0"/></svg><span class="badge" id="cartBadge">0</span></button>
+      <a class="btn btn-navy login" href="#">Đăng nhập</a>
+      <button class="nav-toggle" id="navToggle" type="button" aria-label="Mở menu"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M4 7h16M4 12h16M4 17h16"/></svg></button>
+    </div>
+  </div>
+</header>
+
+<!-- ================= TRANG CHỦ ================= -->
+<main data-page="home" class="active">
+
+  <!-- HERO -->
+  <section class="hero">
+    <svg class="art motif" style="right:4%;top:22px;opacity:.4" width="240" height="98" viewBox="0 0 220 90"><use href="#s-swirl"/></svg>
+    <div class="motif" style="left:-60px;bottom:-70px;opacity:.12"><svg class="art spin-slow" width="340" height="340" viewBox="0 0 200 200"><use href="#s-drum"/></svg></div>
+    <div class="wrap">
+      <svg class="art hero-bamboo" width="170" height="400" viewBox="0 0 90 210" preserveAspectRatio="xMidYMid meet"><use href="#s-bamboo"/></svg>
+      <svg class="art hero-cloud" width="120" height="44"><use href="#s-cloud"/></svg>
+      <div class="hero-left">
+        <div class="who">KIMVIE</div>
+        <h1>Kết nối di sản <span class="amber">Lan tỏa tinh hoa</span></h1>
+        <p class="lead">Kimvie là cầu nối giữa các làng nghề truyền thống và thế hệ hôm nay, gìn giữ giá trị Việt bằng công nghệ và tình yêu văn hóa.</p>
+        <div class="hero-cta">
+          <a class="btn btn-navy" data-go="expo" href="#expo">Khám phá triển lãm →</a>
+          <a class="btn btn-line" data-go="market" href="#market">Tham quan gian hàng →</a>
+        </div>
+        <a class="play" data-go="article" href="#article"><i>▶</i> Tìm hiểu về Kimvie</a>
+      </div>
+      <div class="hero-right">
+        <div class="arch">
+          <span class="sun"></span>
+          <svg class="art motif" style="left:5%;bottom:0;width:90%;opacity:.5" viewBox="0 0 400 160"><use href="#s-mounts"/></svg>
+          <svg class="art a-bamboo" width="86" height="200" viewBox="0 0 90 210"><use href="#s-bamboo"/></svg>
+          <svg class="art a-cloud" width="90" height="33" viewBox="0 0 120 44"><use href="#s-cloud"/></svg>
+          <svg class="art a-vase" width="130" height="195" viewBox="0 0 100 150"><use href="#s-vase"/></svg>
+          <svg class="art a-loom" width="170" height="138" viewBox="0 0 160 130"><use href="#s-loom"/></svg>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 03 LÀNG NGHỀ -->
+  <section class="villages">
+    <div class="motif faint" style="left:50%;top:50%;transform:translate(-50%,-50%)"><svg class="art spin-slow" width="620" height="620" viewBox="0 0 200 200"><use href="#s-drum"/></svg></div>
+    <svg class="art motif" style="left:3%;top:40px;opacity:.3" width="170" height="106" viewBox="0 0 160 100"><use href="#s-lac"/></svg>
+    <svg class="art motif" style="right:3%;bottom:36px;opacity:.3;transform:scaleX(-1)" width="150" height="94" viewBox="0 0 160 100"><use href="#s-lac"/></svg>
+    <div class="wrap">
+      <div class="sec-head">
+        <div class="deco">✦</div>
+        <h2>03 Làng nghề tinh hoa</h2>
+        <p>Ba miền – Ba sắc – Một tinh hoa Việt</p>
+      </div>
+      <div class="v-grid">
+        <article class="v-card v-light">
+          <div class="medal"><svg class="art" width="34" height="34" viewBox="0 0 100 150"><use href="#s-vase"/></svg></div>
+          <h3>BÁT TRÀNG</h3>
+          <div class="sub">Tinh hoa gốm Việt</div>
+          <p>Nơi đất và lửa kết tinh thành những tác phẩm vượt thời gian.</p>
+          <a class="arrow-link" data-go="lang" href="#lang">Khám phá</a>
+          <svg class="art v-art" width="150" height="225" viewBox="0 0 100 150"><use href="#s-vase"/></svg>
+        </article>
+        <article class="v-card v-dark">
+          <div class="medal"><svg class="art" width="32" height="32" viewBox="0 0 120 130"><use href="#s-scarf"/></svg></div>
+          <h3>VẠN PHÚC</h3>
+          <div class="sub">Lụa tơ tằm ngàn năm</div>
+          <p>Mềm mại như dòng chảy thời gian, lưu giữ vẻ đẹp trong từng sợi lụa.</p>
+          <a class="arrow-link" data-go="lang" href="#lang">Khám phá</a>
+          <svg class="art v-art" width="190" height="155" viewBox="0 0 160 130"><use href="#s-loom"/></svg>
+        </article>
+        <article class="v-card v-light v-green">
+          <div class="medal"><svg class="art" width="32" height="32" viewBox="0 0 120 110"><use href="#s-basket"/></svg></div>
+          <h3>PHÚ VINH</h3>
+          <div class="sub">Mây tre đan tinh xảo</div>
+          <p>Từ tre mây bình dị nên những sản phẩm đậm hồn Việt.</p>
+          <a class="arrow-link" data-go="lang" href="#lang">Khám phá</a>
+          <svg class="art v-art" width="120" height="220" viewBox="0 0 90 210"><use href="#s-bamboo"/></svg>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <!-- ĐIỂM KHÁC BIỆT -->
+  <section class="pad" style="border-bottom:1px solid var(--line)">
+    <div class="wrap">
+      <div class="sec-head">
+        <span class="kicker center" style="justify-content:center">Chỉ có ở Kimvie</span>
+        <h2 class="lc">Khám phá theo cách <em style="color:var(--amber);font-style:italic">chưa ai làm</em></h2>
+      </div>
+      <div class="mission">
+        <div class="mis">
+          <div class="m-ic" style="font-size:22px;color:#A8352C">❖</div>
+          <h4>Hộ chiếu di sản</h4>
+          <p>Mỗi bước khám phá — tham quan triển lãm, đọc chuyện làng, mua một món đồ — đều được <b>đóng một con dấu</b>. Đủ 8 dấu, bạn thành "Người Giữ Lửa" và nhận ưu đãi.</p>
+          <button class="btn btn-line" id="newPass" style="margin-top:14px">Mở hộ chiếu của bạn</button>
+        </div>
+        <div class="mis">
+          <div class="m-ic"><svg class="art" width="24" height="24" viewBox="0 0 60 60"><use href="#s-box"/></svg></div>
+          <h4>Căn cước sản phẩm</h4>
+          <p>Mỗi món đồ có <b>"giấy khai sinh số"</b> kèm mã QR: ai làm, mẻ nào, số thứ tự bản giới hạn — món quà thủ công có câu chuyện xác thực.</p>
+          <button class="btn btn-line" id="newId" style="margin-top:14px">Xem thử một căn cước</button>
+        </div>
+        <div class="mis">
+          <div class="m-ic"><svg class="art" width="22" height="28" viewBox="0 0 80 100"><use href="#s-arch-mini"/></svg></div>
+          <h4>Triển lãm 3D</h4>
+          <p>Bước vào <b>không gian triển lãm số</b>: dạo qua ba gian làng nghề, xoay ngắm hiện vật 360° và chạm để mở câu chuyện phía sau từng tác phẩm.</p>
+          <button class="btn btn-line" id="newSnd" style="margin-top:14px">Vào triển lãm số →</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- TRIỂN LÃM 3D BAND -->
+  <section class="expo-band">
+    <svg class="art motif" style="right:12%;top:7%;opacity:.4" width="140" height="88" viewBox="0 0 160 100"><use href="#s-lac"/></svg>
+    <svg class="art motif" style="right:22%;top:16%;opacity:.25" width="90" height="56" viewBox="0 0 160 100"><use href="#s-lac"/></svg>
+    <div class="motif" style="left:-110px;bottom:-120px;opacity:.14"><svg class="art" width="380" height="380" viewBox="0 0 200 200"><use href="#s-drum"/></svg></div>
+    <svg class="art bg-cloud" style="right:40px;top:30px" width="170" height="62" viewBox="0 0 120 44"><use href="#s-cloud"/></svg>
+    <svg class="art bg-cloud" style="left:30px;bottom:26px" width="130" height="48" viewBox="0 0 120 44"><use href="#s-cloud"/></svg>
+    <div class="wrap">
+      <div>
+        <span class="kicker">Triển lãm số</span>
+        <h2>Không gian<br>triển lãm 3D</h2>
+        <p class="desc">Khám phá từng không gian làng nghề qua mô hình 3D sống động, chân thực như đang hiện diện tại triển lãm.</p>
+        <div class="expo-cta">
+          <a class="btn btn-amber" data-go="expo" href="#expo">Bắt đầu tham quan</a>
+          <a class="play" href="#"><i>▶</i> Xem video giới thiệu</a>
+        </div>
+      </div>
+      <div class="room-stage">
+        <svg class="art" width="100%" viewBox="0 0 360 250"><use href="#s-room"/></svg>
+        <button class="hotspot" data-p="binh-men-ran" style="left:24%;top:36%"><span class="tip">Bình gốm men rạn — bấm để xem</span></button>
+        <button class="hotspot" data-p="khan-lua" style="left:55%;top:52%"><span class="tip">Khăn lụa tơ tằm — bấm để xem</span></button>
+        <button class="hotspot" data-p="den-may" style="left:74%;top:40%"><span class="tip">Đèn mây tre đan — bấm để xem</span></button>
+        <p class="hint">✦ Bấm vào điểm sáng để xem hiện vật & mua hàng ✦</p>
+      </div>
+      <div class="feat-panel">
+        <div class="feat">
+          <span class="f-ic"><svg class="art" width="24" height="24" viewBox="0 0 60 60"><use href="#s-360"/></svg></span>
+          <div><h4>TƯƠNG TÁC 360°</h4><p>Xoay, phóng to, thu nhỏ không gian trưng bày</p></div>
+        </div>
+        <div class="feat">
+          <span class="f-ic"><svg class="art" width="24" height="24" viewBox="0 0 60 60"><use href="#s-audio"/></svg></span>
+          <div><h4>THUYẾT MINH TỰ ĐỘNG</h4><p>Tìm hiểu câu chuyện đằng sau từng hiện vật</p></div>
+        </div>
+        <div class="feat">
+          <span class="f-ic"><svg class="art" width="24" height="24" viewBox="0 0 60 60"><use href="#s-spark"/></svg></span>
+          <div><h4>TRẢI NGHIỆM SỐNG ĐỘNG</h4><p>Hiệu ứng ánh sáng, âm thanh chân thực</p></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SÀN THƯƠNG MẠI -->
+  <section class="market">
+    <div class="motif" style="left:-26px;bottom:30px;opacity:.2;color:var(--sepia)"><svg class="art" width="220" height="282" viewBox="0 0 140 180"><use href="#s-lotus"/></svg></div>
+    <svg class="art motif" style="right:2%;top:50px;opacity:.35" width="230" height="94" viewBox="0 0 220 90"><use href="#s-swirl"/></svg>
+    <div class="wrap">
+      <div class="m-head">
+        <div>
+          <span class="kicker">Sàn thương mại</span>
+          <h2>Tinh hoa trong từng sản phẩm</h2>
+        </div>
+        <a class="arrow-link" data-go="market" href="#market">Xem tất cả</a>
+      </div>
+      <div class="p-grid">
+        <article class="p-card">
+          <div class="p-art"><svg class="art" width="86" height="128" viewBox="0 0 100 150"><use href="#s-vase"/></svg></div>
+          <h4>Bình gốm men rạn</h4><div class="pl">Bát Tràng</div>
+          <div class="p-foot"><span class="price">1.250.000đ</span><button class="cart-btn" aria-label="Thêm vào giỏ hàng" data-name="Bình gốm men rạn"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M5 7h14l-1.2 10.3a2 2 0 0 1-2 1.7H8.2a2 2 0 0 1-2-1.7Z"/><path d="M9 7a3 3 0 0 1 6 0"/></svg></button></div>
+        </article>
+        <article class="p-card">
+          <div class="p-art"><svg class="art" width="100" height="110" viewBox="0 0 120 130"><use href="#s-scarf"/></svg></div>
+          <h4>Khăn lụa tơ tằm</h4><div class="pl">Vạn Phúc</div>
+          <div class="p-foot"><span class="price">850.000đ</span><button class="cart-btn" aria-label="Thêm vào giỏ hàng" data-name="Khăn lụa tơ tằm"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M5 7h14l-1.2 10.3a2 2 0 0 1-2 1.7H8.2a2 2 0 0 1-2-1.7Z"/><path d="M9 7a3 3 0 0 1 6 0"/></svg></button></div>
+        </article>
+        <article class="p-card">
+          <div class="p-art"><svg class="art" width="96" height="124" viewBox="0 0 110 140"><use href="#s-lantern"/></svg></div>
+          <h4>Đèn mây tre đan</h4><div class="pl">Phú Vinh</div>
+          <div class="p-foot"><span class="price">650.000đ</span><button class="cart-btn" aria-label="Thêm vào giỏ hàng" data-name="Đèn mây tre đan"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M5 7h14l-1.2 10.3a2 2 0 0 1-2 1.7H8.2a2 2 0 0 1-2-1.7Z"/><path d="M9 7a3 3 0 0 1 6 0"/></svg></button></div>
+        </article>
+        <article class="p-card">
+          <div class="p-art"><svg class="art" width="118" height="86" viewBox="0 0 140 100"><use href="#s-teaset"/></svg></div>
+          <h4>Bộ ấm chén men lam</h4><div class="pl">Bát Tràng</div>
+          <div class="p-foot"><span class="price">990.000đ</span><button class="cart-btn" aria-label="Thêm vào giỏ hàng" data-name="Bộ ấm chén men lam"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M5 7h14l-1.2 10.3a2 2 0 0 1-2 1.7H8.2a2 2 0 0 1-2-1.7Z"/><path d="M9 7a3 3 0 0 1 6 0"/></svg></button></div>
+        </article>
+        <article class="p-card">
+          <div class="p-art"><svg class="art" width="100" height="110" viewBox="0 0 120 130" style="transform:scaleX(-1)"><use href="#s-scarf"/></svg></div>
+          <h4>Khăn lụa thêu tay</h4><div class="pl">Vạn Phúc</div>
+          <div class="p-foot"><span class="price">1.100.000đ</span><button class="cart-btn" aria-label="Thêm vào giỏ hàng" data-name="Khăn lụa thêu tay"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M5 7h14l-1.2 10.3a2 2 0 0 1-2 1.7H8.2a2 2 0 0 1-2-1.7Z"/><path d="M9 7a3 3 0 0 1 6 0"/></svg></button></div>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <!-- HÀNH TRÌNH TINH HOA -->
+  <section class="journey">
+    <div class="motif" style="left:50%;bottom:-24px;transform:translateX(-50%);opacity:.32"><svg class="art" width="720" height="288" viewBox="0 0 400 160"><use href="#s-mounts"/></svg></div>
+    <svg class="art motif" style="left:4%;top:34px;opacity:.3" width="200" height="82" viewBox="0 0 220 90"><use href="#s-swirl"/></svg>
+    <div class="wrap">
+      <div class="sec-head">
+        <span class="kicker center" style="justify-content:center">Câu chuyện làng nghề</span>
+        <h2 class="lc">Hành trình tinh hoa</h2>
+      </div>
+      <div class="j-row">
+        <div class="j-step">
+          <div class="j-ic"><svg class="art" width="34" height="34" viewBox="0 0 60 60"><use href="#s-leaf"/></svg></div>
+          <div class="num">01</div><h4>Chọn nguyên liệu</h4>
+          <p>Tuyển chọn nguyên liệu tự nhiên chất lượng</p>
+        </div>
+        <div class="j-step">
+          <div class="j-ic"><svg class="art" width="34" height="34" viewBox="0 0 60 60"><use href="#s-hands"/></svg></div>
+          <div class="num">02</div><h4>Bàn tay nghệ nhân</h4>
+          <p>Kỹ thuật thủ công được lưu truyền</p>
+        </div>
+        <div class="j-step">
+          <div class="j-ic"><svg class="art" width="34" height="34" viewBox="0 0 60 60"><use href="#s-fire"/></svg></div>
+          <div class="num">03</div><h4>Thổi hồn vào sản phẩm</h4>
+          <p>Mỗi công đoạn là một sự tỉ mỉ và tâm huyết</p>
+        </div>
+        <div class="j-step">
+          <div class="j-ic"><svg class="art" width="34" height="34" viewBox="0 0 60 60"><use href="#s-box"/></svg></div>
+          <div class="num">04</div><h4>Sản phẩm hoàn thiện</h4>
+          <p>Thành phẩm mang đậm tinh hoa văn hóa Việt</p>
+        </div>
+        <div class="j-step">
+          <div class="j-ic"><svg class="art" width="34" height="34" viewBox="0 0 60 60"><use href="#s-truck"/></svg></div>
+          <div class="num">05</div><h4>Đến với bạn</h4>
+          <p>Lan tỏa giá trị di sản tới mọi miền</p>
+        </div>
+      </div>
+      <div style="text-align:center;margin-top:44px">
+        <a class="btn btn-line" data-go="story" href="#story">Đọc câu chuyện làng nghề →</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- SỰ KIỆN & WORKSHOP -->
+  <section class="events">
+    <svg class="art motif" style="left:2%;top:36px;opacity:.3" width="220" height="90" viewBox="0 0 220 90"><use href="#s-swirl"/></svg>
+    <div class="motif" style="right:-70px;top:-60px;opacity:.1"><svg class="art" width="300" height="300" viewBox="0 0 200 200"><use href="#s-drum"/></svg></div>
+    <div class="wrap">
+      <div>
+        <span class="kicker">Sự kiện & Workshop</span>
+        <h2>Trải nghiệm<br>cùng Kimvie</h2>
+        <p class="desc">Tham gia các sự kiện, workshop để cảm nhận và gìn giữ tinh hoa làng nghề theo cách của bạn.</p>
+        <a class="arrow-link" data-go="events" href="#events">Xem lịch sự kiện</a>
+      </div>
+      <div class="e-grid">
+        <a class="e-card e-ochre" data-go="events" href="#events">
+          <svg class="art e-art" width="120" height="180" viewBox="0 0 100 150"><use href="#s-vase"/></svg>
+          <h4>Workshop làm gốm Bát Tràng</h4>
+          <div class="date">20.06.2026</div>
+          <span class="go">→</span>
+        </a>
+        <a class="e-card e-navy" data-go="events" href="#events">
+          <svg class="art e-art" width="140" height="115" viewBox="0 0 160 130"><use href="#s-loom"/></svg>
+          <h4>Trải nghiệm dệt lụa Vạn Phúc</h4>
+          <div class="date">28.06.2026</div>
+          <span class="go">→</span>
+        </a>
+        <a class="e-card e-green" data-go="events" href="#events">
+          <svg class="art e-art" width="110" height="170" viewBox="0 0 90 210"><use href="#s-bamboo"/></svg>
+          <h4>Workshop mây tre đan Phú Vinh</h4>
+          <div class="date">05.07.2026</div>
+          <span class="go">→</span>
+        </a>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<!-- ================= TRIỂN LÃM SỐ ================= -->
+<main data-page="expo">
+  <section class="page-hero">
+    <svg class="art cloud-r" width="200" height="74" viewBox="0 0 120 44"><use href="#s-cloud"/></svg>
+    <div class="motif" style="right:-80px;top:-50px;opacity:.16"><svg class="art spin-slow" width="300" height="300" viewBox="0 0 200 200"><use href="#s-drum"/></svg></div>
+    <svg class="art motif" style="left:38%;bottom:14px;opacity:.25" width="120" height="75" viewBox="0 0 160 100"><use href="#s-lac"/></svg>
+    <svg class="art cloud-l" width="150" height="55" viewBox="0 0 120 44"><use href="#s-cloud"/></svg>
+    <div class="wrap">
+      <div class="crumb">Trang chủ ✦ Triển lãm số</div>
+      <h1>Không gian triển lãm 3D</h1>
+      <p>Dạo bước qua ba gian làng nghề được tái hiện bằng mô hình 3D — chạm vào hiện vật, nghe thuyết minh, và mang về món đồ bạn yêu thích.</p>
+    </div>
+  </section>
+
+  <section class="pad">
+    <div class="wrap">
+      <div class="viewer-shell">
+        <div class="room-stage">
+          <svg class="art" width="100%" viewBox="0 0 360 250"><use href="#s-room"/></svg>
+          <button class="hotspot" data-p="binh-men-ran" style="left:22%;top:34%"><span class="tip">Bình gốm men rạn — Bát Tràng</span></button>
+          <button class="hotspot" data-p="am-chen" style="left:42%;top:55%"><span class="tip">Bộ ấm chén men lam — Bát Tràng</span></button>
+          <button class="hotspot" data-p="khan-lua" style="left:58%;top:48%"><span class="tip">Khăn lụa tơ tằm — Vạn Phúc</span></button>
+          <button class="hotspot" data-p="den-may" style="left:76%;top:38%"><span class="tip">Đèn mây tre đan — Phú Vinh</span></button>
+        </div>
+        <div class="viewer-bar">
+          <button title="Xoay">⟲</button><button title="Thu nhỏ">−</button><button title="Phóng to">+</button><button title="Tự động tham quan">▶</button><button title="Toàn màn hình">⛶</button>
+        </div>
+      </div>
+      <p style="text-align:center;margin-top:16px;font-size:12.5px;color:var(--muted)">✦ Bản giả lập — vị trí nhúng mô hình 3D thật (Three.js / Sketchfab / Tour 360°) ✦</p>
+    </div>
+  </section>
+
+  <!-- SẢNH TRƯNG BÀY TRỰC TUYẾN -->
+  <section class="pad" style="padding-top:14px">
+    <div class="wrap">
+      <div class="sec-head">
+        <span class="kicker center" style="justify-content:center">Triển lãm trực tuyến</span>
+        <h2 class="lc">Sảnh trưng bày hiện vật</h2>
+        <p>Tham quan như một triển lãm thực thụ — bấm vào từng khung trưng bày để xem giới thiệu sản phẩm và đường dẫn mua hàng.</p>
+      </div>
+      <div class="hall">
+        <div class="h-rail"></div>
+        <div class="frames">
+          <div class="frame" data-p="binh-men-ran">
+            <div class="fr-art"><svg class="art" width="84" height="126" viewBox="0 0 100 150"><use href="#s-vase"/></svg></div>
+            <div class="plaque">Bình gốm men rạn · Bát Tràng</div>
+          </div>
+          <div class="frame" data-p="am-chen">
+            <div class="fr-art"><svg class="art" width="120" height="88" viewBox="0 0 140 100"><use href="#s-teaset"/></svg></div>
+            <div class="plaque">Bộ ấm chén men lam · Bát Tràng</div>
+          </div>
+          <div class="frame" data-p="khan-lua">
+            <div class="fr-art"><svg class="art" width="96" height="108" viewBox="0 0 120 130"><use href="#s-scarf"/></svg></div>
+            <div class="plaque">Khăn lụa tơ tằm · Vạn Phúc</div>
+          </div>
+          <div class="frame" data-p="lua-theu">
+            <div class="fr-art"><svg class="art" width="96" height="108" viewBox="0 0 120 130" style="transform:scaleX(-1)"><use href="#s-scarf"/></svg></div>
+            <div class="plaque">Khăn lụa thêu tay · Vạn Phúc</div>
+          </div>
+          <div class="frame" data-p="den-may">
+            <div class="fr-art"><svg class="art" width="90" height="118" viewBox="0 0 110 140"><use href="#s-lantern"/></svg></div>
+            <div class="plaque">Đèn mây tre đan · Phú Vinh</div>
+          </div>
+          <div class="frame" data-p="gio-may">
+            <div class="fr-art"><svg class="art" width="100" height="92" viewBox="0 0 120 110"><use href="#s-basket"/></svg></div>
+            <div class="plaque">Giỏ mây đan · Phú Vinh</div>
+          </div>
+        </div>
+        <div class="floor"></div>
+      </div>
+      <p style="text-align:center;margin-top:16px;font-size:12.5px;color:var(--muted)">✦ Hình ảnh sẽ được chụp thực tế tại làng nghề hoặc do nhóm tự thiết kế ✦</p>
+    </div>
+  </section>
+
+  <section class="pad" style="padding-top:10px">
+    <div class="wrap">
+      <div class="sec-head">
+        <span class="kicker center" style="justify-content:center">Chọn gian tham quan</span>
+        <h2 class="lc">Ba gian — Ba miền ký ức</h2>
+      </div>
+      <div class="gian-grid">
+        <div class="gian">
+          <div class="g-art"><svg class="art" width="80" height="118" viewBox="0 0 100 150"><use href="#s-vase"/></svg></div>
+          <h4>Gian Bát Tràng</h4><div class="gl">Lò bầu & bàn xoay</div>
+          <p>Theo dấu khối đất sét qua bàn xoay, men rạn và lửa lò nghìn độ.</p>
+          <a class="btn btn-line" href="#">Vào gian này →</a>
+        </div>
+        <div class="gian">
+          <div class="g-art"><svg class="art" width="128" height="104" viewBox="0 0 160 130"><use href="#s-loom"/></svg></div>
+          <h4>Gian Vạn Phúc</h4><div class="gl">Đường tơ óng ánh</div>
+          <p>Nghe tiếng thoi đưa, ngắm dải lụa chuyển động như dòng nước.</p>
+          <a class="btn btn-line" href="#">Vào gian này →</a>
+        </div>
+        <div class="gian">
+          <div class="g-art"><svg class="art" width="92" height="86" viewBox="0 0 120 110"><use href="#s-basket"/></svg></div>
+          <h4>Gian Phú Vinh</h4><div class="gl">Vòm tre & ánh sáng</div>
+          <p>Bước dưới vòm tre đan, nơi nan tre kể chuyện bằng bóng nắng.</p>
+          <a class="btn btn-line" href="#">Vào gian này →</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div class="quote-band">
+    <div class="wrap">
+      <svg class="art" width="46" height="46" viewBox="0 0 200 200" style="color:var(--amber2);margin-bottom:14px"><use href="#s-drum"/></svg>
+      <div class="q">"Không gian số không thay thế làng nghề — nó mở thêm một cánh cửa để làng nghề bước ra thế giới."</div>
+      <div class="by">— Kimvie —</div>
+    </div>
+  </div>
+</main>
+
+<!-- ================= SÀN THƯƠNG MẠI ================= -->
+<main data-page="market">
+  <section class="page-hero">
+    <svg class="art cloud-r" width="200" height="74" viewBox="0 0 120 44"><use href="#s-cloud"/></svg>
+    <div class="motif" style="right:-80px;top:-50px;opacity:.16"><svg class="art spin-slow" width="300" height="300" viewBox="0 0 200 200"><use href="#s-drum"/></svg></div>
+    <svg class="art motif" style="left:38%;bottom:14px;opacity:.25" width="120" height="75" viewBox="0 0 160 100"><use href="#s-lac"/></svg>
+    <div class="wrap">
+      <div class="crumb">Trang chủ ✦ Sàn thương mại</div>
+      <h1>Gian hàng làng nghề</h1>
+      <p>Mỗi sản phẩm là một câu chuyện thủ công — chọn theo làng nghề bạn yêu, đặt hàng tận tay nghệ nhân.</p>
+    </div>
+  </section>
+
+  <section class="pad">
+    <div class="wrap">
+      <div class="filters">
+        <button class="chip on" data-f="all">Tất cả</button>
+        <button class="chip" data-f="bt">Gốm Bát Tràng</button>
+        <button class="chip" data-f="vp">Lụa Vạn Phúc</button>
+        <button class="chip" data-f="pv">Mây tre Phú Vinh</button>
+        <span class="sort">Sắp xếp: Nổi bật ▾</span>
+      </div>
+      <div class="p-grid wide" id="allProducts">
+        <article class="p-card" data-v="bt">
+          <div class="p-art"><svg class="art" width="86" height="128" viewBox="0 0 100 150"><use href="#s-vase"/></svg></div>
+          <h4>Bình gốm men rạn</h4><div class="pl">Bát Tràng · Vẽ tay</div>
+          <div class="p-foot"><span class="price">1.250.000đ</span><button class="cart-btn" aria-label="Thêm vào giỏ hàng" data-name="Bình gốm men rạn"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M5 7h14l-1.2 10.3a2 2 0 0 1-2 1.7H8.2a2 2 0 0 1-2-1.7Z"/><path d="M9 7a3 3 0 0 1 6 0"/></svg></button></div>
+        </article>
+        <article class="p-card" data-v="vp">
+          <div class="p-art"><svg class="art" width="100" height="112" viewBox="0 0 120 130"><use href="#s-scarf"/></svg></div>
+          <h4>Khăn lụa tơ tằm</h4><div class="pl">Vạn Phúc · Dệt thủ công</div>
+          <div class="p-foot"><span class="price">850.000đ</span><button class="cart-btn" aria-label="Thêm vào giỏ hàng" data-name="Khăn lụa tơ tằm"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M5 7h14l-1.2 10.3a2 2 0 0 1-2 1.7H8.2a2 2 0 0 1-2-1.7Z"/><path d="M9 7a3 3 0 0 1 6 0"/></svg></button></div>
+        </article>
+        <article class="p-card" data-v="pv">
+          <div class="p-art"><svg class="art" width="96" height="124" viewBox="0 0 110 140"><use href="#s-lantern"/></svg></div>
+          <h4>Đèn mây tre đan</h4><div class="pl">Phú Vinh · Đan tay</div>
+          <div class="p-foot"><span class="price">650.000đ</span><button class="cart-btn" aria-label="Thêm vào giỏ hàng" data-name="Đèn mây tre đan"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M5 7h14l-1.2 10.3a2 2 0 0 1-2 1.7H8.2a2 2 0 0 1-2-1.7Z"/><path d="M9 7a3 3 0 0 1 6 0"/></svg></button></div>
+        </article>
+        <article class="p-card" data-v="bt">
+          <div class="p-art"><svg class="art" width="120" height="88" viewBox="0 0 140 100"><use href="#s-teaset"/></svg></div>
+          <h4>Bộ ấm chén men lam</h4><div class="pl">Bát Tràng · Men lam cổ</div>
+          <div class="p-foot"><span class="price">990.000đ</span><button class="cart-btn" aria-label="Thêm vào giỏ hàng" data-name="Bộ ấm chén men lam"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M5 7h14l-1.2 10.3a2 2 0 0 1-2 1.7H8.2a2 2 0 0 1-2-1.7Z"/><path d="M9 7a3 3 0 0 1 6 0"/></svg></button></div>
+        </article>
+        <article class="p-card" data-v="vp">
+          <div class="p-art"><svg class="art" width="100" height="112" viewBox="0 0 120 130" style="transform:scaleX(-1)"><use href="#s-scarf"/></svg></div>
+          <h4>Khăn lụa thêu tay</h4><div class="pl">Vạn Phúc · Thêu hoa văn</div>
+          <div class="p-foot"><span class="price">1.100.000đ</span><button class="cart-btn" aria-label="Thêm vào giỏ hàng" data-name="Khăn lụa thêu tay"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M5 7h14l-1.2 10.3a2 2 0 0 1-2 1.7H8.2a2 2 0 0 1-2-1.7Z"/><path d="M9 7a3 3 0 0 1 6 0"/></svg></button></div>
+        </article>
+        <article class="p-card" data-v="pv">
+          <div class="p-art"><svg class="art" width="92" height="86" viewBox="0 0 120 110"><use href="#s-basket"/></svg></div>
+          <h4>Giỏ mây đan thủ công</h4><div class="pl">Phú Vinh · Mây tự nhiên</div>
+          <div class="p-foot"><span class="price">420.000đ</span><button class="cart-btn" aria-label="Thêm vào giỏ hàng" data-name="Giỏ mây đan thủ công"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M5 7h14l-1.2 10.3a2 2 0 0 1-2 1.7H8.2a2 2 0 0 1-2-1.7Z"/><path d="M9 7a3 3 0 0 1 6 0"/></svg></button></div>
+        </article>
+        <article class="p-card" data-v="bt">
+          <div class="p-art"><svg class="art" width="80" height="118" viewBox="0 0 100 150" style="transform:scaleX(-1)"><use href="#s-vase"/></svg></div>
+          <h4>Lọ hoa men ngọc</h4><div class="pl">Bát Tràng · Bản giới hạn</div>
+          <div class="p-foot"><span class="price">1.680.000đ</span><button class="cart-btn" aria-label="Thêm vào giỏ hàng" data-name="Lọ hoa men ngọc"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M5 7h14l-1.2 10.3a2 2 0 0 1-2 1.7H8.2a2 2 0 0 1-2-1.7Z"/><path d="M9 7a3 3 0 0 1 6 0"/></svg></button></div>
+        </article>
+        <article class="p-card" data-v="pv">
+          <div class="p-art"><svg class="art" width="90" height="118" viewBox="0 0 110 140" style="transform:scaleX(-1)"><use href="#s-lantern"/></svg></div>
+          <h4>Đèn lồng tre treo trần</h4><div class="pl">Phú Vinh · Bộ 3 chiếc</div>
+          <div class="p-foot"><span class="price">1.450.000đ</span><button class="cart-btn" aria-label="Thêm vào giỏ hàng" data-name="Đèn lồng tre treo trần"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M5 7h14l-1.2 10.3a2 2 0 0 1-2 1.7H8.2a2 2 0 0 1-2-1.7Z"/><path d="M9 7a3 3 0 0 1 6 0"/></svg></button></div>
+        </article>
+      </div>
+      <div style="text-align:center;margin-top:40px">
+        <span class="chip on" style="cursor:default">1</span>
+        <span class="chip">2</span>
+        <span class="chip">3</span>
+        <span class="chip">→</span>
+      </div>
+    </div>
+  </section>
+</main>
+
+<!-- ================= LÀNG NGHỀ ================= -->
+<main data-page="lang">
+  <section class="page-hero">
+    <svg class="art cloud-r" width="200" height="74" viewBox="0 0 120 44"><use href="#s-cloud"/></svg>
+    <div class="motif" style="right:-80px;top:-50px;opacity:.16"><svg class="art spin-slow" width="300" height="300" viewBox="0 0 200 200"><use href="#s-drum"/></svg></div>
+    <svg class="art motif" style="left:38%;bottom:14px;opacity:.25" width="120" height="75" viewBox="0 0 160 100"><use href="#s-lac"/></svg>
+    <div class="wrap">
+      <div class="crumb">Trang chủ ✦ Làng nghề</div>
+      <h1>Ba làng nghề — Ba dòng chảy di sản</h1>
+      <p>Gốm Bát Tràng, lụa Vạn Phúc, mây tre Phú Vinh — mỗi nơi một chất liệu, chung một tâm hồn Việt.</p>
+    </div>
+  </section>
+
+  <section>
+    <div class="wrap">
+      <div class="split">
+        <div class="s-art">
+          <span class="corner c-tl"></span><span class="corner c-br"></span>
+          <svg class="art" width="190" height="280" viewBox="0 0 100 150"><use href="#s-vase"/></svg>
+        </div>
+        <div>
+          <span class="kicker">Gia Lâm · Hà Nội</span>
+          <h3>Gốm sứ Bát Tràng</h3>
+          <p class="desc">Hơn 700 năm đỏ lửa bên tả ngạn sông Hồng. Từ khối đất sét thô, qua bàn xoay và lò nung nghìn độ, thành những tác phẩm men lam, men rạn được người yêu gốm khắp thế giới tìm kiếm.</p>
+          <div class="stat-row">
+            <div><b>700+</b><span>năm tuổi nghề</span></div>
+            <div><b>200</b><span>lò gốm đang đỏ lửa</span></div>
+            <div><b>50+</b><span>nghệ nhân ưu tú</span></div>
+          </div>
+          <div style="display:flex;gap:12px;flex-wrap:wrap">
+            <a class="btn btn-navy" data-go="expo" href="#expo">Xem gian triển lãm</a>
+            <a class="btn btn-line" data-go="market" href="#market">Sản phẩm Bát Tràng</a>
+          </div>
+        </div>
+      </div>
+
+      <div class="split">
+        <div>
+          <span class="kicker">Hà Đông · Hà Nội</span>
+          <h3>Lụa tơ tằm Vạn Phúc</h3>
+          <p class="desc">Nghìn năm tiếng thoi đưa. Lụa Vạn Phúc từng dệt áo cho vua chúa, nay khoác lên vai người trẻ — vẫn sợi tơ ấy, óng và bền như ký ức không phai.</p>
+          <div class="stat-row">
+            <div><b>1.000+</b><span>năm lịch sử</span></div>
+            <div><b>800</b><span>khung cửi hoạt động</span></div>
+            <div><b>70+</b><span>mẫu hoa văn cổ</span></div>
+          </div>
+          <div style="display:flex;gap:12px;flex-wrap:wrap">
+            <a class="btn btn-navy" data-go="expo" href="#expo">Xem gian triển lãm</a>
+            <a class="btn btn-line" data-go="market" href="#market">Sản phẩm Vạn Phúc</a>
+          </div>
+        </div>
+        <div class="s-art">
+          <span class="corner c-tl"></span><span class="corner c-br"></span>
+          <svg class="art" width="270" height="220" viewBox="0 0 160 130"><use href="#s-loom"/></svg>
+        </div>
+      </div>
+
+      <div class="split">
+        <div class="s-art">
+          <span class="corner c-tl"></span><span class="corner c-br"></span>
+          <div style="display:flex;align-items:flex-end;gap:10px">
+            <svg class="art" width="110" height="250" viewBox="0 0 90 210"><use href="#s-bamboo"/></svg>
+            <svg class="art" width="130" height="120" viewBox="0 0 120 110"><use href="#s-basket"/></svg>
+          </div>
+        </div>
+        <div>
+          <span class="kicker">Chương Mỹ · Hà Nội</span>
+          <h3>Mây tre đan Phú Vinh</h3>
+          <p class="desc">400 năm "đan nắng gió vào nan tre". Người Phú Vinh có thể đan chân dung bằng mây — đôi tay tài hoa biến vật liệu bình dị nhất thành tinh xảo nhất.</p>
+          <div class="stat-row">
+            <div><b>400+</b><span>năm tuổi nghề</span></div>
+            <div><b>90%</b><span>hộ dân theo nghề</span></div>
+            <div><b>30+</b><span>quốc gia xuất khẩu</span></div>
+          </div>
+          <div style="display:flex;gap:12px;flex-wrap:wrap">
+            <a class="btn btn-navy" data-go="expo" href="#expo">Xem gian triển lãm</a>
+            <a class="btn btn-line" data-go="market" href="#market">Sản phẩm Phú Vinh</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- HỒ SƠ LÀNG NGHỀ -->
+  <section class="pad" style="background:var(--card);border-top:1px solid var(--line)">
+    <div class="wrap">
+      <div class="sec-head">
+        <span class="kicker center" style="justify-content:center">Tìm hiểu sâu hơn</span>
+        <h2 class="lc">Hồ sơ làng nghề</h2>
+        <p>Lịch sử, nghệ nhân tiêu biểu và những hoa văn làm nên tên tuổi mỗi làng.</p>
+      </div>
+      <div class="vtabs">
+        <button class="vtab on" data-v="bt">Gốm Bát Tràng</button>
+        <button class="vtab" data-v="vp">Lụa Vạn Phúc</button>
+        <button class="vtab" data-v="pv">Mây tre Phú Vinh</button>
+      </div>
+
+      <!-- BÁT TRÀNG -->
+      <div class="vpanel on" id="vp-bt">
+        <div class="prof-grid">
+          <div>
+            <div class="p-sub">Dòng lịch sử</div>
+            <div class="tline">
+              <div class="tl-item"><b>Thế kỷ XIV</b><span>Làng gốm hình thành bên tả ngạn sông Hồng, được nhắc đến trong thư tịch cổ.</span></div>
+              <div class="tl-item"><b>Thế kỷ XV–XVIII</b><span>Gốm Bát Tràng theo thuyền buôn ra thế giới, trở thành đồ cống phẩm quý.</span></div>
+              <div class="tl-item"><b>1958–1990</b><span>Thời kỳ hợp tác xã — cải tiến lò nung, giữ nghề qua những năm gian khó.</span></div>
+              <div class="tl-item"><b>Ngày nay</b><span>Hơn 200 lò đỏ lửa, vừa là điểm du lịch vừa là trung tâm tinh hoa nghề gốm Việt.</span></div>
+            </div>
+          </div>
+          <div>
+            <div class="p-sub">Nghệ nhân tiêu biểu</div>
+            <div class="art-card">
+              <span class="ava"><svg class="art" width="36" height="36" viewBox="0 0 60 60"><use href="#s-artisan"/></svg></span>
+              <div><h5>NNƯT Trần Văn Khang</h5><div class="role">45 năm men rạn · Nghệ nhân Ưu tú</div>
+              <q>"Vết rạn là hơi thở của đất — không chiếc bình nào giống chiếc nào."</q></div>
+            </div>
+            <div class="art-card">
+              <span class="ava"><svg class="art" width="36" height="36" viewBox="0 0 60 60"><use href="#s-artisan"/></svg></span>
+              <div><h5>Nghệ nhân trẻ Lê Thu Hà</h5><div class="role">Men lam vẽ tay · Thế hệ kế thừa</div>
+              <q>"Mình vẽ men lam như viết thư tình cho nghề của ông bà."</q></div>
+            </div>
+          </div>
+        </div>
+        <div class="p-sub">Hoa văn đặc trưng</div>
+        <div class="pattern-grid">
+          <div class="pat"><div class="pbox"><svg class="art" width="72" height="72" viewBox="0 0 60 60"><use href="#s-pat-crackle"/></svg></div><h5>Men rạn</h5><p>Mạng vết rạn tự nhiên hình thành khi men và xương gốm co giãn khác nhau — "dấu vân tay" của thời gian.</p></div>
+          <div class="pat"><div class="pbox"><svg class="art" width="72" height="72" viewBox="0 0 60 60"><use href="#s-pat-lotus"/></svg></div><h5>Sen men lam</h5><p>Hoa sen vẽ tay dưới men xanh lam — biểu tượng thanh khiết của tâm hồn Việt trên nền gốm trắng.</p></div>
+          <div class="pat"><div class="pbox"><svg class="art" width="72" height="72" viewBox="0 0 60 60"><use href="#s-pat-wave"/></svg></div><h5>Sóng nước</h5><p>Đường sóng lặp nhịp nhàng gợi dòng sông Hồng — nơi khởi nguồn và nuôi dưỡng làng gốm.</p></div>
+        </div>
+      </div>
+
+      <!-- VẠN PHÚC -->
+      <div class="vpanel" id="vp-vp">
+        <div class="prof-grid">
+          <div>
+            <div class="p-sub">Dòng lịch sử</div>
+            <div class="tline">
+              <div class="tl-item"><b>Hơn 1.000 năm trước</b><span>Tương truyền tổ nghề truyền dạy dệt lụa cho dân làng ven sông Nhuệ.</span></div>
+              <div class="tl-item"><b>Thời Nguyễn</b><span>Lụa Vạn Phúc được chọn may triều phục — danh xưng "lụa tiến vua".</span></div>
+              <div class="tl-item"><b>1931</b><span>Lụa vân dự hội chợ quốc tế, danh tiếng vươn ra ngoài biên giới.</span></div>
+              <div class="tl-item"><b>Ngày nay</b><span>Khoảng 800 khung cửi, phố lụa sầm uất đón du khách trong và ngoài nước.</span></div>
+            </div>
+          </div>
+          <div>
+            <div class="p-sub">Nghệ nhân tiêu biểu</div>
+            <div class="art-card">
+              <span class="ava"><svg class="art" width="36" height="36" viewBox="0 0 60 60"><use href="#s-artisan"/></svg></span>
+              <div><h5>NNƯT Đỗ Thị Lụa</h5><div class="role">50 năm dệt lụa vân · Nghệ nhân Ưu tú</div>
+              <q>"Lụa vân phải soi lên nắng mới thấy mây — như lòng người, phải chậm mới hiểu."</q></div>
+            </div>
+            <div class="art-card">
+              <span class="ava"><svg class="art" width="36" height="36" viewBox="0 0 60 60"><use href="#s-artisan"/></svg></span>
+              <div><h5>Nghệ nhân Phạm Quang Tơ</h5><div class="role">Nhuộm màu tự nhiên · Thế hệ kế thừa</div>
+              <q>"Màu đẹp nhất là màu của lá, của củ, của đất quê mình."</q></div>
+            </div>
+          </div>
+        </div>
+        <div class="p-sub">Hoa văn đặc trưng</div>
+        <div class="pattern-grid">
+          <div class="pat"><div class="pbox"><svg class="art" width="72" height="72" viewBox="0 0 60 60"><use href="#s-pat-cloudm"/></svg></div><h5>Vân mây</h5><p>Hoa văn chìm chỉ hiện khi nghiêng lụa dưới nắng — kỹ thuật dệt vân làm nên tên tuổi Vạn Phúc.</p></div>
+          <div class="pat"><div class="pbox"><svg class="art" width="80" height="50" viewBox="0 0 160 100"><use href="#s-lac"/></svg></div><h5>Song hạc</h5><p>Đôi hạc chầu đối xứng — biểu tượng trường thọ, thanh cao trên những tấm lụa quý.</p></div>
+          <div class="pat"><div class="pbox"><svg class="art" width="72" height="72" viewBox="0 0 60 60"><use href="#s-pat-lattice"/></svg></div><h5>Hoa chanh</h5><p>Lưới hoa bốn cánh lặp đều — nét duyên kín đáo thường thấy trên lụa may áo dài.</p></div>
+        </div>
+      </div>
+
+      <!-- PHÚ VINH -->
+      <div class="vpanel" id="vp-pv">
+        <div class="prof-grid">
+          <div>
+            <div class="p-sub">Dòng lịch sử</div>
+            <div class="tline">
+              <div class="tl-item"><b>Khoảng 400 năm trước</b><span>Nghề đan hình thành trên đất Chương Mỹ — nơi sẵn mây, sẵn tre, sẵn đôi tay khéo.</span></div>
+              <div class="tl-item"><b>Thời Nguyễn</b><span>Sản phẩm đan tinh xảo được chọn làm đồ ngự dụng trong cung.</span></div>
+              <div class="tl-item"><b>2002</b><span>Vươn ra thị trường quốc tế — xuất khẩu tới hơn 30 quốc gia.</span></div>
+              <div class="tl-item"><b>Ngày nay</b><span>90% hộ dân giữ nghề; nghệ nhân Phú Vinh có thể đan cả chân dung bằng mây.</span></div>
+            </div>
+          </div>
+          <div>
+            <div class="p-sub">Nghệ nhân tiêu biểu</div>
+            <div class="art-card">
+              <span class="ava"><svg class="art" width="36" height="36" viewBox="0 0 60 60"><use href="#s-artisan"/></svg></span>
+              <div><h5>NNƯT Nguyễn Văn Tre</h5><div class="role">Đan chân dung bằng mây · Nghệ nhân Ưu tú</div>
+              <q>"Nan tre mỏng như sợi tóc — phải đan bằng cả hơi thở."</q></div>
+            </div>
+            <div class="art-card">
+              <span class="ava"><svg class="art" width="36" height="36" viewBox="0 0 60 60"><use href="#s-artisan"/></svg></span>
+              <div><h5>Nghệ nhân trẻ Hoàng Mai</h5><div class="role">Đèn mây hiện đại · Thế hệ kế thừa</div>
+              <q>"Mình muốn ánh sáng xuyên qua nan tre kể chuyện làng cho người phố."</q></div>
+            </div>
+          </div>
+        </div>
+        <div class="p-sub">Kỹ thuật đan đặc trưng</div>
+        <div class="pattern-grid">
+          <div class="pat"><div class="pbox"><svg class="art" width="72" height="72" viewBox="0 0 60 60"><use href="#s-pat-w1"/></svg></div><h5>Nong mốt</h5><p>Kiểu đan cơ bản một đè một — nền tảng của mọi sản phẩm mây tre, đều và chắc.</p></div>
+          <div class="pat"><div class="pbox"><svg class="art" width="72" height="72" viewBox="0 0 60 60"><use href="#s-pat-w2"/></svg></div><h5>Nong đôi</h5><p>Hai nan đè hai nan — mặt đan dày dặn, bền chắc, hợp với đồ gia dụng dùng lâu năm.</p></div>
+          <div class="pat"><div class="pbox"><svg class="art" width="72" height="72" viewBox="0 0 60 60"><use href="#s-pat-fish"/></svg></div><h5>Xương cá</h5><p>Nan xếp chéo hình chữ V nối tiếp — tạo vân nổi tinh tế trên đèn và giỏ trang trí.</p></div>
+        </div>
+      </div>
+
+      <p class="demo-note">✦ Thông tin nghệ nhân và mốc thời gian là dữ liệu minh hoạ cho bản demo ✦</p>
+    </div>
+  </section>
+
+  <!-- FAQ -->
+  <section class="pad">
+    <div class="wrap" style="max-width:820px">
+      <div class="sec-head">
+        <span class="kicker center" style="justify-content:center">Giải đáp thắc mắc</span>
+        <h2 class="lc">Câu hỏi thường gặp</h2>
+        <p>Chưa thấy câu trả lời? Hỏi trợ lý Kimvie AI ở góc màn hình nhé.</p>
+      </div>
+      <div class="faq">
+        <details>
+          <summary>Sản phẩm Kimvie có phải thủ công 100% không?</summary>
+          <div class="fa">Đúng vậy. Mỗi sản phẩm đều do nghệ nhân tại Bát Tràng, Vạn Phúc, Phú Vinh làm thủ công, có thể khác nhau đôi chút giữa từng chiếc — đó chính là dấu ấn của đồ làm tay.</div>
+        </details>
+        <details>
+          <summary>Đồ gốm dễ vỡ, vận chuyển thế nào cho an toàn?</summary>
+          <div class="fa">Gốm được bọc 3 lớp (giấy rơm – mút khí – thùng gỗ/carton cứng) và dán nhãn hàng dễ vỡ. Nếu sản phẩm nứt vỡ khi nhận, Kimvie đổi mới miễn phí trong 7 ngày.</div>
+        </details>
+        <details>
+          <summary>Bảo quản khăn lụa tơ tằm ra sao?</summary>
+          <div class="fa">Giặt tay bằng nước lạnh với dầu gội dịu nhẹ, không vắt xoắn, phơi trong bóng râm và là ở nhiệt độ thấp mặt trái. Tránh ngâm lâu và chất tẩy mạnh.</div>
+        </details>
+        <details>
+          <summary>Đồ mây tre dùng lâu có bị mốc không?</summary>
+          <div class="fa">Sản phẩm đã xử lý chống mối mọt. Bạn chỉ cần để nơi khô thoáng, thỉnh thoảng lau khăn ẩm rồi hong gió; tránh để sát tường ẩm hoặc ngoài mưa.</div>
+        </details>
+        <details>
+          <summary>Kimvie có nhận đặt riêng / quà tặng doanh nghiệp?</summary>
+          <div class="fa">Có. Kimvie nhận đặt sản phẩm theo yêu cầu (khắc tên, hoa văn riêng, hộp quà thương hiệu) từ 20 sản phẩm. Liên hệ CSKH để được báo giá trong 24h.</div>
+        </details>
+      </div>
+    </div>
+  </section>
+</main>
+
+<!-- ================= BÀI VIẾT (BLOG) ================= -->
+<main data-page="story">
+  <section class="page-hero">
+    <svg class="art cloud-r" width="200" height="74" viewBox="0 0 120 44"><use href="#s-cloud"/></svg>
+    <div class="motif" style="right:-80px;top:-50px;opacity:.16"><svg class="art spin-slow" width="300" height="300" viewBox="0 0 200 200"><use href="#s-drum"/></svg></div>
+    <svg class="art motif" style="left:38%;bottom:14px;opacity:.25" width="120" height="75" viewBox="0 0 160 100"><use href="#s-lac"/></svg>
+    <div class="wrap">
+      <div class="crumb">Trang chủ ✦ Bài viết</div>
+      <h1>Bài viết & Câu chuyện</h1>
+      <p>Câu chuyện thương hiệu, chuyện làng nghề và những cẩm nang nhỏ — tất cả ở một nơi.</p>
+    </div>
+  </section>
+
+  <!-- BÀI NỔI BẬT -->
+  <section class="pad" style="padding-bottom:34px">
+    <div class="wrap">
+      <a class="featured" data-go="article" href="#article">
+        <div class="ft-art">
+          <svg class="art" width="230" height="230" viewBox="0 0 200 200" style="opacity:.3;position:absolute"><use href="#s-drum"/></svg>
+          <svg class="art" width="108" height="108" viewBox="0 0 64 64" style="position:relative"><use href="#s-logo"/></svg>
+        </div>
+        <div class="ft-body">
+          <span class="b-tag">Câu chuyện thương hiệu</span>
+          <h3>Kimvie — Giữ lửa nghề xưa bằng nhịp sống mới</h3>
+          <p class="ex">Từ những chuyến về làng gặp nghệ nhân đến quyết định xây một cây cầu nối di sản với người trẻ — đây là câu chuyện khởi đầu của Kimvie.</p>
+          <div class="meta-line"><i>✦</i> 12.06.2026 · 6 phút đọc · Đội ngũ Kimvie</div>
+          <span class="btn btn-navy">Đọc bài viết →</span>
+        </div>
+      </a>
+    </div>
+  </section>
+
+  <!-- DANH SÁCH BÀI VIẾT -->
+  <section style="padding-bottom:90px">
+    <div class="wrap">
+      <div class="blog-grid">
+        <a class="b-card" data-go="lang" href="#lang">
+          <div class="b-art"><svg class="art" width="76" height="112" viewBox="0 0 100 150"><use href="#s-vase"/></svg></div>
+          <div class="b-body">
+            <span class="b-tag">Câu chuyện làng nghề</span>
+            <h4>Bát Tràng — 700 năm giữ lửa bên sông Hồng</h4>
+            <p>Theo dấu khối đất sét qua bàn xoay, men rạn và những lò bầu chưa bao giờ nguội.</p>
+            <div class="meta-line"><i>✦</i> 05.06.2026 · 5 phút đọc</div>
+          </div>
+        </a>
+        <a class="b-card" data-go="lang" href="#lang">
+          <div class="b-art"><svg class="art" width="130" height="106" viewBox="0 0 160 130"><use href="#s-loom"/></svg></div>
+          <div class="b-body">
+            <span class="b-tag">Câu chuyện làng nghề</span>
+            <h4>Vạn Phúc — nghìn năm tiếng thoi đưa</h4>
+            <p>Sợi tơ óng từng dệt áo vua chúa, nay khoác lên vai người trẻ giữa phố thị.</p>
+            <div class="meta-line"><i>✦</i> 28.05.2026 · 5 phút đọc</div>
+          </div>
+        </a>
+        <a class="b-card" data-go="lang" href="#lang">
+          <div class="b-art"><svg class="art" width="100" height="92" viewBox="0 0 120 110"><use href="#s-basket"/></svg></div>
+          <div class="b-body">
+            <span class="b-tag">Câu chuyện làng nghề</span>
+            <h4>Phú Vinh — đan nắng gió vào nan tre</h4>
+            <p>Nơi người thợ có thể "vẽ" chân dung bằng mây và sự kiên nhẫn của 400 năm.</p>
+            <div class="meta-line"><i>✦</i> 20.05.2026 · 4 phút đọc</div>
+          </div>
+        </a>
+        <a class="b-card soon" href="#">
+          <div class="b-art"><svg class="art" width="92" height="100" viewBox="0 0 120 130"><use href="#s-scarf"/></svg></div>
+          <div class="b-body">
+            <span class="b-tag">Cẩm nang</span>
+            <h4>5 cách phối khăn lụa cho mùa hè</h4>
+            <p>Gợi ý phối lụa Vạn Phúc cùng trang phục hiện đại — nhẹ, thoáng và rất "thơ".</p>
+            <div class="meta-line"><i>✦</i> 16.05.2026 · 3 phút đọc</div>
+          </div>
+        </a>
+        <a class="b-card soon" href="#">
+          <div class="b-art"><svg class="art" width="84" height="84" viewBox="0 0 60 60"><use href="#s-box"/></svg></div>
+          <div class="b-body">
+            <span class="b-tag">Quà tặng</span>
+            <h4>Chọn quà làng nghề cho đối tác nước ngoài</h4>
+            <p>Một món quà thủ công kể câu chuyện văn hoá — thay lời muốn nói.</p>
+            <div class="meta-line"><i>✦</i> 10.05.2026 · 4 phút đọc</div>
+          </div>
+        </a>
+        <a class="b-card soon" href="#">
+          <div class="b-art"><svg class="art" width="118" height="86" viewBox="0 0 140 100"><use href="#s-teaset"/></svg></div>
+          <div class="b-body">
+            <span class="b-tag">Nhật ký</span>
+            <h4>Một ngày ở chợ gốm ven sông</h4>
+            <p>Ghi chép nhỏ từ chuyến đi sáng sớm cùng các nghệ nhân Bát Tràng.</p>
+            <div class="meta-line"><i>✦</i> 02.05.2026 · 3 phút đọc</div>
+          </div>
+        </a>
+      </div>
+    </div>
+  </section>
+</main>
+
+<!-- ================= BÀI VIẾT CHI TIẾT: CÂU CHUYỆN THƯƠNG HIỆU ================= -->
+<main data-page="article">
+  <section class="page-hero">
+    <svg class="art cloud-r" width="200" height="74" viewBox="0 0 120 44"><use href="#s-cloud"/></svg>
+    <div class="motif" style="right:-80px;top:-50px;opacity:.16"><svg class="art spin-slow" width="300" height="300" viewBox="0 0 200 200"><use href="#s-drum"/></svg></div>
+    <svg class="art motif" style="left:38%;bottom:14px;opacity:.25" width="120" height="75" viewBox="0 0 160 100"><use href="#s-lac"/></svg>
+    <div class="wrap">
+      <div class="crumb">Bài viết ✦ Câu chuyện thương hiệu</div>
+      <h1>Kimvie — Giữ lửa nghề xưa bằng nhịp sống mới</h1>
+      <p>✦ 12.06.2026 · 6 phút đọc · Đội ngũ Kimvie</p>
+    </div>
+  </section>
+
+  <section class="pad">
+    <div class="wrap" style="max-width:780px">
+      <a class="backlink" data-go="story" href="#story">← Tất cả bài viết</a>
+      <div style="height:20px"></div>
+      <p class="dropcap" style="font-size:15.5px;margin-bottom:18px">Kimvie ra đời từ những chuyến về làng — nơi chúng mình gặp các nghệ nhân vẫn miệt mài bên bàn xoay, khung cửi và nan tre, nhưng sản phẩm của họ ngày càng khó tìm đường đến người trẻ. Khoảng cách ấy không nằm ở giá trị, mà ở cách kể chuyện.</p>
+      <p style="font-size:15.5px;color:var(--muted);margin-bottom:18px">Vậy nên Kimvie chọn làm chiếc cầu: một sàn thương mại để sản phẩm thủ công đến tận tay bạn, và một không gian triển lãm số để câu chuyện đằng sau mỗi món đồ được kể bằng ngôn ngữ của thời đại — 3D, âm thanh, ánh sáng và cảm xúc.</p>
+      <p style="font-size:15.5px;color:var(--muted)">Mỗi đơn hàng trên Kimvie là một lần bạn cùng chúng mình "giữ lửa" cho làng nghề — để di sản không nằm trong tủ kính, mà sống tiếp trong nhịp sống hôm nay.</p>
+    </div>
+  </section>
+
+  <div class="quote-band">
+    <div class="wrap">
+      <svg class="art" width="46" height="46" viewBox="0 0 200 200" style="color:var(--amber2);margin-bottom:14px"><use href="#s-drum"/></svg>
+      <div class="q">"Mỗi món đồ thủ công là một lá thư viết tay gửi từ quá khứ — Kimvie chỉ là người đưa thư tận tâm."</div>
+      <div class="by">— Đội ngũ Kimvie —</div>
+    </div>
+  </div>
+
+  <section class="pad">
+    <div class="wrap">
+      <div class="sec-head">
+        <span class="kicker center" style="justify-content:center">Giá trị cốt lõi</span>
+        <h2 class="lc">Kết nối – Bảo tồn – Lan tỏa</h2>
+      </div>
+      <div class="mission">
+        <div class="mis">
+          <div class="m-ic"><svg class="art" width="26" height="26" viewBox="0 0 60 60"><use href="#s-hands"/></svg></div>
+          <h4>Kết nối</h4>
+          <p>Đưa nghệ nhân và người trẻ gặp nhau — qua từng sản phẩm, workshop và câu chuyện.</p>
+        </div>
+        <div class="mis">
+          <div class="m-ic"><svg class="art" width="26" height="26" viewBox="0 0 60 60"><use href="#s-box"/></svg></div>
+          <h4>Bảo tồn</h4>
+          <p>Số hóa hiện vật, tư liệu hóa kỹ thuật — để tinh hoa không mất đi theo thời gian.</p>
+        </div>
+        <div class="mis">
+          <div class="m-ic"><svg class="art" width="26" height="26" viewBox="0 0 60 60"><use href="#s-spark"/></svg></div>
+          <h4>Lan tỏa</h4>
+          <p>Mang vẻ đẹp làng nghề Việt ra thế giới bằng công nghệ và sáng tạo trẻ.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- tái sử dụng hành trình -->
+  <section class="journey">
+    <div class="motif" style="left:50%;bottom:-24px;transform:translateX(-50%);opacity:.32"><svg class="art" width="720" height="288" viewBox="0 0 400 160"><use href="#s-mounts"/></svg></div>
+    <svg class="art motif" style="left:4%;top:34px;opacity:.3" width="200" height="82" viewBox="0 0 220 90"><use href="#s-swirl"/></svg>
+    <div class="wrap">
+      <div class="sec-head">
+        <span class="kicker center" style="justify-content:center">Từ làng ra phố</span>
+        <h2 class="lc">Hành trình tinh hoa</h2>
+      </div>
+      <div class="j-row">
+        <div class="j-step">
+          <div class="j-ic"><svg class="art" width="34" height="34" viewBox="0 0 60 60"><use href="#s-leaf"/></svg></div>
+          <div class="num">01</div><h4>Chọn nguyên liệu</h4><p>Tuyển chọn nguyên liệu tự nhiên chất lượng</p>
+        </div>
+        <div class="j-step">
+          <div class="j-ic"><svg class="art" width="34" height="34" viewBox="0 0 60 60"><use href="#s-hands"/></svg></div>
+          <div class="num">02</div><h4>Bàn tay nghệ nhân</h4><p>Kỹ thuật thủ công được lưu truyền</p>
+        </div>
+        <div class="j-step">
+          <div class="j-ic"><svg class="art" width="34" height="34" viewBox="0 0 60 60"><use href="#s-fire"/></svg></div>
+          <div class="num">03</div><h4>Thổi hồn vào sản phẩm</h4><p>Mỗi công đoạn là một sự tỉ mỉ và tâm huyết</p>
+        </div>
+        <div class="j-step">
+          <div class="j-ic"><svg class="art" width="34" height="34" viewBox="0 0 60 60"><use href="#s-box"/></svg></div>
+          <div class="num">04</div><h4>Sản phẩm hoàn thiện</h4><p>Thành phẩm mang đậm tinh hoa văn hóa Việt</p>
+        </div>
+        <div class="j-step">
+          <div class="j-ic"><svg class="art" width="34" height="34" viewBox="0 0 60 60"><use href="#s-truck"/></svg></div>
+          <div class="num">05</div><h4>Đến với bạn</h4><p>Lan tỏa giá trị di sản tới mọi miền</p>
+        </div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<!-- ================= SỰ KIỆN ================= -->
+<main data-page="events">
+  <section class="page-hero">
+    <svg class="art cloud-r" width="200" height="74" viewBox="0 0 120 44"><use href="#s-cloud"/></svg>
+    <div class="motif" style="right:-80px;top:-50px;opacity:.16"><svg class="art spin-slow" width="300" height="300" viewBox="0 0 200 200"><use href="#s-drum"/></svg></div>
+    <svg class="art motif" style="left:38%;bottom:14px;opacity:.25" width="120" height="75" viewBox="0 0 160 100"><use href="#s-lac"/></svg>
+    <div class="wrap">
+      <div class="crumb">Trang chủ ✦ Sự kiện & Workshop</div>
+      <h1>Lịch trải nghiệm cùng Kimvie</h1>
+      <p>Đặt chỗ workshop, gặp nghệ nhân, tự tay làm món đồ thủ công đầu tiên của bạn.</p>
+    </div>
+  </section>
+
+  <section class="pad">
+    <div class="wrap" style="max-width:880px">
+      <div class="ev-row">
+        <div class="ev-date"><b>20</b><span>TH6</span></div>
+        <div class="ev-info">
+          <h4>Workshop làm gốm Bát Tràng</h4>
+          <div class="meta"><span class="ev-tagx tx-o">GỐM</span><i>⊙</i>09:00 – 11:30 &nbsp; <i>⚲</i>Xưởng gốm Bát Tràng, Gia Lâm &nbsp; <i>✦</i>Còn 8 chỗ</div>
+        </div>
+        <a class="btn btn-navy ev-book" href="#">Đặt chỗ</a>
+      </div>
+      <div class="ev-row">
+        <div class="ev-date"><b>28</b><span>TH6</span></div>
+        <div class="ev-info">
+          <h4>Trải nghiệm dệt lụa Vạn Phúc</h4>
+          <div class="meta"><span class="ev-tagx tx-n">LỤA</span><i>⊙</i>14:00 – 16:30 &nbsp; <i>⚲</i>Làng lụa Vạn Phúc, Hà Đông &nbsp; <i>✦</i>Còn 5 chỗ</div>
+        </div>
+        <a class="btn btn-navy ev-book" href="#">Đặt chỗ</a>
+      </div>
+      <div class="ev-row">
+        <div class="ev-date"><b>05</b><span>TH7</span></div>
+        <div class="ev-info">
+          <h4>Workshop mây tre đan Phú Vinh</h4>
+          <div class="meta"><span class="ev-tagx tx-g">MÂY TRE</span><i>⊙</i>09:00 – 12:00 &nbsp; <i>⚲</i>Làng Phú Vinh, Chương Mỹ &nbsp; <i>✦</i>Còn 12 chỗ</div>
+        </div>
+        <a class="btn btn-navy ev-book" href="#">Đặt chỗ</a>
+      </div>
+      <div class="ev-row">
+        <div class="ev-date"><b>19</b><span>TH7</span></div>
+        <div class="ev-info">
+          <h4>Tour "Một ngày ba làng nghề" cùng Kimvie</h4>
+          <div class="meta"><span class="ev-tagx tx-o">TOUR</span><i>⊙</i>07:30 – 17:00 &nbsp; <i>⚲</i>Khởi hành từ Hồ Gươm &nbsp; <i>✦</i>Sắp mở đăng ký</div>
+        </div>
+        <a class="btn btn-line" href="#">Nhận thông báo</a>
+      </div>
+      <div class="ev-row">
+        <div class="ev-date"><b>02</b><span>TH8</span></div>
+        <div class="ev-info">
+          <h4>Triển lãm thực tế "Vân Khởi" — khai mạc</h4>
+          <div class="meta"><span class="ev-tagx tx-n">TRIỂN LÃM</span><i>⊙</i>18:00 – 21:00 &nbsp; <i>⚲</i>Văn Miếu – Quốc Tử Giám &nbsp; <i>✦</i>Vào cửa tự do</div>
+        </div>
+        <a class="btn btn-line" href="#">Nhận thông báo</a>
+      </div>
+    </div>
+  </section>
+
+  <div class="quote-band">
+    <div class="wrap">
+      <svg class="art" width="46" height="46" viewBox="0 0 200 200" style="color:var(--amber2);margin-bottom:14px"><use href="#s-drum"/></svg>
+      <div class="q">"Bạn không chỉ tham dự một workshop — bạn đang góp một đôi tay vào nghìn năm nghề Việt."</div>
+      <div class="by">— Kimvie Events —</div>
+    </div>
+  </div>
+</main>
+
+<!-- ================= FOOTER ================= -->
+<footer>
+  <svg class="art f-bamboo" width="120" height="240" viewBox="0 0 90 210"><use href="#s-bamboo"/></svg>
+  <div class="motif" style="left:20px;bottom:-30px;opacity:.14"><svg class="art" width="180" height="232" viewBox="0 0 140 180"><use href="#s-lotus"/></svg></div>
+  <div class="motif" style="left:50%;top:-150px;transform:translateX(-50%);opacity:.07"><svg class="art" width="420" height="420" viewBox="0 0 200 200"><use href="#s-drum"/></svg></div>
+  <div class="wrap">
+    <div class="f-news">
+      <div>
+        <h5 style="font-size:11.5px;letter-spacing:.2em;color:var(--cream2);text-transform:uppercase;margin-bottom:16px">Nhận thư từ làng nghề</h5>
+        <div class="nf"><input type="email" placeholder="Nhập địa chỉ email"><button title="Đăng ký">→</button></div>
+      </div>
+      <p class="note">Đăng ký để nhận thông tin về sản phẩm, bộ sưu tập, triển lãm, sự kiện và các vấn đề đáng quan tâm của Kimvie.</p>
+    </div>
+    <div class="f-grid">
+      <div class="f-brand">
+        <div style="display:flex;align-items:center;gap:10px">
+          <svg class="art" width="42" height="42" style="color:var(--cream2)"><use href="#s-logo"/></svg>
+          <span class="name">kimvie</span>
+        </div>
+        <div class="tag">Kết nối – Bảo tồn – Lan tỏa</div>
+        <p style="font-size:12px;line-height:1.7">Cầu nối giữa làng nghề truyền thống và thế hệ hôm nay.</p>
+        <div class="f-socials">
+          <a href="#" title="Facebook" aria-label="Facebook"><svg viewBox="0 0 24 24" width="15" height="15" fill="currentColor"><path d="M24 12.07C24 5.4 18.63 0 12 0S0 5.4 0 12.07c0 6.02 4.39 11.01 10.13 11.93v-8.44H7.08v-3.49h3.05V9.41c0-3.02 1.79-4.69 4.53-4.69 1.31 0 2.68.24 2.68.24v2.97h-1.51c-1.49 0-1.96.93-1.96 1.89v2.25h3.33l-.53 3.49h-2.8V24C19.61 23.08 24 18.09 24 12.07Z"/></svg></a>
+          <a href="#" title="Instagram" aria-label="Instagram"><svg viewBox="0 0 24 24" width="15" height="15" fill="currentColor"><path d="M12 2.16c3.2 0 3.58.01 4.85.07 3.25.15 4.77 1.69 4.92 4.92.06 1.27.07 1.65.07 4.85s-.01 3.58-.07 4.85c-.15 3.23-1.66 4.77-4.92 4.92-1.27.06-1.65.07-4.85.07s-3.58-.01-4.85-.07c-3.26-.15-4.77-1.7-4.92-4.92-.06-1.27-.07-1.65-.07-4.85s.01-3.58.07-4.85C2.38 3.92 3.9 2.38 7.15 2.23 8.42 2.17 8.8 2.16 12 2.16Zm0 1.62c-3.15 0-3.52.01-4.74.07-2.43.11-3.3 1-3.41 3.41-.06 1.22-.07 1.59-.07 4.74s.01 3.52.07 4.74c.11 2.41.98 3.3 3.41 3.41 1.22.06 1.59.07 4.74.07s3.52-.01 4.74-.07c2.43-.11 3.3-1 3.41-3.41.06-1.22.07-1.59.07-4.74s-.01-3.52-.07-4.74c-.11-2.41-.98-3.3-3.41-3.41-1.22-.06-1.59-.07-4.74-.07Zm0 2.76a5.46 5.46 0 1 0 0 10.92 5.46 5.46 0 0 0 0-10.92Zm0 9a3.54 3.54 0 1 1 0-7.08 3.54 3.54 0 0 1 0 7.08Zm5.68-9.23a1.28 1.28 0 1 0 0 2.56 1.28 1.28 0 0 0 0-2.56Z"/></svg></a>
+          <a href="#" title="YouTube" aria-label="YouTube"><svg viewBox="0 0 24 24" width="15" height="15" fill="currentColor"><path d="M23.5 6.2a3 3 0 0 0-2.12-2.13C19.5 3.55 12 3.55 12 3.55s-7.5 0-9.38.52A3 3 0 0 0 .5 6.2 31.3 31.3 0 0 0 0 12a31.3 31.3 0 0 0 .5 5.8 3 3 0 0 0 2.12 2.13c1.88.52 9.38.52 9.38.52s7.5 0 9.38-.52a3 3 0 0 0 2.12-2.13A31.3 31.3 0 0 0 24 12a31.3 31.3 0 0 0-.5-5.8ZM9.6 15.6V8.4l6.2 3.6Z"/></svg></a>
+          <a href="#" title="TikTok" aria-label="TikTok"><svg viewBox="0 0 24 24" width="15" height="15" fill="currentColor"><path d="M16.6 5.82a4.28 4.28 0 0 1-1.06-2.82h-3.3v13.4a2.59 2.59 0 1 1-2.6-2.6c.24 0 .47.04.7.1v-3.36a5.92 5.92 0 1 0 5.2 5.87V9.01a7.6 7.6 0 0 0 4.4 1.4V7.1a4.27 4.27 0 0 1-3.34-1.28Z"/></svg></a>
+        </div>
+      </div>
+      <div>
+        <h5>Cửa hàng</h5>
+        <a class="fl" data-go="market" href="#market">Sản phẩm mới</a>
+        <a class="fl" data-mf="bt" href="#market">Gốm Bát Tràng</a>
+        <a class="fl" data-mf="vp" href="#market">Lụa Vạn Phúc</a>
+        <a class="fl" data-mf="pv" href="#market">Mây tre Phú Vinh</a>
+        <a class="fl" data-go="market" href="#market">Combo / Bộ quà tặng</a>
+      </div>
+      <div>
+        <h5>Đặt hàng & Hỗ trợ</h5>
+        <a class="fl" href="#">Hỏi đáp</a>
+        <a class="fl" href="#">Hướng dẫn mua hàng</a>
+        <a class="fl" href="#">Chính sách bán hàng & đổi trả</a>
+        <a class="fl" href="#">Điều khoản bảo mật</a>
+        <a class="fl" data-cs href="#">Liên hệ chúng tôi</a>
+      </div>
+      <div>
+        <h5>Về Kimvie</h5>
+        <a class="fl" data-go="article" href="#article">Câu chuyện thương hiệu</a>
+        <a class="fl" data-go="story" href="#story">Bài viết</a>
+        <a class="fl" data-go="lang" href="#lang">Làng nghề</a>
+        <a class="fl" data-go="expo" href="#expo">Triển lãm số</a>
+        <a class="fl" data-go="events" href="#events">Sự kiện</a>
+      </div>
+    </div>
+    <div class="f-bottom">© 2026 Kimvie. All rights reserved.</div>
+  </div>
+</footer>
+
+<!-- POPUP HIỆN VẬT -->
+<div class="modal" id="pModal">
+  <div class="back" data-x></div>
+  <div class="panel">
+    <div class="m-art">
+      <svg class="art" id="mArt" width="190" height="230" viewBox="0 0 100 150"><use id="mUse" href="#s-vase"/></svg>
+      <div class="cap">✦ Vị trí ảnh chụp thực tế tại làng nghề / do nhóm thiết kế ✦</div>
+    </div>
+    <div class="m-body">
+      <button class="m-x" data-x>✕</button>
+      <span class="m-tag" id="mTag"></span>
+      <h3 id="mName"></h3>
+      <div class="m-price" id="mPrice"></div>
+      <div class="m-sold" id="mSold"></div>
+      <div class="mtabs">
+        <button class="mtab on" id="mtIntro">Giới thiệu</button>
+        <button class="mtab" id="mtCard">Căn cước số ▣</button>
+      </div>
+      <div id="mCard">
+        <div class="idrow"><span>Mã hiện vật</span><b id="idCode"></b></div>
+        <div class="idrow"><span>Nghệ nhân thực hiện</span><b id="idArt"></b></div>
+        <div class="idrow"><span>Mẻ sản xuất</span><b id="idBatch"></b></div>
+        <div class="idrow"><span>Bản giới hạn</span><b id="idSerial"></b></div>
+        <div class="qr-wrap">
+          <div id="mQr"></div>
+          <p>Quét QR để mở "giấy khai sinh số" — xác thực món đồ thủ công chính gốc từ nghệ nhân (demo).</p>
+        </div>
+      </div>
+      <p class="m-desc" id="mDesc"></p>
+      <div style="display:flex;gap:10px;flex-wrap:wrap">
+        <a class="btn btn-amber" id="mBuy" href="#market">Mua sản phẩm này →</a>
+        <button class="btn btn-line" data-x>Tiếp tục tham quan</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- HỘ CHIẾU DI SẢN -->
+<div class="modal" id="ppModal">
+  <div class="back" data-ppx></div>
+  <div class="panel pp">
+    <div class="pp-head">
+      <svg class="art" width="42" height="42" viewBox="0 0 64 64" style="color:var(--gold)"><use href="#s-logo"/></svg>
+      <div>
+        <h3>HỘ CHIẾU DI SẢN</h3>
+        <small>Lữ khách Kimvie · Hành trình ba làng nghề · 2026</small>
+      </div>
+      <button class="m-x" data-ppx style="margin-left:auto">✕</button>
+    </div>
+    <div class="pp-body">
+      <div class="pp-meta"><span id="ppCount">0/8 con dấu</span><span id="ppTitle">Lữ khách mới</span></div>
+      <div class="pp-bar"><i id="ppFill"></i></div>
+      <div class="pp-grid" id="ppGrid"></div>
+      <div class="pp-reward" id="ppReward"></div>
+      <p class="demo-note" style="margin-top:16px">Con dấu lưu trên trình duyệt của bạn · <a href="#" id="ppReset" style="color:var(--amber2);font-weight:700">Làm mới hành trình (demo)</a></p>
+    </div>
+  </div>
+</div>
+
+<div id="toast"></div>
+
+<script src="script.js" defer></script>
+</body>
+</html>
