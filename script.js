@@ -76,8 +76,7 @@ const STAMPS = [
  {id:'expo',name:'Lữ Khách',icon:'s-arch-mini',vb:'0 0 80 100',how:'Ghé thăm Triển lãm 3D'},
  {id:'relic',name:'Hiện Vật',icon:'s-lantern',vb:'0 0 110 140',how:'Mở xem một hiện vật trong triển lãm'},
  {id:'read',name:'Thư Làng',icon:'s-lac',vb:'0 0 160 100',how:'Đọc bài viết Câu chuyện thương hiệu'},
- {id:'cart',name:'Giữ Lửa',icon:'s-fire',vb:'0 0 60 60',how:'Thêm một sản phẩm vào giỏ hàng'},
- {id:'ws',name:'Đồng Hành',icon:'s-hands',vb:'0 0 60 60',how:'Đặt chỗ một workshop (trang Sự kiện)'}
+ {id:'cart',name:'Giữ Lửa',icon:'s-fire',vb:'0 0 60 60',how:'Thêm một sản phẩm vào giỏ hàng'}
 ];
 let earned = JSON.parse(localStorage.getItem('kvStamps') || '{}');
 const ppModal = document.getElementById('ppModal'), ppGrid = document.getElementById('ppGrid');
@@ -86,13 +85,13 @@ function renderPassport(){
   ppGrid.innerHTML = STAMPS.map(s => '<div class="stamp' + (earned[s.id] ? ' got' : '') + '" title="' + s.how + '">'
     + '<svg class="art" width="30" height="30" viewBox="' + s.vb + '"><use href="#' + s.icon + '"/></svg>'
     + '<small>' + s.name + '</small></div>').join('');
-  document.getElementById('ppCount').textContent = n + '/8 con dấu';
-  document.getElementById('ppTitle').textContent = n >= 8 ? '✦ Người Giữ Lửa ✦' : (n >= 4 ? 'Lữ khách thân quen' : 'Lữ khách mới');
-  document.getElementById('ppFill').style.width = (n / 8 * 100) + '%';
+  document.getElementById('ppCount').textContent = n + '/7 con dấu';
+  document.getElementById('ppTitle').textContent = n >= 7 ? '✦ Người Giữ Lửa ✦' : (n >= 4 ? 'Lữ khách thân quen' : 'Lữ khách mới');
+  document.getElementById('ppFill').style.width = (n / 7 * 100) + '%';
   const bd = document.getElementById('ppBadge'); bd.textContent = n; bd.classList.toggle('show', n > 0);
-  document.getElementById('ppReward').innerHTML = n >= 8
-    ? '<b style="color:var(--vermilion)">Đủ 8 con dấu — bạn chính thức là NGƯỜI GIỮ LỬA!</b><br>Mã ưu đãi 10% cho đơn tiếp theo:<br><span class="code">GIULUA10</span>'
-    : 'Sưu tập đủ <b>8 con dấu</b> để nhận danh hiệu <b>Người Giữ Lửa</b> + mã ưu đãi 10%.<br><span style="font-size:11px">Di chuột vào từng ô dấu để biết cách nhận.</span>';
+  document.getElementById('ppReward').innerHTML = n >= 7
+    ? '<b style="color:var(--vermilion)">Đủ 7 con dấu — bạn chính thức là NGƯỜI GIỮ LỬA!</b><br>Mã ưu đãi 10% cho đơn tiếp theo:<br><span class="code">GIULUA10</span>'
+    : 'Sưu tập đủ <b>7 con dấu</b> để nhận danh hiệu <b>Người Giữ Lửa</b> + mã ưu đãi 10%.<br><span style="font-size:11px">Di chuột vào từng ô dấu để biết cách nhận.</span>';
 }
 window.stamp = function(id){
   if(earned[id]) return;
@@ -100,8 +99,8 @@ window.stamp = function(id){
   earned[id] = Date.now(); localStorage.setItem('kvStamps', JSON.stringify(earned));
   renderPassport();
   const n = Object.keys(earned).length;
-  showToast(n >= 8 ? '🎉 Đủ 8 dấu — bạn là <b>Người Giữ Lửa</b>! Mở hộ chiếu nhận ưu đãi'
-                   : '❖ Nhận dấu <b>' + s.name + '</b> (' + n + '/8) — xem trong Hộ chiếu di sản');
+  showToast(n >= 7 ? '🎉 Đủ 7 dấu — bạn là <b>Người Giữ Lửa</b>! Mở hộ chiếu nhận ưu đãi'
+                   : '❖ Nhận dấu <b>' + s.name + '</b> (' + n + '/7) — xem trong Hộ chiếu di sản');
 };
 function openPP(){ renderPassport(); ppModal.classList.add('open'); }
 document.getElementById('ppBtn').addEventListener('click', openPP);
@@ -231,6 +230,87 @@ function retagReveal(){
 /* ===== reduced-motion: settle the video ===== */
 const bgVideo = document.querySelector('.bg-video');
 if(REDUCE && bgVideo){ bgVideo.removeAttribute('autoplay'); bgVideo.pause(); }
+
+/* ===== hero slider — auto-advance every 10s ===== */
+(function(){
+  const slider = document.getElementById('heroSlider');
+  if(!slider) return;
+  const imgs = [...slider.querySelectorAll('.hs-img')];
+  if(imgs.length < 2) return;
+  let i = 0;
+  setInterval(() => {
+    imgs[i].classList.remove('on');
+    i = (i + 1) % imgs.length;
+    imgs[i].classList.add('on');
+  }, 10000);
+})();
+
+/* ===== real product photography in cards ===== */
+(function(){
+  const byV = {bt:'gom_viet.png', vp:'lua_viet.png', pv:'may_dan_tre.png'};
+  const byText = [[/Bát Tràng/i,'gom_viet.png'], [/Vạn Phúc/i,'lua_viet.png'], [/Phú Vinh/i,'may_dan_tre.png']];
+  document.querySelectorAll('.p-card').forEach(card => {
+    const art = card.querySelector('.p-art'); if(!art) return;
+    const name = (card.querySelector('h4')?.textContent || 'Sản phẩm').trim();
+    const pl = card.querySelector('.pl')?.textContent || '';
+    let file = byV[card.dataset.v];
+    if(!file){ const hit = byText.find(([re]) => re.test(pl) || re.test(name)); file = hit && hit[1]; }
+    if(!file) return;
+    art.classList.add('has-img');
+    art.innerHTML = '<img src="assets/product_img/' + file + '" alt="' + name + '" loading="lazy">';
+  });
+})();
+
+/* ===== ambient audio: wind + flute, 12% volume, fade in/out, flute trails wind by 5s ===== */
+(function(){
+  const wind = document.getElementById('aWind'), flute = document.getElementById('aFlute'), btn = document.getElementById('audioBtn');
+  if(!wind || !flute || !btn) return;
+  const VOL = 0.12, FADE = 2.5;                 // target volume + fade length (s)
+  const ICON_ON  = '<svg viewBox="0 0 24 24" width="19" height="19" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M11 5 6 9H3v6h3l5 4z"/><path d="M16 9a4 4 0 0 1 0 6"/><path d="M19 6.5a8 8 0 0 1 0 11"/></svg>';
+  const ICON_OFF = '<svg viewBox="0 0 24 24" width="19" height="19" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M11 5 6 9H3v6h3l5 4z"/><path d="m22 9-6 6"/><path d="m16 9 6 6"/></svg>';
+  let enabled = localStorage.getItem('kvAudio'); enabled = enabled === null ? true : enabled === '1';
+  let playing = false, fluteTimer = null;
+
+  function paint(){ btn.innerHTML = enabled ? ICON_ON : ICON_OFF; btn.classList.toggle('off', !enabled); btn.setAttribute('aria-pressed', enabled ? 'true' : 'false'); }
+
+  // per-loop fade envelope (fade in at start of each file, fade out before its end), capped at VOL
+  [wind, flute].forEach(el => el.addEventListener('timeupdate', () => {
+    if(!playing || el.paused) return;
+    const d = el.duration; if(!d || isNaN(d)) return;
+    const rem = d - el.currentTime; let t = VOL;
+    if(el.currentTime < FADE) t = VOL * (el.currentTime / FADE);
+    else if(rem < FADE) t = VOL * (rem / FADE);
+    el.volume = Math.max(0, Math.min(VOL, t));
+  }));
+
+  function start(){
+    if(playing) return; playing = true;
+    wind.volume = 0;
+    const p = wind.play(); if(p) p.catch(() => { playing = false; });
+    clearTimeout(fluteTimer);
+    fluteTimer = setTimeout(() => { if(playing && enabled){ flute.volume = 0; flute.play().catch(() => {}); } }, 5000);
+  }
+  function stop(){
+    playing = false; clearTimeout(fluteTimer);
+    [wind, flute].forEach(el => {
+      const from = el.volume, t0 = performance.now();
+      const step = now => { const k = Math.min(1, (now - t0) / 800); el.volume = from * (1 - k); if(k < 1) requestAnimationFrame(step); else el.pause(); };
+      requestAnimationFrame(step);
+    });
+  }
+  function setEnabled(on){ enabled = on; localStorage.setItem('kvAudio', on ? '1' : '0'); paint(); if(on) start(); else stop(); }
+
+  btn.addEventListener('click', () => setEnabled(!enabled));
+  paint();
+
+  if(enabled){
+    start();
+    // autoplay is blocked until a user gesture — kick it off on the first one
+    const kick = () => { if(enabled && wind.paused){ playing = false; start(); } window.removeEventListener('pointerdown', kick); window.removeEventListener('keydown', kick); };
+    window.addEventListener('pointerdown', kick, { once: true });
+    window.addEventListener('keydown', kick, { once: true });
+  }
+})();
 
 /* ===== boot ===== */
 go((location.hash || '#home').slice(1) || 'home');

@@ -9,15 +9,15 @@
   /* --- original cream / navy / amber theme --- */
   --cream:#F2EBDA; --cream2:#FAF5E9; --card:#F7F1E2;
   --navy:#161E45; --navy2:#1E2756; --navy-soft:#2A3468;
-  --amber:#D9943F; --amber2:#C9842E; --amber-soft:rgba(217,148,63,.16);
+  --amber:#D9943F; --amber2:#9A5F14; --amber-soft:rgba(217,148,63,.16);
   --ochre:#94590F; --green:#2E5233;
-  --sepia:#8A7053; --gold:#C9A86A;
+  --sepia:#8A7053; --gold:#946513;
   --ink:#2A2418; --muted:#6E6450;
   --line:rgba(22,30,69,.16); --line-soft:rgba(22,30,69,.10);
 
   /* surfaces (light) + accent aliases used by the redesign components */
   --lacquer:#F2EBDA; --lacquer-2:#FAF5E9; --panel:#F7F1E2; --panel-2:#FAF5E9;
-  --gold-soft:#C9842E; --gold-deep:#94590F;
+  --gold-soft:#9A5F14; --gold-deep:#94590F; --gold-bright:#E2C57E;
   --vermilion:#A8352C; --vermilion-deep:#8A2A22;
   --jade:#2E5233;
   --pearl:#161E45;        /* primary heading colour on light surfaces */
@@ -687,3 +687,46 @@ footer{color:rgba(250,245,233,.78)}
 .f-bottom{color:rgba(250,245,233,.5)}
 .f-socials a{color:rgba(250,245,233,.78)}
 .f-socials a:hover{color:var(--cream2)}
+
+/* =========================================================================
+   EDIT PASS — headline fit, uppercase brand, hero slider, product photos
+   ========================================================================= */
+/* 1 · headline neatly on two lines */
+.hero h1{font-size:clamp(38px,4.6vw,62px)}
+.hero h1 .amber{white-space:nowrap}
+
+/* 2 · brand wordmark shows uppercase (was force-lowercased) */
+.brand .name{text-transform:none;letter-spacing:.14em}
+.f-brand .name{letter-spacing:.12em}
+
+/* 3 · hero auto-rotating slider — the arch frame is baked into each image,
+   so no extra border here; the container is cropped to the arch's bounds (ratio
+   ~0.78 shows every poster fully) and the drop-shadow follows the arch alpha. */
+.hero-slider{
+  position:relative;align-self:center;
+  width:min(490px,100%);aspect-ratio:.78;
+}
+.hs-img{
+  position:absolute;inset:0;width:100%;height:100%;
+  object-fit:cover;object-position:center;
+  opacity:0;transition:opacity 1.4s ease;
+}
+.hs-img.on{opacity:1}
+
+/* 7 · real product photography inside the cards */
+.p-art.has-img{padding:0;background:#fff;overflow:hidden}
+.p-art.has-img img{width:100%;height:100%;object-fit:cover;display:block;transition:transform .45s ease}
+.p-card:hover .p-art.has-img img{transform:scale(1.05)}
+
+/* 6 · audio toggle muted state */
+#audioBtn.off{opacity:.5}
+
+/* gold text stays bright on the dark navy bands (base gold was darkened for light bg) */
+.topbar,.topbar b,
+.page-hero .crumb,
+.expo-band .kicker,.expo-band .feat h4,.expo-band .feat .f-ic,
+.room-stage,
+.viewer-shell,.viewer-bar button,
+.featured .ft-art,
+.f-brand .tag,.f-grid h5 i,.f-grid a.fl:hover,.f-news button,
+.pp-head h3{color:var(--gold-bright)}

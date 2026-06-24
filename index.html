@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Kimvie — Kết nối di sản · Lan tỏa tinh hoa</title>
+<title>KIMVIE — Kết nối di sản · Lan tỏa tinh hoa</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,600;0,700;0,800;0,900;1,600&family=Be+Vietnam+Pro:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -258,7 +258,7 @@
   <div class="wrap nav">
     <a class="brand" href="#home" data-go="home">
       <svg class="art" width="44" height="44" style="color:var(--gold)"><use href="#s-logo"/></svg>
-      <span class="name">kimvie</span>
+      <span class="name">KIMVIE</span>
     </a>
     <ul class="menu">
       <li><a href="#home" data-go="home" class="on">Trang chủ</a></li>
@@ -266,13 +266,13 @@
       <li><a href="#market" data-go="market">Sàn thương mại</a></li>
       <li><a href="#lang" data-go="lang">Làng nghề</a></li>
       <li><a href="#story" data-go="story">Bài viết</a></li>
-      <li><a href="#events" data-go="events">Sự kiện</a></li>
     </ul>
     <div class="nav-right">
       <button class="ic" type="button" title="Tìm kiếm" aria-label="Tìm kiếm"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.4-3.4"/></svg></button>
       <button class="ic" type="button" title="Tài khoản" aria-label="Tài khoản"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M5 20a7 7 0 0 1 14 0"/></svg></button>
       <button class="ic" id="ppBtn" type="button" title="Hộ chiếu di sản" aria-label="Hộ chiếu di sản"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="3" width="14" height="18" rx="2"/><circle cx="12" cy="10" r="2.6"/><path d="M9 16h6"/></svg><span class="badge" id="ppBadge">0</span></button>
       <button class="ic" type="button" title="Giỏ hàng" aria-label="Giỏ hàng"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M5 7h14l-1.2 10.3a2 2 0 0 1-2 1.7H8.2a2 2 0 0 1-2-1.7Z"/><path d="M9 7a3 3 0 0 1 6 0"/></svg><span class="badge" id="cartBadge">0</span></button>
+      <button class="ic" id="audioBtn" type="button" aria-label="Bật hoặc tắt âm thanh nền" aria-pressed="false" title="Âm thanh nền"></button>
       <a class="btn btn-navy login" href="#">Đăng nhập</a>
       <button class="nav-toggle" id="navToggle" type="button" aria-label="Mở menu"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M4 7h16M4 12h16M4 17h16"/></svg></button>
     </div>
@@ -292,21 +292,19 @@
       <div class="hero-left">
         <div class="who">KIMVIE</div>
         <h1>Kết nối di sản <span class="amber">Lan tỏa tinh hoa</span></h1>
-        <p class="lead">Kimvie là cầu nối giữa các làng nghề truyền thống và thế hệ hôm nay, gìn giữ giá trị Việt bằng công nghệ và tình yêu văn hóa.</p>
+        <p class="lead">KIMVIE là cầu nối giữa các làng nghề truyền thống và thế hệ hôm nay, gìn giữ giá trị Việt bằng công nghệ và tình yêu văn hóa.</p>
         <div class="hero-cta">
           <a class="btn btn-navy" data-go="expo" href="#expo">Khám phá triển lãm →</a>
           <a class="btn btn-line" data-go="market" href="#market">Tham quan gian hàng →</a>
         </div>
-        <a class="play" data-go="article" href="#article"><i>▶</i> Tìm hiểu về Kimvie</a>
+        <a class="play" data-go="article" href="#article"><i>▶</i> Tìm hiểu về KIMVIE</a>
       </div>
       <div class="hero-right">
-        <div class="arch">
-          <span class="sun"></span>
-          <svg class="art motif" style="left:5%;bottom:0;width:90%;opacity:.5" viewBox="0 0 400 160"><use href="#s-mounts"/></svg>
-          <svg class="art a-bamboo" width="86" height="200" viewBox="0 0 90 210"><use href="#s-bamboo"/></svg>
-          <svg class="art a-cloud" width="90" height="33" viewBox="0 0 120 44"><use href="#s-cloud"/></svg>
-          <svg class="art a-vase" width="130" height="195" viewBox="0 0 100 150"><use href="#s-vase"/></svg>
-          <svg class="art a-loom" width="170" height="138" viewBox="0 0 160 130"><use href="#s-loom"/></svg>
+        <div class="hero-slider" id="heroSlider" role="group" aria-label="Bộ sưu tập KIMVIE">
+          <img class="hs-img on" src="assets/slider/slider_1.png" alt="Bộ sưu tập thủ công KIMVIE" loading="eager">
+          <img class="hs-img" src="assets/slider/slider_2.png" alt="Gốm Việt — Bát Tràng" loading="lazy">
+          <img class="hs-img" src="assets/slider/slider_3.png" alt="Lụa &amp; mây tre Việt" loading="lazy">
+          <img class="hs-img" src="assets/slider/slider_4.png" alt="Tinh hoa làng nghề Việt" loading="lazy">
         </div>
       </div>
     </div>
@@ -356,7 +354,7 @@
   <section class="pad" style="border-bottom:1px solid var(--line)">
     <div class="wrap">
       <div class="sec-head">
-        <span class="kicker center" style="justify-content:center">Chỉ có ở Kimvie</span>
+        <span class="kicker center" style="justify-content:center">Chỉ có ở KIMVIE</span>
         <h2 class="lc">Khám phá theo cách <em style="color:var(--amber);font-style:italic">chưa ai làm</em></h2>
       </div>
       <div class="mission">
@@ -461,6 +459,31 @@
           <h4>Khăn lụa thêu tay</h4><div class="pl">Vạn Phúc</div>
           <div class="p-foot"><span class="price">1.100.000đ</span><button class="cart-btn" aria-label="Thêm vào giỏ hàng" data-name="Khăn lụa thêu tay"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M5 7h14l-1.2 10.3a2 2 0 0 1-2 1.7H8.2a2 2 0 0 1-2-1.7Z"/><path d="M9 7a3 3 0 0 1 6 0"/></svg></button></div>
         </article>
+        <article class="p-card">
+          <div class="p-art"><svg class="art" width="86" height="128" viewBox="0 0 100 150"><use href="#s-vase"/></svg></div>
+          <h4>Bình gốm men rạn</h4><div class="pl">Bát Tràng</div>
+          <div class="p-foot"><span class="price">1.250.000đ</span><button class="cart-btn" aria-label="Thêm vào giỏ hàng" data-name="Bình gốm men rạn"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M5 7h14l-1.2 10.3a2 2 0 0 1-2 1.7H8.2a2 2 0 0 1-2-1.7Z"/><path d="M9 7a3 3 0 0 1 6 0"/></svg></button></div>
+        </article>
+        <article class="p-card">
+          <div class="p-art"><svg class="art" width="100" height="110" viewBox="0 0 120 130"><use href="#s-scarf"/></svg></div>
+          <h4>Khăn lụa tơ tằm</h4><div class="pl">Vạn Phúc</div>
+          <div class="p-foot"><span class="price">850.000đ</span><button class="cart-btn" aria-label="Thêm vào giỏ hàng" data-name="Khăn lụa tơ tằm"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M5 7h14l-1.2 10.3a2 2 0 0 1-2 1.7H8.2a2 2 0 0 1-2-1.7Z"/><path d="M9 7a3 3 0 0 1 6 0"/></svg></button></div>
+        </article>
+        <article class="p-card">
+          <div class="p-art"><svg class="art" width="96" height="124" viewBox="0 0 110 140"><use href="#s-lantern"/></svg></div>
+          <h4>Đèn mây tre đan</h4><div class="pl">Phú Vinh</div>
+          <div class="p-foot"><span class="price">650.000đ</span><button class="cart-btn" aria-label="Thêm vào giỏ hàng" data-name="Đèn mây tre đan"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M5 7h14l-1.2 10.3a2 2 0 0 1-2 1.7H8.2a2 2 0 0 1-2-1.7Z"/><path d="M9 7a3 3 0 0 1 6 0"/></svg></button></div>
+        </article>
+        <article class="p-card">
+          <div class="p-art"><svg class="art" width="118" height="86" viewBox="0 0 140 100"><use href="#s-teaset"/></svg></div>
+          <h4>Bộ ấm chén men lam</h4><div class="pl">Bát Tràng</div>
+          <div class="p-foot"><span class="price">990.000đ</span><button class="cart-btn" aria-label="Thêm vào giỏ hàng" data-name="Bộ ấm chén men lam"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M5 7h14l-1.2 10.3a2 2 0 0 1-2 1.7H8.2a2 2 0 0 1-2-1.7Z"/><path d="M9 7a3 3 0 0 1 6 0"/></svg></button></div>
+        </article>
+        <article class="p-card">
+          <div class="p-art"><svg class="art" width="100" height="110" viewBox="0 0 120 130" style="transform:scaleX(-1)"><use href="#s-scarf"/></svg></div>
+          <h4>Khăn lụa thêu tay</h4><div class="pl">Vạn Phúc</div>
+          <div class="p-foot"><span class="price">1.100.000đ</span><button class="cart-btn" aria-label="Thêm vào giỏ hàng" data-name="Khăn lụa thêu tay"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M5 7h14l-1.2 10.3a2 2 0 0 1-2 1.7H8.2a2 2 0 0 1-2-1.7Z"/><path d="M9 7a3 3 0 0 1 6 0"/></svg></button></div>
+        </article>
       </div>
     </div>
   </section>
@@ -503,40 +526,6 @@
       </div>
       <div style="text-align:center;margin-top:44px">
         <a class="btn btn-line" data-go="story" href="#story">Đọc câu chuyện làng nghề →</a>
-      </div>
-    </div>
-  </section>
-
-  <!-- SỰ KIỆN & WORKSHOP -->
-  <section class="events">
-    <svg class="art motif" style="left:2%;top:36px;opacity:.3" width="220" height="90" viewBox="0 0 220 90"><use href="#s-swirl"/></svg>
-    <div class="motif" style="right:-70px;top:-60px;opacity:.1"><svg class="art" width="300" height="300" viewBox="0 0 200 200"><use href="#s-drum"/></svg></div>
-    <div class="wrap">
-      <div>
-        <span class="kicker">Sự kiện & Workshop</span>
-        <h2>Trải nghiệm<br>cùng Kimvie</h2>
-        <p class="desc">Tham gia các sự kiện, workshop để cảm nhận và gìn giữ tinh hoa làng nghề theo cách của bạn.</p>
-        <a class="arrow-link" data-go="events" href="#events">Xem lịch sự kiện</a>
-      </div>
-      <div class="e-grid">
-        <a class="e-card e-ochre" data-go="events" href="#events">
-          <svg class="art e-art" width="120" height="180" viewBox="0 0 100 150"><use href="#s-vase"/></svg>
-          <h4>Workshop làm gốm Bát Tràng</h4>
-          <div class="date">20.06.2026</div>
-          <span class="go">→</span>
-        </a>
-        <a class="e-card e-navy" data-go="events" href="#events">
-          <svg class="art e-art" width="140" height="115" viewBox="0 0 160 130"><use href="#s-loom"/></svg>
-          <h4>Trải nghiệm dệt lụa Vạn Phúc</h4>
-          <div class="date">28.06.2026</div>
-          <span class="go">→</span>
-        </a>
-        <a class="e-card e-green" data-go="events" href="#events">
-          <svg class="art e-art" width="110" height="170" viewBox="0 0 90 210"><use href="#s-bamboo"/></svg>
-          <h4>Workshop mây tre đan Phú Vinh</h4>
-          <div class="date">05.07.2026</div>
-          <span class="go">→</span>
-        </a>
       </div>
     </div>
   </section>
@@ -650,7 +639,7 @@
     <div class="wrap">
       <svg class="art" width="46" height="46" viewBox="0 0 200 200" style="color:var(--amber2);margin-bottom:14px"><use href="#s-drum"/></svg>
       <div class="q">"Không gian số không thay thế làng nghề — nó mở thêm một cánh cửa để làng nghề bước ra thế giới."</div>
-      <div class="by">— Kimvie —</div>
+      <div class="by">— KIMVIE —</div>
     </div>
   </div>
 </main>
@@ -938,16 +927,16 @@
       <div class="sec-head">
         <span class="kicker center" style="justify-content:center">Giải đáp thắc mắc</span>
         <h2 class="lc">Câu hỏi thường gặp</h2>
-        <p>Chưa thấy câu trả lời? Hỏi trợ lý Kimvie AI ở góc màn hình nhé.</p>
+        <p>Chưa thấy câu trả lời? Hỏi trợ lý KIMVIE AI ở góc màn hình nhé.</p>
       </div>
       <div class="faq">
         <details>
-          <summary>Sản phẩm Kimvie có phải thủ công 100% không?</summary>
+          <summary>Sản phẩm KIMVIE có phải thủ công 100% không?</summary>
           <div class="fa">Đúng vậy. Mỗi sản phẩm đều do nghệ nhân tại Bát Tràng, Vạn Phúc, Phú Vinh làm thủ công, có thể khác nhau đôi chút giữa từng chiếc — đó chính là dấu ấn của đồ làm tay.</div>
         </details>
         <details>
           <summary>Đồ gốm dễ vỡ, vận chuyển thế nào cho an toàn?</summary>
-          <div class="fa">Gốm được bọc 3 lớp (giấy rơm – mút khí – thùng gỗ/carton cứng) và dán nhãn hàng dễ vỡ. Nếu sản phẩm nứt vỡ khi nhận, Kimvie đổi mới miễn phí trong 7 ngày.</div>
+          <div class="fa">Gốm được bọc 3 lớp (giấy rơm – mút khí – thùng gỗ/carton cứng) và dán nhãn hàng dễ vỡ. Nếu sản phẩm nứt vỡ khi nhận, KIMVIE đổi mới miễn phí trong 7 ngày.</div>
         </details>
         <details>
           <summary>Bảo quản khăn lụa tơ tằm ra sao?</summary>
@@ -958,8 +947,8 @@
           <div class="fa">Sản phẩm đã xử lý chống mối mọt. Bạn chỉ cần để nơi khô thoáng, thỉnh thoảng lau khăn ẩm rồi hong gió; tránh để sát tường ẩm hoặc ngoài mưa.</div>
         </details>
         <details>
-          <summary>Kimvie có nhận đặt riêng / quà tặng doanh nghiệp?</summary>
-          <div class="fa">Có. Kimvie nhận đặt sản phẩm theo yêu cầu (khắc tên, hoa văn riêng, hộp quà thương hiệu) từ 20 sản phẩm. Liên hệ CSKH để được báo giá trong 24h.</div>
+          <summary>KIMVIE có nhận đặt riêng / quà tặng doanh nghiệp?</summary>
+          <div class="fa">Có. KIMVIE nhận đặt sản phẩm theo yêu cầu (khắc tên, hoa văn riêng, hộp quà thương hiệu) từ 20 sản phẩm. Liên hệ CSKH để được báo giá trong 24h.</div>
         </details>
       </div>
     </div>
@@ -989,9 +978,9 @@
         </div>
         <div class="ft-body">
           <span class="b-tag">Câu chuyện thương hiệu</span>
-          <h3>Kimvie — Giữ lửa nghề xưa bằng nhịp sống mới</h3>
-          <p class="ex">Từ những chuyến về làng gặp nghệ nhân đến quyết định xây một cây cầu nối di sản với người trẻ — đây là câu chuyện khởi đầu của Kimvie.</p>
-          <div class="meta-line"><i>✦</i> 12.06.2026 · 6 phút đọc · Đội ngũ Kimvie</div>
+          <h3>KIMVIE — Giữ lửa nghề xưa bằng nhịp sống mới</h3>
+          <p class="ex">Từ những chuyến về làng gặp nghệ nhân đến quyết định xây một cây cầu nối di sản với người trẻ — đây là câu chuyện khởi đầu của KIMVIE.</p>
+          <div class="meta-line"><i>✦</i> 12.06.2026 · 6 phút đọc · Đội ngũ KIMVIE</div>
           <span class="btn btn-navy">Đọc bài viết →</span>
         </div>
       </a>
@@ -1069,8 +1058,8 @@
     <svg class="art motif" style="left:38%;bottom:14px;opacity:.25" width="120" height="75" viewBox="0 0 160 100"><use href="#s-lac"/></svg>
     <div class="wrap">
       <div class="crumb">Bài viết ✦ Câu chuyện thương hiệu</div>
-      <h1>Kimvie — Giữ lửa nghề xưa bằng nhịp sống mới</h1>
-      <p>✦ 12.06.2026 · 6 phút đọc · Đội ngũ Kimvie</p>
+      <h1>KIMVIE — Giữ lửa nghề xưa bằng nhịp sống mới</h1>
+      <p>✦ 12.06.2026 · 6 phút đọc · Đội ngũ KIMVIE</p>
     </div>
   </section>
 
@@ -1078,17 +1067,17 @@
     <div class="wrap" style="max-width:780px">
       <a class="backlink" data-go="story" href="#story">← Tất cả bài viết</a>
       <div style="height:20px"></div>
-      <p class="dropcap" style="font-size:15.5px;margin-bottom:18px">Kimvie ra đời từ những chuyến về làng — nơi chúng mình gặp các nghệ nhân vẫn miệt mài bên bàn xoay, khung cửi và nan tre, nhưng sản phẩm của họ ngày càng khó tìm đường đến người trẻ. Khoảng cách ấy không nằm ở giá trị, mà ở cách kể chuyện.</p>
-      <p style="font-size:15.5px;color:var(--muted);margin-bottom:18px">Vậy nên Kimvie chọn làm chiếc cầu: một sàn thương mại để sản phẩm thủ công đến tận tay bạn, và một không gian triển lãm số để câu chuyện đằng sau mỗi món đồ được kể bằng ngôn ngữ của thời đại — 3D, âm thanh, ánh sáng và cảm xúc.</p>
-      <p style="font-size:15.5px;color:var(--muted)">Mỗi đơn hàng trên Kimvie là một lần bạn cùng chúng mình "giữ lửa" cho làng nghề — để di sản không nằm trong tủ kính, mà sống tiếp trong nhịp sống hôm nay.</p>
+      <p class="dropcap" style="font-size:15.5px;margin-bottom:18px">KIMVIE ra đời từ những chuyến về làng — nơi chúng mình gặp các nghệ nhân vẫn miệt mài bên bàn xoay, khung cửi và nan tre, nhưng sản phẩm của họ ngày càng khó tìm đường đến người trẻ. Khoảng cách ấy không nằm ở giá trị, mà ở cách kể chuyện.</p>
+      <p style="font-size:15.5px;color:var(--muted);margin-bottom:18px">Vậy nên KIMVIE chọn làm chiếc cầu: một sàn thương mại để sản phẩm thủ công đến tận tay bạn, và một không gian triển lãm số để câu chuyện đằng sau mỗi món đồ được kể bằng ngôn ngữ của thời đại — 3D, âm thanh, ánh sáng và cảm xúc.</p>
+      <p style="font-size:15.5px;color:var(--muted)">Mỗi đơn hàng trên KIMVIE là một lần bạn cùng chúng mình "giữ lửa" cho làng nghề — để di sản không nằm trong tủ kính, mà sống tiếp trong nhịp sống hôm nay.</p>
     </div>
   </section>
 
   <div class="quote-band">
     <div class="wrap">
       <svg class="art" width="46" height="46" viewBox="0 0 200 200" style="color:var(--amber2);margin-bottom:14px"><use href="#s-drum"/></svg>
-      <div class="q">"Mỗi món đồ thủ công là một lá thư viết tay gửi từ quá khứ — Kimvie chỉ là người đưa thư tận tâm."</div>
-      <div class="by">— Đội ngũ Kimvie —</div>
+      <div class="q">"Mỗi món đồ thủ công là một lá thư viết tay gửi từ quá khứ — KIMVIE chỉ là người đưa thư tận tâm."</div>
+      <div class="by">— Đội ngũ KIMVIE —</div>
     </div>
   </div>
 
@@ -1153,72 +1142,6 @@
   </section>
 </main>
 
-<!-- ================= SỰ KIỆN ================= -->
-<main data-page="events">
-  <section class="page-hero">
-    <svg class="art cloud-r" width="200" height="74" viewBox="0 0 120 44"><use href="#s-cloud"/></svg>
-    <div class="motif" style="right:-80px;top:-50px;opacity:.16"><svg class="art spin-slow" width="300" height="300" viewBox="0 0 200 200"><use href="#s-drum"/></svg></div>
-    <svg class="art motif" style="left:38%;bottom:14px;opacity:.25" width="120" height="75" viewBox="0 0 160 100"><use href="#s-lac"/></svg>
-    <div class="wrap">
-      <div class="crumb">Trang chủ ✦ Sự kiện & Workshop</div>
-      <h1>Lịch trải nghiệm cùng Kimvie</h1>
-      <p>Đặt chỗ workshop, gặp nghệ nhân, tự tay làm món đồ thủ công đầu tiên của bạn.</p>
-    </div>
-  </section>
-
-  <section class="pad">
-    <div class="wrap" style="max-width:880px">
-      <div class="ev-row">
-        <div class="ev-date"><b>20</b><span>TH6</span></div>
-        <div class="ev-info">
-          <h4>Workshop làm gốm Bát Tràng</h4>
-          <div class="meta"><span class="ev-tagx tx-o">GỐM</span><i>⊙</i>09:00 – 11:30 &nbsp; <i>⚲</i>Xưởng gốm Bát Tràng, Gia Lâm &nbsp; <i>✦</i>Còn 8 chỗ</div>
-        </div>
-        <a class="btn btn-navy ev-book" href="#">Đặt chỗ</a>
-      </div>
-      <div class="ev-row">
-        <div class="ev-date"><b>28</b><span>TH6</span></div>
-        <div class="ev-info">
-          <h4>Trải nghiệm dệt lụa Vạn Phúc</h4>
-          <div class="meta"><span class="ev-tagx tx-n">LỤA</span><i>⊙</i>14:00 – 16:30 &nbsp; <i>⚲</i>Làng lụa Vạn Phúc, Hà Đông &nbsp; <i>✦</i>Còn 5 chỗ</div>
-        </div>
-        <a class="btn btn-navy ev-book" href="#">Đặt chỗ</a>
-      </div>
-      <div class="ev-row">
-        <div class="ev-date"><b>05</b><span>TH7</span></div>
-        <div class="ev-info">
-          <h4>Workshop mây tre đan Phú Vinh</h4>
-          <div class="meta"><span class="ev-tagx tx-g">MÂY TRE</span><i>⊙</i>09:00 – 12:00 &nbsp; <i>⚲</i>Làng Phú Vinh, Chương Mỹ &nbsp; <i>✦</i>Còn 12 chỗ</div>
-        </div>
-        <a class="btn btn-navy ev-book" href="#">Đặt chỗ</a>
-      </div>
-      <div class="ev-row">
-        <div class="ev-date"><b>19</b><span>TH7</span></div>
-        <div class="ev-info">
-          <h4>Tour "Một ngày ba làng nghề" cùng Kimvie</h4>
-          <div class="meta"><span class="ev-tagx tx-o">TOUR</span><i>⊙</i>07:30 – 17:00 &nbsp; <i>⚲</i>Khởi hành từ Hồ Gươm &nbsp; <i>✦</i>Sắp mở đăng ký</div>
-        </div>
-        <a class="btn btn-line" href="#">Nhận thông báo</a>
-      </div>
-      <div class="ev-row">
-        <div class="ev-date"><b>02</b><span>TH8</span></div>
-        <div class="ev-info">
-          <h4>Triển lãm thực tế "Vân Khởi" — khai mạc</h4>
-          <div class="meta"><span class="ev-tagx tx-n">TRIỂN LÃM</span><i>⊙</i>18:00 – 21:00 &nbsp; <i>⚲</i>Văn Miếu – Quốc Tử Giám &nbsp; <i>✦</i>Vào cửa tự do</div>
-        </div>
-        <a class="btn btn-line" href="#">Nhận thông báo</a>
-      </div>
-    </div>
-  </section>
-
-  <div class="quote-band">
-    <div class="wrap">
-      <svg class="art" width="46" height="46" viewBox="0 0 200 200" style="color:var(--amber2);margin-bottom:14px"><use href="#s-drum"/></svg>
-      <div class="q">"Bạn không chỉ tham dự một workshop — bạn đang góp một đôi tay vào nghìn năm nghề Việt."</div>
-      <div class="by">— Kimvie Events —</div>
-    </div>
-  </div>
-</main>
 
 <!-- ================= FOOTER ================= -->
 <footer>
@@ -1231,13 +1154,13 @@
         <h5 style="font-size:11.5px;letter-spacing:.2em;color:var(--cream2);text-transform:uppercase;margin-bottom:16px">Nhận thư từ làng nghề</h5>
         <div class="nf"><input type="email" placeholder="Nhập địa chỉ email"><button title="Đăng ký">→</button></div>
       </div>
-      <p class="note">Đăng ký để nhận thông tin về sản phẩm, bộ sưu tập, triển lãm, sự kiện và các vấn đề đáng quan tâm của Kimvie.</p>
+      <p class="note">Đăng ký để nhận thông tin về sản phẩm, bộ sưu tập, triển lãm, sự kiện và các vấn đề đáng quan tâm của KIMVIE.</p>
     </div>
     <div class="f-grid">
       <div class="f-brand">
         <div style="display:flex;align-items:center;gap:10px">
           <svg class="art" width="42" height="42" style="color:var(--cream2)"><use href="#s-logo"/></svg>
-          <span class="name">kimvie</span>
+          <span class="name">KIMVIE</span>
         </div>
         <div class="tag">Kết nối – Bảo tồn – Lan tỏa</div>
         <p style="font-size:12px;line-height:1.7">Cầu nối giữa làng nghề truyền thống và thế hệ hôm nay.</p>
@@ -1265,15 +1188,14 @@
         <a class="fl" data-cs href="#">Liên hệ chúng tôi</a>
       </div>
       <div>
-        <h5>Về Kimvie</h5>
+        <h5>Về KIMVIE</h5>
         <a class="fl" data-go="article" href="#article">Câu chuyện thương hiệu</a>
         <a class="fl" data-go="story" href="#story">Bài viết</a>
         <a class="fl" data-go="lang" href="#lang">Làng nghề</a>
         <a class="fl" data-go="expo" href="#expo">Triển lãm số</a>
-        <a class="fl" data-go="events" href="#events">Sự kiện</a>
       </div>
     </div>
-    <div class="f-bottom">© 2026 Kimvie. All rights reserved.</div>
+    <div class="f-bottom">© 2026 KIMVIE. All rights reserved.</div>
   </div>
 </footer>
 
@@ -1322,7 +1244,7 @@
       <svg class="art" width="42" height="42" viewBox="0 0 64 64" style="color:var(--gold)"><use href="#s-logo"/></svg>
       <div>
         <h3>HỘ CHIẾU DI SẢN</h3>
-        <small>Lữ khách Kimvie · Hành trình ba làng nghề · 2026</small>
+        <small>Lữ khách KIMVIE · Hành trình ba làng nghề · 2026</small>
       </div>
       <button class="m-x" data-ppx style="margin-left:auto">✕</button>
     </div>
@@ -1338,6 +1260,8 @@
 
 <div id="toast"></div>
 
+<audio id="aWind" src="assets/audio/winds.mp3" loop preload="auto" playsinline></audio>
+<audio id="aFlute" src="assets/audio/flute.mp3" loop preload="auto" playsinline></audio>
 <script src="script.js" defer></script>
 </body>
 </html>
