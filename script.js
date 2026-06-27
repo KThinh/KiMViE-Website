@@ -33,14 +33,15 @@ function showToast(html){
   toast.innerHTML = html; toast.classList.add('show');
   clearTimeout(toastT); toastT = setTimeout(() => toast.classList.remove('show'), 2400);
 }
-document.querySelectorAll('.cart-btn').forEach(b => b.addEventListener('click', () => {
+document.querySelectorAll('.cart-btn').forEach(b => b.addEventListener('click', (e) => {
+  e.stopPropagation();
   cart++; badge.textContent = cart; badge.classList.add('show');
   showToast('Đã thêm <b>' + (b.dataset.name || 'sản phẩm') + '</b> vào giỏ hàng ✦');
   if(window.stamp) stamp('cart');
 }));
 
 /* ===== sold counts on product cards ===== */
-const SOLD = {'Bình gốm men rạn':'1,2k','Khăn lụa tơ tằm':'2,3k','Đèn mây tre đan':'860','Bộ ấm chén men lam':'1,5k','Khăn lụa thêu tay':'640','Giỏ mây đan thủ công':'3,1k','Lọ hoa men ngọc':'420','Đèn lồng tre treo trần':'510'};
+const SOLD = {'Bộ ấm trà men hỏa biến':'980','Hũ đựng trà Mã Đáo Thành Công':'1,1k','Đĩa trưng bày hoa sen ánh trăng':'640','Cà vạt lụa tơ tằm':'2,3k','Khăn lụa vân sen hồng':'1,7k','Hộp đựng đồ mây tre đan':'860','Túi đeo chéo mây tre đan':'1,4k'};
 document.querySelectorAll('.p-card').forEach(c => {
   const h = c.querySelector('h4'), pl = c.querySelector('.pl');
   if(h && pl && SOLD[h.textContent.trim()]){
@@ -151,23 +152,26 @@ document.getElementById('mtCard').addEventListener('click', () => setMTab('card'
 
 /* ===== "Điểm khác biệt" CTA buttons ===== */
 document.getElementById('newPass').addEventListener('click', openPP);
-document.getElementById('newId').addEventListener('click', () => { openProduct('binh-men-ran'); setMTab('card'); });
+document.getElementById('newId').addEventListener('click', () => { openProduct('am-tra'); setMTab('card'); });
 document.getElementById('newSnd').addEventListener('click', () => go('expo'));
 
 /* ===== product catalogue + modal ===== */
+const PROD_DIR = 'assets/product_img/';
 const PRODUCTS = {
- 'binh-men-ran':{name:'Bình gốm men rạn',tag:'Gốm Bát Tràng',f:'bt',price:'1.250.000đ',sym:'s-vase',vb:'0 0 100 150',w:175,h:255,
-  desc:'Men rạn cổ truyền với những vết rạn tự nhiên như mạng thời gian. Mỗi chiếc bình được vuốt tay trên bàn xoay và nung suốt 24 giờ trong lò truyền thống Bát Tràng.'},
- 'am-chen':{name:'Bộ ấm chén men lam',tag:'Gốm Bát Tràng',f:'bt',price:'990.000đ',sym:'s-teaset',vb:'0 0 140 100',w:250,h:178,
-  desc:'Hoạ tiết men lam vẽ tay dưới men — sắc xanh đặc trưng Bát Tràng đã chinh phục người yêu trà suốt nhiều thế kỷ. Bộ gồm 1 ấm, 6 chén và khay gỗ.'},
- 'khan-lua':{name:'Khăn lụa tơ tằm',tag:'Lụa Vạn Phúc',f:'vp',price:'850.000đ',sym:'s-scarf',vb:'0 0 120 130',w:195,h:212,
-  desc:'Dệt thủ công 100% tơ tằm trên khung cửi gỗ nghìn năm tuổi nghề. Hoa văn vân mây cổ, nhuộm màu tự nhiên — nhẹ và thoáng như hơi thở.'},
- 'lua-theu':{name:'Khăn lụa thêu tay',tag:'Lụa Vạn Phúc',f:'vp',price:'1.100.000đ',sym:'s-scarf',vb:'0 0 120 130',w:195,h:212,
-  desc:'Từng đường kim mũi chỉ được nghệ nhân thêu tay trong nhiều ngày. Phiên bản giới hạn theo mùa, mỗi chiếc khăn là một bức tranh độc bản.'},
- 'den-may':{name:'Đèn mây tre đan',tag:'Mây tre Phú Vinh',f:'pv',price:'650.000đ',sym:'s-lantern',vb:'0 0 110 140',w:185,h:235,
-  desc:'Nan tre vót mỏng, đan tay theo kỹ thuật Phú Vinh 400 năm. Khi thắp sáng, bóng nan tre đổ lên tường như một bức tranh khắc sống động.'},
- 'gio-may':{name:'Giỏ mây đan thủ công',tag:'Mây tre Phú Vinh',f:'pv',price:'420.000đ',sym:'s-basket',vb:'0 0 120 110',w:205,h:188,
-  desc:'Mây tự nhiên xử lý chống mối mọt, đan nong đôi bền chắc. Món đồ bình dị mang hồn quê Bắc Bộ vào không gian sống hiện đại.'}
+ 'am-tra':{name:'Bộ ấm trà men hỏa biến',tag:'Gốm Bát Tràng',f:'bt',price:'1.450.000đ',img:'Bộ Ấm Trà Đĩa Men Hỏa Biến Xanh Khay Hoa Xanh.png',
+  desc:'Bộ ấm trà phủ men hỏa biến xanh ngọc — sắc men biến ảo theo nhiệt độ lò nung, kèm đĩa và khay hoa xanh. Mỗi mẻ ra lò cho một dải màu độc nhất, không chiếc nào giống chiếc nào.'},
+ 'hu-tra':{name:'Hũ đựng trà Mã Đáo Thành Công',tag:'Gốm Bát Tràng',f:'bt',price:'1.180.000đ',img:'Hũ Đựng Trà Men Xanh Mã Đáo Thành Công Vẽ Vàng.png',
+  desc:'Hũ sứ men xanh vẽ vàng họa tiết "Mã Đáo Thành Công" — biểu tượng cát tường, may mắn. Nắp khít giữ hương trà thơm lâu; từng nét vàng kim được vẽ tay thủ công.'},
+ 'dia-sen':{name:'Đĩa trưng bày hoa sen ánh trăng',tag:'Gốm Bát Tràng',f:'bt',price:'1.350.000đ',img:'Đĩa Trưng Bày Đắp Nổi Vẽ Màu Hoa Sen Ánh Trăng.png',
+  desc:'Đĩa trưng bày đắp nổi, vẽ màu hoa sen dưới ánh trăng — tinh xảo trong từng cánh sen, từng gợn nước. Một tác phẩm trang trí mang hồn Việt cho không gian sống.'},
+ 'cavat-lua':{name:'Cà vạt lụa tơ tằm',tag:'Lụa Vạn Phúc',f:'vp',price:'680.000đ',img:'CARAVAT LỤA TƠ TẰM NGHỆ NHÂN đỏ đô.png',
+  desc:'Cà vạt dệt 100% lụa tơ tằm Vạn Phúc, sắc đỏ đô sang trọng với hoa văn chìm tinh tế. Kèm hộp gỗ khắc hoa văn — món quà lịch lãm cho phái mạnh.'},
+ 'khan-sen':{name:'Khăn lụa vân sen hồng',tag:'Lụa Vạn Phúc',f:'vp',price:'920.000đ',img:'Khăn lụa vân Sen hồng phối màu.png',
+  desc:'Khăn lụa vân sen phối sắc hồng — hoa văn sen ẩn hiện khi soi nắng, mềm mại và thoáng nhẹ như hơi thở. Dệt thủ công trên khung cửi nghìn năm tuổi nghề.'},
+ 'hop-may':{name:'Hộp đựng đồ mây tre đan',tag:'Mây tre Phú Vinh',f:'pv',price:'540.000đ',img:'Hộp đựng đồ Mây Tre Đan.png',
+  desc:'Hộp đựng đồ đan tay từ mây tre Phú Vinh theo kỹ thuật nong đôi bền chắc, đã xử lý chống mối mọt. Mộc mạc mà tinh tế cho không gian sống hiện đại.'},
+ 'tui-may':{name:'Túi đeo chéo mây tre đan',tag:'Mây tre Phú Vinh',f:'pv',price:'750.000đ',img:'Túi Đeo Chéo Mây Tre Đan.png',
+  desc:'Túi đeo chéo đan tay phối quai mây tròn, hoa văn xương cá đặc trưng Phú Vinh. Nhẹ, bền và thời trang — đưa mây tre Việt vào nhịp sống đương đại.'}
 };
 const pModal = document.getElementById('pModal');
 let curP = null;
@@ -178,9 +182,9 @@ function openProduct(id){
   document.getElementById('mPrice').textContent = p.price;
   document.getElementById('mSold').textContent = '★ 4.9 · Đã bán ' + (SOLD[p.name] || '500+') + ' · Còn hàng';
   document.getElementById('mDesc').textContent = p.desc;
-  const art = document.getElementById('mArt');
-  art.setAttribute('viewBox', p.vb); art.setAttribute('width', p.w); art.setAttribute('height', p.h);
-  document.getElementById('mUse').setAttribute('href', '#' + p.sym);
+  const box = document.querySelector('.m-art');
+  if(box) box.innerHTML = '<img class="m-photo" src="' + PROD_DIR + p.img + '" alt="' + p.name + '">'
+    + '<div class="cap">✦ Ảnh sản phẩm thực tế · KIMVIE ✦</div>';
   if(window.fillIdCard) fillIdCard(p);
   if(window.setMTab) setMTab('intro');
   if(window.stamp) stamp('relic');
@@ -231,7 +235,7 @@ function retagReveal(){
 const bgVideo = document.querySelector('.bg-video');
 if(REDUCE && bgVideo){ bgVideo.removeAttribute('autoplay'); bgVideo.pause(); }
 
-/* ===== hero slider — auto-advance every 10s ===== */
+/* ===== hero slider — auto-advance every 7s ===== */
 (function(){
   const slider = document.getElementById('heroSlider');
   if(!slider) return;
@@ -242,22 +246,17 @@ if(REDUCE && bgVideo){ bgVideo.removeAttribute('autoplay'); bgVideo.pause(); }
     imgs[i].classList.remove('on');
     i = (i + 1) % imgs.length;
     imgs[i].classList.add('on');
-  }, 10000);
+  }, 7000);
 })();
 
-/* ===== real product photography in cards ===== */
+/* ===== real product photography in cards (by product id) ===== */
 (function(){
-  const byV = {bt:'gom_viet.png', vp:'lua_viet.png', pv:'may_dan_tre.png'};
-  const byText = [[/Bát Tràng/i,'gom_viet.png'], [/Vạn Phúc/i,'lua_viet.png'], [/Phú Vinh/i,'may_dan_tre.png']];
   document.querySelectorAll('.p-card').forEach(card => {
     const art = card.querySelector('.p-art'); if(!art) return;
-    const name = (card.querySelector('h4')?.textContent || 'Sản phẩm').trim();
-    const pl = card.querySelector('.pl')?.textContent || '';
-    let file = byV[card.dataset.v];
-    if(!file){ const hit = byText.find(([re]) => re.test(pl) || re.test(name)); file = hit && hit[1]; }
-    if(!file) return;
+    const p = PRODUCTS[card.dataset.p];
+    if(!p || !p.img) return;
     art.classList.add('has-img');
-    art.innerHTML = '<img src="assets/product_img/' + file + '" alt="' + name + '" loading="lazy">';
+    art.innerHTML = '<img src="' + PROD_DIR + p.img + '" alt="' + p.name + '" loading="lazy">';
   });
 })();
 
@@ -265,7 +264,7 @@ if(REDUCE && bgVideo){ bgVideo.removeAttribute('autoplay'); bgVideo.pause(); }
 (function(){
   const wind = document.getElementById('aWind'), flute = document.getElementById('aFlute'), btn = document.getElementById('audioBtn');
   if(!wind || !flute || !btn) return;
-  const VOL = 0.12, FADE = 2.5;                 // target volume + fade length (s)
+  const VOL = 0.5, FADE = 2.5;                  // target volume + fade length (s)
   const ICON_ON  = '<svg viewBox="0 0 24 24" width="19" height="19" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M11 5 6 9H3v6h3l5 4z"/><path d="M16 9a4 4 0 0 1 0 6"/><path d="M19 6.5a8 8 0 0 1 0 11"/></svg>';
   const ICON_OFF = '<svg viewBox="0 0 24 24" width="19" height="19" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M11 5 6 9H3v6h3l5 4z"/><path d="m22 9-6 6"/><path d="m16 9 6 6"/></svg>';
   let enabled = localStorage.getItem('kvAudio'); enabled = enabled === null ? true : enabled === '1';
@@ -310,6 +309,99 @@ if(REDUCE && bgVideo){ bgVideo.removeAttribute('autoplay'); bgVideo.pause(); }
     window.addEventListener('pointerdown', kick, { once: true });
     window.addEventListener('keydown', kick, { once: true });
   }
+})();
+
+/* ===== interactive map of craft villages ===== */
+const VILLAGES = {
+  bt:{ name:'Gốm Bát Tràng', region:'Gia Lâm · Hà Nội', img:'GỐM BÁT TRÀNG.webp',
+    blurb:'Hơn 700 năm bên sông Hồng — cái nôi của gốm sứ Việt.',
+    lead:'Nằm bên tả ngạn sông Hồng, Bát Tràng là làng gốm cổ và danh tiếng bậc nhất Việt Nam, nơi đất và lửa kết tinh thành những tác phẩm vượt thời gian.',
+    body:['Đất sét được luyện kỹ, vuốt tay trên bàn xoay rồi nung trong lò bầu suốt nhiều giờ ở nhiệt độ nghìn độ. Men rạn, men lam, men hỏa biến — mỗi dòng men là một câu chuyện riêng về lửa và thời gian.',
+          'Ngày nay, nghệ nhân Bát Tràng vừa giữ lối làm cổ truyền, vừa sáng tạo những dòng men mới, đưa gốm Việt ra thế giới.'],
+    facts:[['700+','năm tuổi nghề'],['200+','lò gốm'],['#1','làng gốm Việt']],
+    prods:['am-tra','hu-tra','dia-sen'] },
+  vp:{ name:'Lụa Vạn Phúc', region:'Hà Đông · Hà Nội', img:'LỤA TƠ TẰM.jpg',
+    blurb:'Nghìn năm tiếng thoi đưa — quê hương của "lụa tiến vua".',
+    lead:'Làng lụa Vạn Phúc nức tiếng nghìn năm với nghề dệt tơ tằm, từng dệt nên những tấm "lụa tiến vua" mềm mại như dòng chảy thời gian.',
+    body:['Đặc sản là lụa vân: hoa văn chìm trong sợi, chỉ hiện rõ khi soi dưới nắng. Tơ tằm tự nhiên, nhuộm màu thảo mộc cho dải lụa nhẹ, bền và óng ánh.',
+          'Mỗi tấm lụa là hàng nghìn lần thoi đưa của bàn tay nghệ nhân — giữ lấy vẻ đẹp Việt trong từng sợi tơ.'],
+    facts:[['1000+','năm tuổi nghề'],['Lụa','tiến vua'],['100%','tơ tằm']],
+    prods:['cavat-lua','khan-sen'] },
+  pv:{ name:'Mây tre đan Phú Vinh', region:'Chương Mỹ · Hà Nội', img:'MÂY ĐAN TRE.png',
+    blurb:'400 năm "đan nắng gió vào nan tre".',
+    lead:'Phú Vinh là làng mây tre đan 400 năm tuổi, nơi nghệ nhân khéo léo đến mức đan được cả chân dung bằng những sợi mây mảnh.',
+    body:['Nan tre, sợi mây được vót mỏng, xử lý chống mối mọt rồi đan tay theo các kỹ thuật nong mốt, nong đôi, xương cá. Từ vật liệu bình dị, bàn tay nghệ nhân nâng mây tre thành đồ trang trí và thời trang.',
+          'Sản phẩm Phú Vinh mộc mạc mà tinh tế, mang hồn quê Bắc Bộ vào nhịp sống đương đại.'],
+    facts:[['400+','năm tuổi nghề'],['Đan','chân dung mây'],['Bền','chống mối mọt']],
+    prods:['hop-may','tui-may'] }
+};
+(function(){
+  const overview = document.getElementById('mapOverview');
+  const zoom = document.getElementById('mapZoom');
+  const panel = document.getElementById('mapPanel');
+  const north = document.getElementById('northRegion');
+  const back = document.getElementById('mapBack');
+  if(!overview || !zoom || !panel) return;
+  const VDIR = 'assets/lang_nghe_img/';
+
+  function setZoomed(z){ overview.hidden = z; zoom.hidden = !z; }
+  function setPins(k){ zoom.querySelectorAll('.vpin').forEach(p => p.classList.toggle('on', p.dataset.v === k)); }
+
+  function renderIntro(){
+    setZoomed(false); setPins(null);
+    panel.innerHTML =
+      '<div class="map-intro">' +
+        '<span class="kicker">Bản đồ làng nghề</span>' +
+        '<h3>Khám phá tinh hoa thủ công theo từng vùng miền</h3>' +
+        '<p>Mỗi vùng đất Việt Nam ôm trong mình những làng nghề trăm năm tuổi. Hành trình của KIMVIE bắt đầu từ <b>Miền Bắc</b> — chiếc nôi của gốm, lụa và mây tre.</p>' +
+        '<p>Di chuột lên <b>Miền Bắc</b> trên bản đồ để làm nổi vùng, rồi <b>nhấn để phóng to</b> và xem danh sách làng nghề.</p>' +
+        '<div class="hintline">✦ Bắt đầu với Miền Bắc trên bản đồ →</div>' +
+      '</div>';
+  }
+  function renderList(){
+    setZoomed(true); setPins(null);
+    panel.innerHTML =
+      '<div class="mapv-listhead">Làng nghề Miền Bắc</div>' +
+      '<div class="mapv-listsub">Chọn một làng nghề để xem câu chuyện và sản phẩm tiêu biểu.</div>' +
+      '<div class="mapv-list">' +
+      Object.entries(VILLAGES).map(([k,v]) =>
+        '<button class="mapv-card" type="button" data-v="' + k + '">' +
+          '<img src="' + VDIR + v.img + '" alt="' + v.name + '" loading="lazy">' +
+          '<div><div class="vk">' + v.region + '</div><h4>' + v.name + '</h4><p>' + v.blurb + '</p></div>' +
+        '</button>').join('') +
+      '</div>';
+  }
+  function renderVillage(k){
+    const v = VILLAGES[k]; if(!v) return;
+    setZoomed(true); setPins(k);
+    const prods = v.prods.map(id => { const p = PRODUCTS[id]; return p ?
+      '<button class="vprod" type="button" data-p="' + id + '">' +
+        '<img src="' + PROD_DIR + p.img + '" alt="' + p.name + '" loading="lazy">' +
+        '<div class="vpb"><h5>' + p.name + '</h5><div class="vpprice">' + p.price + '</div></div>' +
+      '</button>' : ''; }).join('');
+    panel.innerHTML =
+      '<button class="mapv-back2" type="button">← Danh sách làng nghề</button>' +
+      '<div class="mapv-detail">' +
+        '<div class="vtop"><img class="vhero" src="' + VDIR + v.img + '" alt="' + v.name + '">' +
+          '<div class="vcap"><div class="vk">' + v.region + '</div><h3>' + v.name + '</h3></div></div>' +
+        '<p class="vlead">' + v.lead + '</p>' +
+        v.body.map(b => '<p class="vbody">' + b + '</p>').join('') +
+        '<div class="vfacts">' + v.facts.map(f => '<div><b>' + f[0] + '</b><span>' + f[1] + '</span></div>').join('') + '</div>' +
+        '<div class="vsub">Sản phẩm tiêu biểu</div>' +
+        '<div class="vprod-grid">' + prods + '</div>' +
+      '</div>';
+    panel.scrollIntoView({behavior:'smooth', block:'nearest'});
+  }
+
+  north.addEventListener('click', renderList);
+  if(back) back.addEventListener('click', renderIntro);
+  document.querySelector('.vnmap').addEventListener('click', e => {
+    const pin = e.target.closest('.vpin'); if(pin){ renderVillage(pin.dataset.v); return; }
+    const card = e.target.closest('.mapv-card'); if(card){ renderVillage(card.dataset.v); return; }
+    const b2 = e.target.closest('.mapv-back2'); if(b2){ renderList(); return; }
+    const vp = e.target.closest('.vprod'); if(vp && vp.dataset.p){ openProduct(vp.dataset.p); return; }
+  });
+  renderIntro();
 })();
 
 /* ===== boot ===== */
