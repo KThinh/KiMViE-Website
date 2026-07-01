@@ -74,7 +74,7 @@ const STAMPS = [
  {id:'bt',name:'Men Lam',icon:'s-vase',vb:'0 0 100 150',how:'Mở hồ sơ Gốm Bát Tràng (trang Làng nghề)'},
  {id:'vp',name:'Tơ Vàng',icon:'s-loom',vb:'0 0 160 130',how:'Mở hồ sơ Lụa Vạn Phúc (trang Làng nghề)'},
  {id:'pv',name:'Tre Xanh',icon:'s-basket',vb:'0 0 120 110',how:'Mở hồ sơ Mây tre Phú Vinh (trang Làng nghề)'},
- {id:'expo',name:'Lữ Khách',icon:'s-arch-mini',vb:'0 0 80 100',how:'Ghé thăm Triển lãm 3D'},
+ {id:'expo',name:'Lữ Khách',icon:'s-arch-mini',vb:'0 0 80 100',how:'Ghé thăm Bản đồ làng nghề'},
  {id:'relic',name:'Hiện Vật',icon:'s-lantern',vb:'0 0 110 140',how:'Mở xem một hiện vật trong triển lãm'},
  {id:'read',name:'Thư Làng',icon:'s-lac',vb:'0 0 160 100',how:'Đọc bài viết Câu chuyện thương hiệu'},
  {id:'cart',name:'Giữ Lửa',icon:'s-fire',vb:'0 0 60 60',how:'Thêm một sản phẩm vào giỏ hàng'}
@@ -105,7 +105,6 @@ window.stamp = function(id){
 };
 function openPP(){ renderPassport(); ppModal.classList.add('open'); }
 document.getElementById('ppBtn').addEventListener('click', openPP);
-document.getElementById('tbPass').addEventListener('click', openPP);
 ppModal.querySelectorAll('[data-ppx]').forEach(el => el.addEventListener('click', () => ppModal.classList.remove('open')));
 document.getElementById('ppReset').addEventListener('click', e => {
   e.preventDefault(); earned = {}; localStorage.removeItem('kvStamps'); renderPassport();
@@ -202,15 +201,31 @@ document.getElementById('mBuy').addEventListener('click', e => {
   if(chip) chip.click();
 });
 
-/* ===== market filters ===== */
-document.querySelectorAll('.filters .chip').forEach(c => c.addEventListener('click', () => {
-  c.parentElement.querySelectorAll('.chip').forEach(x => x.classList.remove('on'));
-  c.classList.add('on');
-  const f = c.dataset.f;
-  document.querySelectorAll('#allProducts .p-card').forEach(p => {
-    p.style.display = (f === 'all' || p.dataset.v === f) ? 'flex' : 'none';
-  });
-}));
+/* ===== market filters + pagination (combined) ===== */
+(function(){
+  let curFilter = 'all', curPage = '1';
+  function renderMarket(){
+    document.querySelectorAll('#allProducts .p-card').forEach(p => {
+      const matchF = curFilter === 'all' || p.dataset.v === curFilter;
+      const matchP = p.dataset.page === curPage;
+      p.style.display = (matchF && matchP) ? 'flex' : 'none';
+    });
+  }
+  document.querySelectorAll('.filters .chip').forEach(c => c.addEventListener('click', () => {
+    c.parentElement.querySelectorAll('.chip').forEach(x => x.classList.remove('on'));
+    c.classList.add('on');
+    curFilter = c.dataset.f;
+    renderMarket();
+  }));
+  document.querySelectorAll('.pagination .chip').forEach(c => c.addEventListener('click', () => {
+    c.parentElement.querySelectorAll('.chip').forEach(x => x.classList.remove('on'));
+    c.classList.add('on');
+    curPage = c.dataset.page;
+    renderMarket();
+    document.getElementById('allProducts').scrollIntoView({behavior:'smooth', block:'start'});
+  }));
+  renderMarket();
+})();
 
 /* ===== whisper-quiet scroll reveal (criterion 06) ===== */
 const REDUCE = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -260,11 +275,11 @@ if(REDUCE && bgVideo){ bgVideo.removeAttribute('autoplay'); bgVideo.pause(); }
   });
 })();
 
-/* ===== ambient audio: wind + flute, 12% volume, fade in/out, flute trails wind by 5s ===== */
+/* ===== ambient audio: wind + flute, fade in/out, flute trails wind by 5s ===== */
 (function(){
   const wind = document.getElementById('aWind'), flute = document.getElementById('aFlute'), btn = document.getElementById('audioBtn');
   if(!wind || !flute || !btn) return;
-  const VOL = 0.5, FADE = 2.5;                  // target volume + fade length (s)
+  const WIND_VOL = 0.375, FLUTE_VOL = 0.5, FADE = 2.5;   // wind lowered 25% below its previous 0.5 level
   const ICON_ON  = '<svg viewBox="0 0 24 24" width="19" height="19" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M11 5 6 9H3v6h3l5 4z"/><path d="M16 9a4 4 0 0 1 0 6"/><path d="M19 6.5a8 8 0 0 1 0 11"/></svg>';
   const ICON_OFF = '<svg viewBox="0 0 24 24" width="19" height="19" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M11 5 6 9H3v6h3l5 4z"/><path d="m22 9-6 6"/><path d="m16 9 6 6"/></svg>';
   let enabled = localStorage.getItem('kvAudio'); enabled = enabled === null ? true : enabled === '1';
@@ -272,14 +287,15 @@ if(REDUCE && bgVideo){ bgVideo.removeAttribute('autoplay'); bgVideo.pause(); }
 
   function paint(){ btn.innerHTML = enabled ? ICON_ON : ICON_OFF; btn.classList.toggle('off', !enabled); btn.setAttribute('aria-pressed', enabled ? 'true' : 'false'); }
 
-  // per-loop fade envelope (fade in at start of each file, fade out before its end), capped at VOL
+  // per-loop fade envelope (fade in at start of each file, fade out before its end), capped at its own target volume
   [wind, flute].forEach(el => el.addEventListener('timeupdate', () => {
     if(!playing || el.paused) return;
     const d = el.duration; if(!d || isNaN(d)) return;
-    const rem = d - el.currentTime; let t = VOL;
-    if(el.currentTime < FADE) t = VOL * (el.currentTime / FADE);
-    else if(rem < FADE) t = VOL * (rem / FADE);
-    el.volume = Math.max(0, Math.min(VOL, t));
+    const vol = el === wind ? WIND_VOL : FLUTE_VOL;
+    const rem = d - el.currentTime; let t = vol;
+    if(el.currentTime < FADE) t = vol * (el.currentTime / FADE);
+    else if(rem < FADE) t = vol * (rem / FADE);
+    el.volume = Math.max(0, Math.min(vol, t));
   }));
 
   function start(){
@@ -318,14 +334,14 @@ const VILLAGES = {
     lead:'Nằm bên tả ngạn sông Hồng, Bát Tràng là làng gốm cổ và danh tiếng bậc nhất Việt Nam, nơi đất và lửa kết tinh thành những tác phẩm vượt thời gian.',
     body:['Đất sét được luyện kỹ, vuốt tay trên bàn xoay rồi nung trong lò bầu suốt nhiều giờ ở nhiệt độ nghìn độ. Men rạn, men lam, men hỏa biến — mỗi dòng men là một câu chuyện riêng về lửa và thời gian.',
           'Ngày nay, nghệ nhân Bát Tràng vừa giữ lối làm cổ truyền, vừa sáng tạo những dòng men mới, đưa gốm Việt ra thế giới.'],
-    facts:[['700+','năm tuổi nghề'],['200+','lò gốm'],['#1','làng gốm Việt']],
+    facts:[['700+','năm tuổi nghề'],['1.000+','chủ thể sản xuất'],['2019','Di sản văn hóa phi vật thể QG']],
     prods:['am-tra','hu-tra','dia-sen'] },
   vp:{ name:'Lụa Vạn Phúc', region:'Hà Đông · Hà Nội', img:'LỤA TƠ TẰM.jpg',
     blurb:'Nghìn năm tiếng thoi đưa — quê hương của "lụa tiến vua".',
     lead:'Làng lụa Vạn Phúc nức tiếng nghìn năm với nghề dệt tơ tằm, từng dệt nên những tấm "lụa tiến vua" mềm mại như dòng chảy thời gian.',
     body:['Đặc sản là lụa vân: hoa văn chìm trong sợi, chỉ hiện rõ khi soi dưới nắng. Tơ tằm tự nhiên, nhuộm màu thảo mộc cho dải lụa nhẹ, bền và óng ánh.',
           'Mỗi tấm lụa là hàng nghìn lần thoi đưa của bàn tay nghệ nhân — giữ lấy vẻ đẹp Việt trong từng sợi tơ.'],
-    facts:[['1000+','năm tuổi nghề'],['Lụa','tiến vua'],['100%','tơ tằm']],
+    facts:[['1.100+','năm tuổi nghề'],['Lụa','tiến vua'],['100%','tơ tằm']],
     prods:['cavat-lua','khan-sen'] },
   pv:{ name:'Mây tre đan Phú Vinh', region:'Chương Mỹ · Hà Nội', img:'MÂY ĐAN TRE.png',
     blurb:'400 năm "đan nắng gió vào nan tre".',
@@ -355,7 +371,6 @@ const VILLAGES = {
         '<h3>Khám phá tinh hoa thủ công theo từng vùng miền</h3>' +
         '<p>Mỗi vùng đất Việt Nam ôm trong mình những làng nghề trăm năm tuổi. Hành trình của KIMVIE bắt đầu từ <b>Miền Bắc</b> — chiếc nôi của gốm, lụa và mây tre.</p>' +
         '<p>Di chuột lên <b>Miền Bắc</b> trên bản đồ để làm nổi vùng, rồi <b>nhấn để phóng to</b> và xem danh sách làng nghề.</p>' +
-        '<div class="hintline">✦ Bắt đầu với Miền Bắc trên bản đồ →</div>' +
       '</div>';
   }
   function renderList(){
