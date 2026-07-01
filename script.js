@@ -41,7 +41,7 @@ document.querySelectorAll('.cart-btn').forEach(b => b.addEventListener('click', 
 }));
 
 /* ===== sold counts on product cards ===== */
-const SOLD = {'Bộ ấm trà men hỏa biến':'980','Hũ đựng trà Mã Đáo Thành Công':'1,1k','Đĩa trưng bày hoa sen ánh trăng':'640','Cà vạt lụa tơ tằm':'2,3k','Khăn lụa vân sen hồng':'1,7k','Hộp đựng đồ mây tre đan':'860','Túi đeo chéo mây tre đan':'1,4k'};
+const SOLD = {'Bộ ấm trà men hỏa biến':'980','Hũ đựng trà Mã Đáo Thành Công':'1,1k','Đĩa trưng bày hoa sen ánh trăng':'640','Cà vạt lụa tơ tằm':'2,3k','Khăn lụa vân sen hồng':'1,7k','Hộp đựng đồ mây tre đan':'860','Túi đeo chéo mây tre đan':'1,4k','Bình hút lộc Mã Đáo Thành Công':'420','Bình sen vàng kim men xanh đồng':'260','Đĩa sứ bầu dục men lam':'730','Khăn tơ ngũ sắc xanh cam':'1,2k','Áo dài lụa tơ tằm Hà Đông':'180','Túi đan ruột mây hình chữ nhật':'540'};
 document.querySelectorAll('.p-card').forEach(c => {
   const h = c.querySelector('h4'), pl = c.querySelector('.pl');
   if(h && pl && SOLD[h.textContent.trim()]){
@@ -170,7 +170,19 @@ const PRODUCTS = {
  'hop-may':{name:'Hộp đựng đồ mây tre đan',tag:'Mây tre Phú Vinh',f:'pv',price:'540.000đ',img:'Hộp đựng đồ Mây Tre Đan.png',
   desc:'Hộp đựng đồ đan tay từ mây tre Phú Vinh theo kỹ thuật nong đôi bền chắc, đã xử lý chống mối mọt. Mộc mạc mà tinh tế cho không gian sống hiện đại.'},
  'tui-may':{name:'Túi đeo chéo mây tre đan',tag:'Mây tre Phú Vinh',f:'pv',price:'750.000đ',img:'Túi Đeo Chéo Mây Tre Đan.png',
-  desc:'Túi đeo chéo đan tay phối quai mây tròn, hoa văn xương cá đặc trưng Phú Vinh. Nhẹ, bền và thời trang — đưa mây tre Việt vào nhịp sống đương đại.'}
+  desc:'Túi đeo chéo đan tay phối quai mây tròn, hoa văn xương cá đặc trưng Phú Vinh. Nhẹ, bền và thời trang — đưa mây tre Việt vào nhịp sống đương đại.'},
+ 'binh-loc':{name:'Bình hút lộc Mã Đáo Thành Công',tag:'Gốm Bát Tràng',f:'bt',price:'2.200.000đ',img:'Bình hút lộc Bát Tràng vẽ mã đáo thành công.png',
+  desc:'Bình hút lộc dáng tròn đầy, vẽ tay họa tiết "Mã Đáo Thành Công" trên nền men cao cấp — biểu tượng tài lộc, hanh thông. Đặt phòng khách hay bàn làm việc để chiêu tài, giữ vượng khí.'},
+ 'binh-sen':{name:'Bình sen vàng kim men xanh đồng',tag:'Gốm Bát Tràng',f:'bt',price:'2.850.000đ',img:'Bình sen vàng kim cao cấp men xanh đồng.png',
+  desc:'Bình cắm hoa men xanh đồng phủ vàng kim, đắp nổi hoa sen — quốc hoa của Việt Nam. Nước men trầm sang trọng, đường nét vàng vẽ tay tỉ mỉ, tôn dáng cho mọi không gian.'},
+ 'dia-bau':{name:'Đĩa sứ bầu dục men lam',tag:'Gốm Bát Tràng',f:'bt',price:'890.000đ',img:'Đĩa sứ bầu dục.png',
+  desc:'Đĩa sứ dáng bầu dục vẽ men lam cổ điển — vừa để bày biện món ăn, vừa làm vật trang trí. Cốt sứ mỏng, thấu quang, an toàn cho thực phẩm.'},
+ 'khan-nguson':{name:'Khăn tơ ngũ sắc xanh cam',tag:'Lụa Vạn Phúc',f:'vp',price:'780.000đ',img:'Khăn tơ ngũ sắc xanh cam.png',
+  desc:'Khăn tơ tằm phối ngũ sắc xanh — cam rực rỡ, dệt thủ công tại Vạn Phúc. Chất tơ mềm rủ, lên màu tươi mà vẫn tinh tế — điểm nhấn cho trang phục ngày thường lẫn dự tiệc.'},
+ 'aodai-lua':{name:'Áo dài lụa tơ tằm Hà Đông',tag:'Lụa Vạn Phúc',f:'vp',price:'3.600.000đ',img:'Áo dài lụa tơ tằm Hà Đông cẩm giao.png',
+  desc:'Áo dài may từ lụa tơ tằm Hà Đông nguyên tấm, hoa văn cẩm giao trang nhã. Chất lụa óng nhẹ, thoáng mát, ôm dáng mềm mại — tôn vẻ đẹp Á Đông trong từng đường tà.'},
+ 'tui-ruot-may':{name:'Túi đan ruột mây hình chữ nhật',tag:'Mây tre Phú Vinh',f:'pv',price:'690.000đ',img:'Túi Đan ruột mây hình chữ nhật.png',
+  desc:'Túi dáng hộp chữ nhật đan từ ruột mây Phú Vinh, nan mảnh đều tăm tắp. Cứng dáng, bền chắc và thời trang — phụ kiện thủ công đưa mây tre Việt vào phong cách hiện đại.'}
 };
 const pModal = document.getElementById('pModal');
 let curP = null;
