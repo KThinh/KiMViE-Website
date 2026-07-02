@@ -8,10 +8,10 @@ const pages = document.querySelectorAll('main[data-page]');
 const navLinks = document.querySelectorAll('[data-go]');
 function go(p){
   pages.forEach(m => m.classList.toggle('active', m.dataset.page === p));
-  const nk = (p === 'article') ? 'story' : p;
+  const nk = (p === 'article' || p.startsWith('art-')) ? 'story' : p;
   document.querySelectorAll('.menu a').forEach(a => a.classList.toggle('on', a.dataset.go === nk));
   document.body.classList.remove('nav-open');            // close mobile menu
-  if(window.stamp){ if(p === 'expo') stamp('expo'); if(p === 'article') stamp('read'); }
+  if(window.stamp){ if(p === 'expo') stamp('expo'); if(p === 'article' || p.startsWith('art-')) stamp('read'); }
   window.scrollTo({top:0, behavior:'instant'});
   history.replaceState(null, '', '#' + p);
   retagReveal();
@@ -24,8 +24,9 @@ if(navToggle){
   navToggle.addEventListener('click', () => document.body.classList.toggle('nav-open'));
 }
 
-/* ===== cart (demo) ===== */
-let cart = 0;
+/* ===== cart + checkout (mô phỏng) ===== */
+const CART_KEY = 'kvCart';
+let cartItems = JSON.parse(localStorage.getItem(CART_KEY) || '[]');
 const badge = document.getElementById('cartBadge');
 const toast = document.getElementById('toast');
 let toastT;
@@ -33,12 +34,109 @@ function showToast(html){
   toast.innerHTML = html; toast.classList.add('show');
   clearTimeout(toastT); toastT = setTimeout(() => toast.classList.remove('show'), 2400);
 }
+function fmtVnd(n){ return n.toLocaleString('vi-VN') + 'đ'; }
+function cartCount(){ return cartItems.reduce((s, i) => s + i.qty, 0); }
+function cartTotal(){ return cartItems.reduce((s, i) => s + i.price * i.qty, 0); }
+function saveCart(){
+  localStorage.setItem(CART_KEY, JSON.stringify(cartItems));
+  const n = cartCount();
+  badge.textContent = n; badge.classList.toggle('show', n > 0);
+}
+function addToCart(name, price){
+  const it = cartItems.find(i => i.name === name);
+  if(it) it.qty++; else cartItems.push({name, price, qty:1});
+  saveCart();
+  showToast('Đã thêm <b>' + name + '</b> vào giỏ hàng ✦');
+  if(window.stamp) stamp('cart');
+}
 document.querySelectorAll('.cart-btn').forEach(b => b.addEventListener('click', (e) => {
   e.stopPropagation();
-  cart++; badge.textContent = cart; badge.classList.add('show');
-  showToast('Đã thêm <b>' + (b.dataset.name || 'sản phẩm') + '</b> vào giỏ hàng ✦');
-  if(window.stamp) stamp('cart');
+  const priceEl = b.closest('.p-foot') ? b.closest('.p-foot').querySelector('.price') : null;
+  const price = priceEl ? parseInt(priceEl.textContent.replace(/\D/g, ''), 10) || 0 : 0;
+  addToCart(b.dataset.name || 'Sản phẩm', price);
 }));
+saveCart();
+
+/* checkout modal — 4 steps: cart -> info -> QR -> done */
+const cartModal = document.getElementById('cartModal');
+(function(){
+  if(!cartModal) return;
+  const list = document.getElementById('cartList');
+  const titles = {1:'Giỏ hàng của bạn', 2:'Thông tin nhận hàng', 3:'Quét QR để thanh toán', 4:'Hoàn tất đơn hàng'};
+  let step = 1, orderCode = '';
+
+  function setStep(s){
+    step = s;
+    document.getElementById('ckTitle').textContent = titles[s];
+    for(let i = 1; i <= 4; i++) document.getElementById('ckStep' + i).classList.toggle('on', i === s);
+    document.querySelectorAll('#ckSteps span').forEach(el => el.classList.toggle('on', +el.dataset.s <= Math.min(s, 3)));
+  }
+  function renderCart(){
+    if(!cartItems.length){
+      list.innerHTML = '<div class="ck-empty"><svg viewBox="0 0 24 24" width="34" height="34" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 7h14l-1.2 10.3a2 2 0 0 1-2 1.7H8.2a2 2 0 0 1-2-1.7Z"/><path d="M9 7a3 3 0 0 1 6 0"/></svg><p>Giỏ hàng đang trống.<br>Ghé <b>Sàn thương mại</b> để chọn một món quà làng nghề nhé.</p></div>';
+    } else {
+      list.innerHTML = cartItems.map((i, idx) =>
+        '<div class="ck-row">' +
+          '<div class="ck-info"><h5>' + i.name + '</h5><span>' + fmtVnd(i.price) + '</span></div>' +
+          '<div class="ck-qty">' +
+            '<button type="button" data-q="-1" data-i="' + idx + '" aria-label="Giảm số lượng">−</button>' +
+            '<b>' + i.qty + '</b>' +
+            '<button type="button" data-q="1" data-i="' + idx + '" aria-label="Tăng số lượng">+</button>' +
+          '</div>' +
+          '<div class="ck-line">' + fmtVnd(i.price * i.qty) + '</div>' +
+          '<button class="ck-rm" type="button" data-rm="' + idx + '" aria-label="Xóa sản phẩm">✕</button>' +
+        '</div>').join('');
+    }
+    const t = '<span>Tạm tính (' + cartCount() + ' sản phẩm)</span><b>' + fmtVnd(cartTotal()) + '</b>';
+    document.getElementById('ckTotal1').innerHTML = t;
+    document.getElementById('ckTotal2').innerHTML = t;
+    document.getElementById('ckToInfo').disabled = !cartItems.length;
+  }
+  window.openCart = function(){ renderCart(); setStep(1); cartModal.classList.add('open'); };
+  function closeCart(){ cartModal.classList.remove('open'); }
+
+  document.getElementById('cartBtn').addEventListener('click', openCart);
+  cartModal.querySelectorAll('[data-cx]').forEach(el => el.addEventListener('click', closeCart));
+  cartModal.querySelectorAll('[data-ckback]').forEach(b => b.addEventListener('click', () => setStep(+b.dataset.ckback)));
+
+  list.addEventListener('click', e => {
+    const q = e.target.closest('[data-q]'), rm = e.target.closest('[data-rm]');
+    if(q){
+      const it = cartItems[+q.dataset.i]; if(!it) return;
+      it.qty += +q.dataset.q;
+      if(it.qty < 1) cartItems.splice(+q.dataset.i, 1);
+    } else if(rm){
+      cartItems.splice(+rm.dataset.rm, 1);
+    } else return;
+    saveCart(); renderCart();
+  });
+
+  document.getElementById('ckToInfo').addEventListener('click', () => { if(cartItems.length) setStep(2); });
+
+  document.getElementById('ckForm').addEventListener('submit', e => {
+    e.preventDefault();
+    const email = document.getElementById('ckEmail').value.trim();
+    const addr = document.getElementById('ckAddr').value.trim();
+    const err = document.getElementById('ckErr');
+    if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)){ err.textContent = 'Vui lòng nhập địa chỉ email hợp lệ.'; return; }
+    if(!addr){ err.textContent = 'Vui lòng nhập địa chỉ nhận hàng.'; return; }
+    err.textContent = '';
+    orderCode = 'KIMVIE KV' + String(Date.now()).slice(-6);
+    document.getElementById('ckAmount').textContent = fmtVnd(cartTotal());
+    document.getElementById('ckMemo').textContent = orderCode;
+    setStep(3);
+  });
+
+  document.getElementById('ckPaid').addEventListener('click', () => {
+    const email = document.getElementById('ckEmail').value.trim();
+    document.getElementById('ckDoneMsg').innerHTML =
+      'Đơn hàng <b>' + orderCode.replace('KIMVIE ', '') + '</b> (' + fmtVnd(cartTotal()) + ') đã được ghi nhận.<br>Xác nhận demo sẽ được gửi tới <b>' + email + '</b>.';
+    cartItems = []; saveCart();
+    setStep(4);
+  });
+
+  document.addEventListener('keydown', e => { if(e.key === 'Escape') closeCart(); });
+})();
 
 /* ===== sold counts on product cards ===== */
 const SOLD = {'Bộ ấm trà men hỏa biến':'980','Hũ đựng trà Mã Đáo Thành Công':'1,1k','Đĩa trưng bày hoa sen ánh trăng':'640','Cà vạt lụa tơ tằm':'2,3k','Khăn lụa vân sen hồng':'1,7k','Hộp đựng đồ mây tre đan':'860','Túi đeo chéo mây tre đan':'1,4k','Bình hút lộc Mã Đáo Thành Công':'420','Bình sen vàng kim men xanh đồng':'260','Đĩa sứ bầu dục men lam':'730','Khăn tơ ngũ sắc xanh cam':'1,2k','Áo dài lụa tơ tằm Hà Đông':'180','Túi đan ruột mây hình chữ nhật':'540'};
@@ -117,7 +215,7 @@ document.querySelectorAll('.ev-book').forEach(b => b.addEventListener('click', e
 renderPassport();
 
 /* ===== product "digital ID" + QR ===== */
-const ARTISAN = {bt:'NNƯT Trần Văn Khang', vp:'NNƯT Đỗ Thị Lụa', pv:'NNƯT Nguyễn Văn Tre'};
+const ARTISAN = {bt:'NNND Trần Độ', vp:'Nghệ nhân Nguyễn Thị Tâm', pv:'NNND Nguyễn Văn Tĩnh'};
 function khash(s){ let h = 7; for(const c of s) h = (h * 31 + c.charCodeAt(0)) % 99991; return h; }
 function qrSvg(code){
   const h = khash(code), N = 15, c = 5; let r = '';
@@ -208,9 +306,13 @@ document.addEventListener('keydown', e => {
 });
 document.querySelectorAll('[data-p]').forEach(el => el.addEventListener('click', e => { e.preventDefault(); openProduct(el.dataset.p); }));
 document.getElementById('mBuy').addEventListener('click', e => {
-  e.preventDefault(); closeModal(); go('market');
-  const chip = document.querySelector('.filters .chip[data-f="' + (curP ? curP.f : 'all') + '"]');
-  if(chip) chip.click();
+  e.preventDefault(); closeModal();
+  if(curP){
+    addToCart(curP.name, parseInt(curP.price.replace(/\D/g, ''), 10) || 0);
+    if(window.openCart) openCart();
+  } else {
+    go('market');
+  }
 });
 
 /* ===== market filters + pagination (combined) ===== */
@@ -291,7 +393,7 @@ if(REDUCE && bgVideo){ bgVideo.removeAttribute('autoplay'); bgVideo.pause(); }
 (function(){
   const wind = document.getElementById('aWind'), flute = document.getElementById('aFlute'), btn = document.getElementById('audioBtn');
   if(!wind || !flute || !btn) return;
-  const WIND_VOL = 0.375, FLUTE_VOL = 0.5, FADE = 2.5;   // wind lowered 25% below its previous 0.5 level
+  const WIND_VOL = 0.26, FLUTE_VOL = 0.5, FADE = 2.5;    // wind kept well under the flute so it reads as ambience
   const ICON_ON  = '<svg viewBox="0 0 24 24" width="19" height="19" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M11 5 6 9H3v6h3l5 4z"/><path d="M16 9a4 4 0 0 1 0 6"/><path d="M19 6.5a8 8 0 0 1 0 11"/></svg>';
   const ICON_OFF = '<svg viewBox="0 0 24 24" width="19" height="19" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M11 5 6 9H3v6h3l5 4z"/><path d="m22 9-6 6"/><path d="m16 9 6 6"/></svg>';
   let enabled = localStorage.getItem('kvAudio'); enabled = enabled === null ? true : enabled === '1';

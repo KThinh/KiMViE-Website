@@ -266,7 +266,7 @@
       <button class="ic" type="button" title="Tìm kiếm" aria-label="Tìm kiếm"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.4-3.4"/></svg></button>
       <button class="ic" type="button" title="Tài khoản" aria-label="Tài khoản"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M5 20a7 7 0 0 1 14 0"/></svg></button>
       <button class="ic" id="ppBtn" type="button" title="Hộ chiếu di sản" aria-label="Hộ chiếu di sản"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="3" width="14" height="18" rx="2"/><circle cx="12" cy="10" r="2.6"/><path d="M9 16h6"/></svg><span class="badge" id="ppBadge">0</span></button>
-      <button class="ic" type="button" title="Giỏ hàng" aria-label="Giỏ hàng"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M5 7h14l-1.2 10.3a2 2 0 0 1-2 1.7H8.2a2 2 0 0 1-2-1.7Z"/><path d="M9 7a3 3 0 0 1 6 0"/></svg><span class="badge" id="cartBadge">0</span></button>
+      <button class="ic" id="cartBtn" type="button" title="Giỏ hàng" aria-label="Giỏ hàng"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M5 7h14l-1.2 10.3a2 2 0 0 1-2 1.7H8.2a2 2 0 0 1-2-1.7Z"/><path d="M9 7a3 3 0 0 1 6 0"/></svg><span class="badge" id="cartBadge">0</span></button>
       <button class="ic" id="audioBtn" type="button" aria-label="Bật hoặc tắt âm thanh nền" aria-pressed="false" title="Âm thanh nền"></button>
       <a class="btn btn-navy login" href="#">Đăng nhập</a>
       <button class="nav-toggle" id="navToggle" type="button" aria-label="Mở menu"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M4 7h16M4 12h16M4 17h16"/></svg></button>
@@ -289,7 +289,7 @@
         <h1>Kết nối di sản <span class="amber">Lan tỏa tinh hoa</span></h1>
         <p class="lead">KIMVIE là cầu nối giữa các làng nghề truyền thống và thế hệ hôm nay, gìn giữ giá trị Việt bằng công nghệ và tình yêu văn hóa.</p>
         <div class="hero-cta">
-          <a class="btn btn-navy" data-go="expo" href="#expo">Khám phá triển lãm →</a>
+          <a class="btn btn-navy" data-go="expo" href="#expo">Khám phá bản đồ văn hoá Việt →</a>
           <a class="btn btn-line" data-go="market" href="#market">Tham quan gian hàng →</a>
         </div>
         <a class="play" data-go="article" href="#article"><i>▶</i> Tìm hiểu về KIMVIE</a>
@@ -680,7 +680,7 @@
             <div><b>2019</b><span>Di sản văn hóa phi vật thể Quốc gia</span></div>
           </div>
           <div style="display:flex;gap:12px;flex-wrap:wrap">
-            <a class="btn btn-navy" data-go="expo" href="#expo">Xem gian triển lãm</a>
+            <a class="btn btn-navy" data-go="expo" href="#expo">Khám phá bản đồ văn hoá Việt</a>
             <a class="btn btn-line" data-go="market" href="#market">Sản phẩm Bát Tràng</a>
           </div>
         </div>
@@ -697,7 +697,7 @@
             <div><b>1931</b><span>vinh danh tại Hội chợ Marseille</span></div>
           </div>
           <div style="display:flex;gap:12px;flex-wrap:wrap">
-            <a class="btn btn-navy" data-go="expo" href="#expo">Xem gian triển lãm</a>
+            <a class="btn btn-navy" data-go="expo" href="#expo">Khám phá bản đồ văn hoá Việt</a>
             <a class="btn btn-line" data-go="market" href="#market">Sản phẩm Vạn Phúc</a>
           </div>
         </div>
@@ -722,7 +722,7 @@
             <div><b>30+</b><span>quốc gia xuất khẩu</span></div>
           </div>
           <div style="display:flex;gap:12px;flex-wrap:wrap">
-            <a class="btn btn-navy" data-go="expo" href="#expo">Xem gian triển lãm</a>
+            <a class="btn btn-navy" data-go="expo" href="#expo">Khám phá bản đồ văn hoá Việt</a>
             <a class="btn btn-line" data-go="market" href="#market">Sản phẩm Phú Vinh</a>
           </div>
         </div>
@@ -750,23 +750,31 @@
           <div>
             <div class="p-sub">Dòng lịch sử</div>
             <div class="tline">
-              <div class="tl-item"><b>Năm 1010</b><span>Tổ nghề từ Bồ Bát (Yên Mô, Ninh Bình) theo vua Lý Công Uẩn dời đô, tìm thấy đất sét trắng bên sông Hồng và lập làng gốm.</span></div>
-              <div class="tl-item"><b>Thời Lê</b><span>Gốm Bát Tràng đạt đỉnh cao, xuất khẩu sang Nhật Bản, Trung Quốc và Đông Nam Á.</span></div>
-              <div class="tl-item"><b>2002–2004</b><span>Hiệp hội Gốm sứ Bát Tràng thành lập, thương hiệu chính thức được đăng ký.</span></div>
-              <div class="tl-item"><b>2019–2025</b><span>Công nhận Di sản văn hóa phi vật thể Quốc gia; gia nhập Mạng lưới các thành phố Thủ công sáng tạo thế giới.</span></div>
+              <div class="tl-item"><b>Năm 1010</b><span>Các dòng họ làm gốm từ Bồ Bát theo vua Lý Công Uẩn dời đô ra Thăng Long, đến vùng Bạch Thổ ven sông Hồng và hình thành làng gốm Bát Tràng.</span></div>
+              <div class="tl-item"><b>Thế kỷ XV–XVII (Thời Lê)</b><span>Gốm Bát Tràng phát triển cực thịnh, trở thành trung tâm sản xuất gốm nổi tiếng và xuất khẩu sang Nhật Bản, Trung Quốc, Đông Nam Á.</span></div>
+              <div class="tl-item"><b>2002–2004</b><span>Thương hiệu gốm Bát Tràng được bảo hộ và phát triển, góp phần nâng cao giá trị và uy tín của làng nghề.</span></div>
+              <div class="tl-item"><b>2025</b><span>Bát Tràng trở thành thành viên Mạng lưới Thành phố Thủ công sáng tạo Thế giới (World Craft Cities Network), ghi dấu bước phát triển trên trường quốc tế.</span></div>
             </div>
           </div>
           <div>
             <div class="p-sub">Nghệ nhân tiêu biểu</div>
             <div class="art-card">
               <span class="ava"><svg class="art" width="36" height="36" viewBox="0 0 60 60"><use href="#s-artisan"/></svg></span>
-              <div><h5>NNƯT Trần Văn Khang</h5><div class="role">45 năm men rạn · Nghệ nhân Ưu tú</div>
-              <q>"Vết rạn là hơi thở của đất — không chiếc bình nào giống chiếc nào."</q></div>
+              <div><h5>Nghệ nhân Nhân dân Trần Độ</h5><div class="role">"Vua men gốm" · Hơn 60 năm giữ nghề</div>
+              <p class="bio">Nghệ nhân nhân dân duy nhất của làng gốm Bát Tràng hiện nay, đã phục dựng thành công hàng chục dòng men cổ tưởng chừng thất truyền, đưa tinh hoa văn hóa Việt vươn tầm quốc tế.</p>
+              <q>Đừng chỉ tặng một món quà — hãy trao một giá trị văn hoá!</q></div>
             </div>
             <div class="art-card">
               <span class="ava"><svg class="art" width="36" height="36" viewBox="0 0 60 60"><use href="#s-artisan"/></svg></span>
-              <div><h5>Nghệ nhân trẻ Lê Thu Hà</h5><div class="role">Men lam vẽ tay · Thế hệ kế thừa</div>
-              <q>"Mình vẽ men lam như viết thư tình cho nghề của ông bà."</q></div>
+              <div><h5>Nghệ nhân Ưu tú Tô Thanh Sơn</h5><div class="role">Men hỏa biến · Men rạn</div>
+              <p class="bio">Được ví như người "thu cả vũ trụ vào một cái chén nhỏ", ông nổi tiếng với sức sáng tạo không ngừng, truyền hơi thở đương đại vào những hình hài gốm sứ truyền thống.</p>
+              <q>Chúng tôi không chờ già rồi mất. Chúng tôi in tim mình vào lòng người từ đất!</q></div>
+            </div>
+            <div class="art-card">
+              <span class="ava"><svg class="art" width="36" height="36" viewBox="0 0 60 60"><use href="#s-artisan"/></svg></span>
+              <div><h5>Nghệ nhân Ưu tú Vương Mạnh Tuấn</h5><div class="role">Gốm sứ đồ sộ · Đại lễ 1000 năm Thăng Long</div>
+              <p class="bio">Tâm huyết với bảo tồn di sản, nổi tiếng với những tác phẩm mang ý nghĩa lịch sử; luôn khai thác chất liệu đất đặc trưng để tạo nên sản phẩm đậm hồn cốt dân tộc.</p>
+              <q>Hình tượng con rồng luôn là nguồn cảm hứng cho các tác phẩm của mình — biểu hiện cho tâm hồn cao thượng và ước mơ vươn lên.</q></div>
             </div>
           </div>
         </div>
@@ -784,23 +792,31 @@
           <div>
             <div class="p-sub">Dòng lịch sử</div>
             <div class="tline">
-              <div class="tl-item"><b>Năm 865</b><span>Bà Lã Thị Nga truyền dạy nghề nuôi tằm dệt lụa cho dân làng ven sông Nhuệ; sau khi mất được thờ làm Thành hoàng làng tại đình Vạn Phúc.</span></div>
-              <div class="tl-item"><b>Thời Nguyễn</b><span>Làng đổi tên từ Vạn Bảo thành Vạn Phúc để tránh kị húy; lụa Vạn Phúc được chọn may triều phục — danh xưng "lụa tiến vua".</span></div>
-              <div class="tl-item"><b>1931</b><span>Lụa vân được người Pháp đánh giá là sản phẩm tinh xảo nhất Đông Dương tại hội chợ Marseille.</span></div>
-              <div class="tl-item"><b>Ngày nay</b><span>60% trong 800 hộ dân còn giữ nghề; tháng 2/2025 cùng Bát Tràng gia nhập Mạng lưới các thành phố Thủ công sáng tạo thế giới.</span></div>
+              <div class="tl-item"><b>Năm 865</b><span>Theo truyền thuyết, bà Lã Thị Nga truyền nghề nuôi tằm, dệt lụa cho người dân Vạn Phúc; sau khi mất được tôn là Thành hoàng làng.</span></div>
+              <div class="tl-item"><b>Thời Nguyễn</b><span>Làng đổi tên từ Vạn Bảo thành Vạn Phúc để tránh phạm húy. Lụa Vạn Phúc nổi tiếng trong cả nước và được dân gian gọi là "lụa tiến vua".</span></div>
+              <div class="tl-item"><b>1931</b><span>Lụa Vạn Phúc được giới thiệu tại Hội chợ Quốc tế Marseille (Pháp), góp phần đưa thương hiệu lụa Việt ra thế giới.</span></div>
+              <div class="tl-item"><b>2025</b><span>Vạn Phúc chính thức gia nhập Mạng lưới Thành phố Thủ công sáng tạo Thế giới (World Craft Cities Network), khẳng định vị thế của làng nghề truyền thống trên trường quốc tế.</span></div>
             </div>
           </div>
           <div>
             <div class="p-sub">Nghệ nhân tiêu biểu</div>
             <div class="art-card">
               <span class="ava"><svg class="art" width="36" height="36" viewBox="0 0 60 60"><use href="#s-artisan"/></svg></span>
-              <div><h5>NNƯT Đỗ Thị Lụa</h5><div class="role">50 năm dệt lụa vân · Nghệ nhân Ưu tú</div>
-              <q>"Lụa vân phải soi lên nắng mới thấy mây — như lòng người, phải chậm mới hiểu."</q></div>
+              <div><h5>Nghệ nhân Nguyễn Thị Tâm</h5><div class="role">"Báu vật sống" của Vạn Phúc · Phục dựng Lụa Vân</div>
+              <p class="bio">Người có công lớn phục dựng thành công dòng Lụa Vân quý từng tưởng chừng thất truyền, giúp lụa Vạn Phúc khẳng định lại vị thế trong thời đại mới.</p>
+              <q>Đời tằm ngắn ngủi, nhưng sợi tơ của nó nhả ra, qua bàn tay người thợ, để lại cho đời những sản phẩm vô giá.</q></div>
             </div>
             <div class="art-card">
               <span class="ava"><svg class="art" width="36" height="36" viewBox="0 0 60 60"><use href="#s-artisan"/></svg></span>
-              <div><h5>Nghệ nhân Phạm Quang Tơ</h5><div class="role">Nhuộm màu tự nhiên · Thế hệ kế thừa</div>
-              <q>"Màu đẹp nhất là màu của lá, của củ, của đất quê mình."</q></div>
+              <div><h5>Nghệ nhân Triệu Văn Mão</h5><div class="role">Cố nghệ nhân · Phục dựng lụa cổ</div>
+              <p class="bio">Được cả làng kính trọng bởi tài năng và công lao sưu tầm, phục dựng nhiều loại lụa cổ quý hiếm; người đặt nền móng, truyền lửa cho các thế hệ sau.</p>
+              <q>Giữ nghề là giữ lấy tổ tiên, sợi tơ có bền thì danh tiếng làng mới mãi trường tồn.</q></div>
+            </div>
+            <div class="art-card">
+              <span class="ava"><svg class="art" width="36" height="36" viewBox="0 0 60 60"><use href="#s-artisan"/></svg></span>
+              <div><h5>Nghệ nhân · CEO Lê Thị Kim Thư</h5><div class="role">Người "giữ lửa" · Đưa lụa Việt ra quốc tế</div>
+              <p class="bio">Gương mặt tiêu biểu trong bảo tồn và phát triển làng lụa ngàn năm tuổi: phục dựng kỹ thuật dệt cổ truyền, nâng tầm giá trị sản phẩm thủ công Việt.</p>
+              <q>Mỗi tấm lụa không chỉ là sản phẩm, mà là hơi thở của ngàn năm văn hiến được kết tinh từ những bàn tay cần mẫn.</q></div>
             </div>
           </div>
         </div>
@@ -818,23 +834,25 @@
           <div>
             <div class="p-sub">Dòng lịch sử</div>
             <div class="tline">
-              <div class="tl-item"><b>Khoảng 400 năm trước</b><span>Bắt nguồn từ truyền thuyết "bãi Cò Đậu" ở xứ Phú Hoa Trang xưa — người dân đan lông cò thành nón, rồi chuyển sang cỏ lác, cỏ lau và cuối cùng là mây, giang, tre bền chắc hơn.</span></div>
-              <div class="tl-item"><b>Từ vật dụng thô sơ</b><span>Từ thúng, mủng, rổ, rá, người Phú Vinh nâng tầm lên thành tranh chân dung, hoành phi, chao đèn bằng kỹ thuật "xâu xiên" độc quyền.</span></div>
-              <div class="tl-item"><b>Vươn ra quốc tế</b><span>Xuất khẩu tới hơn 30 quốc gia (EU, Nhật Bản, Mỹ...).</span></div>
-              <div class="tl-item"><b>Ngày nay</b><span>90% sản phẩm của Hợp tác xã Phú Nghĩa xuất sang Mỹ và Nhật; nghệ nhân Phú Vinh có thể đan cả chân dung bằng mây.</span></div>
+              <div class="tl-item"><b>Thế kỷ XVII (khoảng 400 năm trước)</b><span>Theo truyền thuyết Bãi Cò Đậu, nghề đan lát hình thành tại Phú Vinh, từ lông cò và cỏ lau, sau đó phát triển sang mây, giang và tre.</span></div>
+              <div class="tl-item"><b>Đầu thế kỷ XX</b><span>Nghề mây tre đan phát triển từ các vật dụng sinh hoạt thành các sản phẩm mỹ nghệ tinh xảo như tranh chân dung, hoành phi và đồ trang trí.</span></div>
+              <div class="tl-item"><b>Cuối thế kỷ XX</b><span>Sản phẩm Phú Vinh được xuất khẩu tới hơn 30 quốc gia và vùng lãnh thổ, khẳng định vị thế trên thị trường quốc tế.</span></div>
+              <div class="tl-item"><b>Ngày nay</b><span>Phú Vinh tiếp tục gìn giữ nghề truyền thống, nổi tiếng với kỹ thuật đan chân dung và các sản phẩm thủ công mỹ nghệ cao cấp phục vụ thị trường trong nước và xuất khẩu.</span></div>
             </div>
           </div>
           <div>
             <div class="p-sub">Nghệ nhân tiêu biểu</div>
             <div class="art-card">
               <span class="ava"><svg class="art" width="36" height="36" viewBox="0 0 60 60"><use href="#s-artisan"/></svg></span>
-              <div><h5>NNƯT Nguyễn Văn Tre</h5><div class="role">Đan chân dung bằng mây · Nghệ nhân Ưu tú</div>
-              <q>"Nan tre mỏng như sợi tóc — phải đan bằng cả hơi thở."</q></div>
+              <div><h5>Nghệ nhân Nhân dân Nguyễn Văn Tĩnh</h5><div class="role">Gần 50 năm giữ nghề · Đào tạo thế hệ trẻ</div>
+              <p class="bio">Một trong những nghệ nhân nổi tiếng nhất làng, khéo léo trong các sản phẩm thủ công tinh xảo và tâm huyết biến mây tre thành những tác phẩm nghệ thuật hiện đại.</p>
+              <q>Truyền nghề bắt đầu từ việc truyền đam mê. Tôi kể chuyện làng, chuyện nghề như lời hát ru để tình yêu cây tre sợi mây thẩm thấu vào tiềm thức thế hệ trẻ.</q></div>
             </div>
             <div class="art-card">
               <span class="ava"><svg class="art" width="36" height="36" viewBox="0 0 60 60"><use href="#s-artisan"/></svg></span>
-              <div><h5>Nghệ nhân trẻ Hoàng Mai</h5><div class="role">Đèn mây hiện đại · Thế hệ kế thừa</div>
-              <q>"Mình muốn ánh sáng xuyên qua nan tre kể chuyện làng cho người phố."</q></div>
+              <div><h5>Nghệ nhân Nguyễn Văn Trung</h5><div class="role">Tranh chân dung bằng mây · Sáng tạo nguyên liệu</div>
+              <p class="bio">Người tiên phong sử dụng đa dạng nguyên liệu (kể cả bèo tây) để đan lát; đặc biệt thành công với những bức tranh chân dung bằng mây mềm mại, giàu cảm xúc.</p>
+              <q>Với tôi, đan là một hoạt động hấp dẫn. Sáng tạo kiểu mẫu để đan là một thú vui. Tôi có thể làm thành bất cứ thứ gì, chỉ từ những sợi đan.</q></div>
             </div>
           </div>
         </div>
@@ -846,7 +864,7 @@
         </div>
       </div>
 
-      <p class="demo-note">✦ Thông tin nghệ nhân và mốc thời gian là dữ liệu minh hoạ cho bản demo ✦</p>
+      <p class="demo-note">✦ Tư liệu tổng hợp từ các làng nghề — phục vụ bản demo KIMVIE ✦</p>
     </div>
   </section>
 
@@ -919,30 +937,30 @@
   <section style="padding-bottom:90px">
     <div class="wrap">
       <div class="blog-grid">
-        <a class="b-card" data-go="lang" href="#lang">
-          <div class="b-art"><img src="assets/bai_viet/CÂU CHUYỆN LÀNG NGHỀ 1.png" alt="Bát Tràng — 700 năm giữ lửa bên sông Hồng" loading="lazy"></div>
+        <a class="b-card" data-go="art-bt" href="#art-bt">
+          <div class="b-art"><img src="assets/bai_viet/CÂU CHUYỆN LÀNG NGHỀ 1.png" alt="Gốm Bát Tràng — Lửa, Đất và nhịp đập của thời đại mới" loading="lazy"></div>
           <div class="b-body">
             <span class="b-tag">Câu chuyện làng nghề</span>
-            <h4>Bát Tràng — 700 năm giữ lửa bên sông Hồng</h4>
-            <p>Theo dấu khối đất sét qua bàn xoay, men rạn và những lò bầu chưa bao giờ nguội.</p>
+            <h4>Gốm Bát Tràng — Lửa, Đất và nhịp đập của thời đại mới</h4>
+            <p>Người ta tìm đến Bát Tràng không chỉ để mua một chiếc bình hay cái bát, mà để chạm vào câu chuyện của lửa và đất.</p>
             <div class="meta-line"><i>✦</i> 05.06.2026 · 5 phút đọc</div>
           </div>
         </a>
-        <a class="b-card" data-go="lang" href="#lang">
-          <div class="b-art"><img src="assets/bai_viet/CÂU CHUYỆN LÀNG NGHỀ 2.png" alt="Vạn Phúc — nghìn năm tiếng thoi đưa" loading="lazy"></div>
+        <a class="b-card" data-go="art-vp" href="#art-vp">
+          <div class="b-art"><img src="assets/bai_viet/CÂU CHUYỆN LÀNG NGHỀ 2.png" alt="Lụa Vạn Phúc — Dải lụa mềm dệt nên ký ức thời gian" loading="lazy"></div>
           <div class="b-body">
             <span class="b-tag">Câu chuyện làng nghề</span>
-            <h4>Vạn Phúc — nghìn năm tiếng thoi đưa</h4>
-            <p>Sợi tơ óng từng dệt áo vua chúa, nay khoác lên vai người trẻ giữa phố thị.</p>
+            <h4>Lụa Vạn Phúc — Dải lụa mềm dệt nên ký ức thời gian</h4>
+            <p>Tiếng thoi đưa lách cách ngàn năm bên dòng sông Nhuệ vẫn chưa bao giờ dứt, dệt nên những dải lụa Vân say đắm bao thế hệ.</p>
             <div class="meta-line"><i>✦</i> 28.05.2026 · 5 phút đọc</div>
           </div>
         </a>
-        <a class="b-card" data-go="lang" href="#lang">
-          <div class="b-art"><img src="assets/bai_viet/CÂU CHUYỆN LÀNG NGHỀ 3.png" alt="Phú Vinh — đan nắng gió vào nan tre" loading="lazy"></div>
+        <a class="b-card" data-go="art-pv" href="#art-pv">
+          <div class="b-art"><img src="assets/bai_viet/CÂU CHUYỆN LÀNG NGHỀ 3.png" alt="Mây tre đan Phú Vinh — Bản giao hưởng của những tế bào mộc mạc" loading="lazy"></div>
           <div class="b-body">
             <span class="b-tag">Câu chuyện làng nghề</span>
-            <h4>Phú Vinh — đan nắng gió vào nan tre</h4>
-            <p>Nơi người thợ có thể "vẽ" chân dung bằng mây và sự kiên nhẫn của 400 năm.</p>
+            <h4>Mây tre đan Phú Vinh — Bản giao hưởng của những tế bào mộc mạc</h4>
+            <p>Từ những thân tre, sợi mây vô tri nơi lũy tre làng, đôi bàn tay tài hoa đã dệt nên tác phẩm mang hơi thở thiên nhiên.</p>
             <div class="meta-line"><i>✦</i> 20.05.2026 · 4 phút đọc</div>
           </div>
         </a>
@@ -1071,6 +1089,140 @@
 </main>
 
 
+<!-- ================= BÀI VIẾT: GỐM BÁT TRÀNG ================= -->
+<main data-page="art-bt">
+  <section class="page-hero">
+    <svg class="art cloud-r" width="200" height="74" viewBox="0 0 120 44"><use href="#s-cloud"/></svg>
+    <div class="motif" style="right:-80px;top:-50px;opacity:.16"><svg class="art spin-slow" width="300" height="300" viewBox="0 0 200 200"><use href="#s-drum"/></svg></div>
+    <div class="wrap">
+      <div class="crumb">Bài viết ✦ Câu chuyện làng nghề</div>
+      <h1>Gốm Bát Tràng — Lửa, Đất và nhịp đập của thời đại mới</h1>
+      <p>✦ 05.06.2026 · 5 phút đọc · Đội ngũ KIMVIE</p>
+    </div>
+  </section>
+
+  <section class="pad art-read">
+    <div class="wrap" style="max-width:780px">
+      <a class="backlink" data-go="story" href="#story">← Tất cả bài viết</a>
+      <figure class="art-figure">
+        <img src="assets/bai_viet/CÂU CHUYỆN LÀNG NGHỀ 1.png" alt="Lò gốm Bát Tràng đỏ lửa" loading="lazy">
+        <span class="corner c-tl"></span><span class="corner c-br"></span>
+        <figcaption>✦ Bát Tràng — nơi đất hoá thành di sản ✦</figcaption>
+      </figure>
+      <p class="art-sapo">Người ta tìm đến Bát Tràng không chỉ để mua một chiếc bình hay cái bát, mà để chạm vào câu chuyện của lửa và đất đã âm ỉ cháy suốt hàng trăm năm.</p>
+      <p class="dropcap art-p">Giữa guồng quay hối hả của nhịp sống hiện đại, Gốm Bát Tràng vẫn giữ cho mình một khoảng lặng đầy kiêu hãnh. Không chỉ dừng lại ở những kỹ thuật vuốt tay truyền thống hay bài men rạn cổ truyền độc bản, thế hệ nghệ nhân trẻ tại Bát Tràng ngày nay đang thổi một luồng sinh khí mới vào từng thớ đất.</p>
+      <p class="art-p">Đó là sự giao thoa tuyệt đẹp giữa nét tinh xảo, cổ kính và ngôn ngữ thiết kế tối giản đương đại. Những chiếc bình gốm giờ đây không chỉ là vật dụng trưng bày trên bàn thờ gia tiên, mà còn vươn mình trở thành những tác phẩm nghệ thuật sắp đặt sang trọng trong các không gian kiến trúc hiện đại.</p>
+    </div>
+  </section>
+
+  <div class="quote-band">
+    <div class="wrap">
+      <svg class="art" width="46" height="46" viewBox="0 0 60 60" style="color:var(--amber2);margin:0 auto 14px"><use href="#s-fire"/></svg>
+      <div class="q">"Từng vết rạn trên men, từng độ ngả màu của hỏa biến không phải là sự ngẫu nhiên — mà là 'hơi thở' của đất trời, là lời tự tình của người thợ gốm gửi gắm vào ngọn lửa nung lên tới cả ngàn độ C."</div>
+      <div class="by">— Câu chuyện làng nghề · KIMVIE —</div>
+    </div>
+  </div>
+
+  <section class="pad art-read" style="padding-top:64px">
+    <div class="wrap" style="max-width:780px">
+      <p class="art-p">Mua một món đồ gốm Bát Tràng hôm nay, chính là bạn đang mang về nhà một mảnh ghép của di sản, được nhào nặn bằng tư duy của thời đại mới.</p>
+      <div class="art-next">
+        <a class="btn btn-navy" data-mf="bt" href="#market">Khám phá sản phẩm Bát Tràng →</a>
+        <a class="arrow-link" data-go="art-vp" href="#art-vp">Đọc tiếp: Lụa Vạn Phúc</a>
+      </div>
+    </div>
+  </section>
+</main>
+
+<!-- ================= BÀI VIẾT: LỤA VẠN PHÚC ================= -->
+<main data-page="art-vp">
+  <section class="page-hero">
+    <svg class="art cloud-r" width="200" height="74" viewBox="0 0 120 44"><use href="#s-cloud"/></svg>
+    <div class="motif" style="right:-80px;top:-50px;opacity:.16"><svg class="art spin-slow" width="300" height="300" viewBox="0 0 200 200"><use href="#s-drum"/></svg></div>
+    <div class="wrap">
+      <div class="crumb">Bài viết ✦ Câu chuyện làng nghề</div>
+      <h1>Lụa Vạn Phúc — Dải lụa mềm dệt nên ký ức thời gian</h1>
+      <p>✦ 28.05.2026 · 5 phút đọc · Đội ngũ KIMVIE</p>
+    </div>
+  </section>
+
+  <section class="pad art-read">
+    <div class="wrap" style="max-width:780px">
+      <a class="backlink" data-go="story" href="#story">← Tất cả bài viết</a>
+      <figure class="art-figure">
+        <img src="assets/bai_viet/CÂU CHUYỆN LÀNG NGHỀ 2.png" alt="Khung cửi dệt lụa Vạn Phúc" loading="lazy">
+        <span class="corner c-tl"></span><span class="corner c-br"></span>
+        <figcaption>✦ Vạn Phúc — nghìn năm tiếng thoi đưa bên sông Nhuệ ✦</figcaption>
+      </figure>
+      <p class="art-sapo">Tiếng thoi đưa lách cách ngàn năm bên dòng sông Nhuệ vẫn chưa bao giờ dứt, dệt nên những dải lụa Vân làm say đắm biết bao thế hệ.</p>
+      <p class="dropcap art-p">Lụa Vạn Phúc (hay lụa Hà Đông) từ lâu đã đi vào thơ ca như một biểu tượng của vẻ đẹp thanh tao, đài các. Điều làm nên linh hồn của lụa Vạn Phúc chính là kỹ thuật dệt lụa Vân — loại lụa mỏng nhẹ, có hoa văn chìm nổi thoắt ẩn thoắt hiện dưới ánh sáng, tựa như những đám mây bềnh bồng trên nền trời.</p>
+      <p class="art-p">Ngày nay, lụa Vạn Phúc không chỉ "đóng khung" trong những tà áo dài truyền thống cất kỹ trong tủ kính. Các nhà thiết kế trẻ đã mạnh dạn đưa chất liệu lụa tơ tằm thượng hạng này vào những bộ sưu tập thời trang ứng dụng: từ váy dạ hội, áo sơ mi lụa cho quý cô công sở, đến những chiếc khăn choàng cá tính.</p>
+      <p class="art-p">Cầm trên tay một dải lụa Vạn Phúc, ta không chỉ cảm nhận được độ rủ mềm mại, mát lạnh trượt trên da, mà còn chạm vào cả một bề dày lịch sử — nơi những người thợ dệt vẫn ngày đêm miệt mài giữ lại tinh hoa của cội nguồn Việt Nam.</p>
+    </div>
+  </section>
+
+  <div class="quote-band">
+    <div class="wrap">
+      <svg class="art" width="46" height="46" viewBox="0 0 120 130" style="color:var(--amber2);margin:0 auto 14px"><use href="#s-scarf"/></svg>
+      <div class="q">"Nắng Sài Gòn anh đi mà chợt mát<br>Bởi vì em mặc áo lụa Hà Đông"</div>
+      <div class="by">— Nguyên Sa · Áo lụa Hà Đông —</div>
+    </div>
+  </div>
+
+  <section class="pad art-read" style="padding-top:64px">
+    <div class="wrap" style="max-width:780px">
+      <div class="art-next" style="margin-top:0;padding-top:0;border-top:none">
+        <a class="btn btn-navy" data-mf="vp" href="#market">Khám phá sản phẩm Vạn Phúc →</a>
+        <a class="arrow-link" data-go="art-pv" href="#art-pv">Đọc tiếp: Mây tre đan Phú Vinh</a>
+      </div>
+    </div>
+  </section>
+</main>
+
+<!-- ================= BÀI VIẾT: MÂY TRE ĐAN PHÚ VINH ================= -->
+<main data-page="art-pv">
+  <section class="page-hero">
+    <svg class="art cloud-r" width="200" height="74" viewBox="0 0 120 44"><use href="#s-cloud"/></svg>
+    <div class="motif" style="right:-80px;top:-50px;opacity:.16"><svg class="art spin-slow" width="300" height="300" viewBox="0 0 200 200"><use href="#s-drum"/></svg></div>
+    <div class="wrap">
+      <div class="crumb">Bài viết ✦ Câu chuyện làng nghề</div>
+      <h1>Mây tre đan Phú Vinh — Bản giao hưởng của những tế bào mộc mạc</h1>
+      <p>✦ 20.05.2026 · 4 phút đọc · Đội ngũ KIMVIE</p>
+    </div>
+  </section>
+
+  <section class="pad art-read">
+    <div class="wrap" style="max-width:780px">
+      <a class="backlink" data-go="story" href="#story">← Tất cả bài viết</a>
+      <figure class="art-figure">
+        <img src="assets/bai_viet/CÂU CHUYỆN LÀNG NGHỀ 3.png" alt="Nghệ nhân đan mây tre Phú Vinh" loading="lazy">
+        <span class="corner c-tl"></span><span class="corner c-br"></span>
+        <figcaption>✦ Phú Vinh — 400 năm đan nắng gió vào nan tre ✦</figcaption>
+      </figure>
+      <p class="art-sapo">Từ những thân tre, sợi mây vô tri nơi lũy tre làng, đôi bàn tay tài hoa của nghệ nhân Phú Vinh đã dệt nên những tác phẩm mang đậm hơi thở thiên nhiên.</p>
+      <p class="dropcap art-p">Bạn có bao giờ tự hỏi, làm thế nào mà những thân tre cứng cáp lại có thể uốn lượn mềm mại thành những chiếc giỏ, chiếc khay tinh tế đến vậy? Câu trả lời nằm ở sự nhẫn nại phi thường của những người thợ làng Phú Vinh. Quá trình chẻ nan, tuốt mây đòi hỏi sự tĩnh tâm tuyệt đối. Sợi mây phải mỏng như lạt, đều tăm tắp thì khi đan lên mới tạo ra bề mặt phẳng mịn, hoa văn sắc nét.</p>
+      <p class="art-p">Hơn cả một nghề thủ công, mây tre đan Phú Vinh hiện đang trở thành biểu tượng của lối sống xanh và thời trang bền vững. Từ những chiếc túi xách mây dạo phố đầy phong cách, đến những chao đèn tre mang lại ánh sáng ấm áp cho không gian sống, chất liệu tự nhiên này đang len lỏi vào từng ngóc ngách của cuộc sống hiện đại.</p>
+    </div>
+  </section>
+
+  <div class="quote-band">
+    <div class="wrap">
+      <svg class="art" width="46" height="46" viewBox="0 0 90 210" style="color:var(--amber2);margin:0 auto 14px"><use href="#s-bamboo"/></svg>
+      <div class="q">"Sự mộc mạc của mây tre không hề làm mất đi sự sang trọng — ngược lại, nó mang đến một vẻ đẹp bình dị, chữa lành và kết nối con người về lại với thiên nhiên nguyên bản."</div>
+      <div class="by">— Câu chuyện làng nghề · KIMVIE —</div>
+    </div>
+  </div>
+
+  <section class="pad art-read" style="padding-top:64px">
+    <div class="wrap" style="max-width:780px">
+      <div class="art-next" style="margin-top:0">
+        <a class="btn btn-navy" data-mf="pv" href="#market">Khám phá sản phẩm Phú Vinh →</a>
+        <a class="arrow-link" data-go="art-bt" href="#art-bt">Đọc tiếp: Gốm Bát Tràng</a>
+      </div>
+    </div>
+  </section>
+</main>
+
 <!-- ================= FOOTER ================= -->
 <footer>
   <svg class="art f-bamboo" width="120" height="240" viewBox="0 0 90 210"><use href="#s-bamboo"/></svg>
@@ -1182,6 +1334,83 @@
       <div class="pp-grid" id="ppGrid"></div>
       <div class="pp-reward" id="ppReward"></div>
       <p class="demo-note" style="margin-top:16px">Con dấu lưu trên trình duyệt của bạn · <a href="#" id="ppReset" style="color:var(--amber2);font-weight:700">Làm mới hành trình (demo)</a></p>
+    </div>
+  </div>
+</div>
+
+<!-- GIỎ HÀNG & THANH TOÁN (mô phỏng) -->
+<div class="modal" id="cartModal">
+  <div class="back" data-cx></div>
+  <div class="panel cartp">
+    <div class="ck-head">
+      <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 7h14l-1.2 10.3a2 2 0 0 1-2 1.7H8.2a2 2 0 0 1-2-1.7Z"/><path d="M9 7a3 3 0 0 1 6 0"/></svg>
+      <h3 id="ckTitle">Giỏ hàng của bạn</h3>
+      <button class="m-x" data-cx aria-label="Đóng">✕</button>
+    </div>
+    <div class="ck-steps" id="ckSteps" aria-hidden="true">
+      <span class="on" data-s="1">1 · Giỏ hàng</span><i></i>
+      <span data-s="2">2 · Thông tin</span><i></i>
+      <span data-s="3">3 · Thanh toán</span>
+    </div>
+    <div class="ck-body">
+
+      <!-- BƯỚC 1: giỏ hàng -->
+      <div class="ck-step on" id="ckStep1">
+        <div id="cartList"></div>
+        <div class="ck-total" id="ckTotal1"></div>
+        <button class="btn btn-amber ck-cta" id="ckToInfo" type="button">Tiến hành thanh toán →</button>
+      </div>
+
+      <!-- BƯỚC 2: email + địa chỉ -->
+      <div class="ck-step" id="ckStep2">
+        <form id="ckForm" novalidate>
+          <div class="ck-field">
+            <label for="ckEmail">Email <em>*</em></label>
+            <input type="email" id="ckEmail" placeholder="ban@email.com" required autocomplete="email">
+          </div>
+          <div class="ck-field">
+            <label for="ckName">Họ và tên</label>
+            <input type="text" id="ckName" placeholder="Nguyễn Văn A" autocomplete="name">
+          </div>
+          <div class="ck-field">
+            <label for="ckAddr">Địa chỉ nhận hàng <em>*</em></label>
+            <input type="text" id="ckAddr" placeholder="Số nhà, đường, phường/xã, tỉnh/thành" required autocomplete="street-address">
+          </div>
+          <p class="ck-err" id="ckErr" role="alert"></p>
+          <div class="ck-total" id="ckTotal2"></div>
+          <button class="btn btn-amber ck-cta" type="submit">Xác nhận · Lấy mã QR →</button>
+          <button class="ck-back" type="button" data-ckback="1">← Quay lại giỏ hàng</button>
+        </form>
+      </div>
+
+      <!-- BƯỚC 3: QR banking -->
+      <div class="ck-step" id="ckStep3">
+        <div class="ck-qr">
+          <img src="assets/qr_code.png" alt="Mã QR chuyển khoản ngân hàng KIMVIE">
+          <div class="ck-bank">
+            <div class="ck-brow"><span>Ngân hàng</span><b>Vietcombank</b></div>
+            <div class="ck-brow"><span>Chủ tài khoản</span><b>CTY TNHH KIMVIE</b></div>
+            <div class="ck-brow"><span>Số tài khoản</span><b>0123 456 789</b></div>
+            <div class="ck-brow"><span>Số tiền</span><b id="ckAmount"></b></div>
+            <div class="ck-brow"><span>Nội dung CK</span><b id="ckMemo"></b></div>
+          </div>
+        </div>
+        <p class="ck-hint">Mở ứng dụng ngân hàng, quét mã QR và chuyển khoản đúng nội dung để đơn hàng được xác nhận tự động.</p>
+        <button class="btn btn-amber ck-cta" id="ckPaid" type="button">Tôi đã chuyển khoản ✓</button>
+        <button class="ck-back" type="button" data-ckback="2">← Sửa thông tin nhận hàng</button>
+      </div>
+
+      <!-- BƯỚC 4: hoàn tất -->
+      <div class="ck-step" id="ckStep4">
+        <div class="ck-done">
+          <div class="ck-check">✓</div>
+          <h4>Đặt hàng thành công!</h4>
+          <p id="ckDoneMsg"></p>
+          <button class="btn btn-navy ck-cta" data-cx type="button">Tiếp tục khám phá KIMVIE →</button>
+        </div>
+      </div>
+
+      <p class="demo-note" style="margin-top:18px">✦ Mô phỏng thanh toán cho bản demo — không phát sinh giao dịch thật ✦</p>
     </div>
   </div>
 </div>

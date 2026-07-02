@@ -900,3 +900,130 @@ footer{color:rgba(250,245,233,.78)}
   .hero-cta .btn,.expo-cta .btn{width:100%;justify-content:center}
   .hero h1{font-size:clamp(34px,9vw,46px)}
 }
+
+/* =========================================================================
+   EDIT PASS 5 — docx fixes + cart/checkout demo
+   ========================================================================= */
+/* 1 · "Khám phá theo cách chưa ai làm" — the nowrap headline used to overflow
+   its 660px centered box and sat off-frame; size it to its own content and
+   let it shrink so it always stays centered inside the section */
+.sec-head h2.one-line{
+  white-space:nowrap;max-width:none;width:max-content;
+  margin-left:50%;transform:translateX(-50%);
+  font-size:clamp(26px,3.3vw,46px);
+}
+@media (max-width:768px){
+  .sec-head h2.one-line{white-space:normal;width:auto;margin-left:0;transform:none}
+}
+
+/* 2 · map page — lacquer-dark ground so the cream map floats out of the frame */
+.vnmap-left{
+  background:linear-gradient(150deg,#121939,var(--navy) 55%,var(--navy2));
+  border-color:rgba(226,197,126,.38);
+  box-shadow:inset 0 0 80px rgba(0,0,0,.35), 0 24px 50px rgba(22,30,69,.25);
+}
+.map-base,.map-zoom-img{filter:drop-shadow(0 20px 34px rgba(0,0,0,.55))}
+.north-hit:hover ~ .north-overlay,.north-hit:focus-visible ~ .north-overlay{
+  filter:drop-shadow(0 16px 22px rgba(0,0,0,.6)) saturate(1.25);
+}
+
+/* 3 · article pages (câu chuyện làng nghề) */
+.art-read{padding-bottom:64px}
+.art-figure{position:relative;border-radius:10px;overflow:hidden;margin:26px 0 8px;border:1px solid var(--line)}
+/* the source PNGs are 1920×1080 posters with the photo inset on a black mat
+   (~17% side / ~11% top margins baked in) — scale past the mat so the photo
+   itself reaches the frame on every edge */
+.art-figure img{width:100%;height:min(420px,52vw);object-fit:cover;display:block;transform:scale(1.55);transform-origin:center}
+.art-figure figcaption{
+  position:absolute;left:0;right:0;bottom:0;padding:26px 18px 12px;text-align:center;
+  font-size:11px;letter-spacing:.08em;color:var(--cream2);
+  background:linear-gradient(0deg,rgba(16,12,9,.72),transparent);
+}
+.art-sapo{
+  font-family:var(--serif);font-style:italic;font-size:18.5px;line-height:1.7;color:var(--pearl);
+  border-left:3px solid var(--gold);padding-left:20px;margin:26px 0 24px;
+}
+.art-p{font-size:15.5px;color:var(--muted);line-height:1.85;margin-bottom:18px}
+.art-next{display:flex;gap:22px;align-items:center;flex-wrap:wrap;margin-top:34px;padding-top:26px;border-top:1px solid var(--line-soft)}
+
+/* 4 · artisan cards — short bio line above the quote */
+.art-card .bio{font-size:12.5px;color:var(--muted);line-height:1.6;margin:2px 0 8px}
+
+/* 5 · cart + checkout modal (mô phỏng) */
+.panel.cartp{display:block;max-width:600px;grid-template-columns:1fr}
+.ck-head{
+  background:linear-gradient(130deg,var(--navy),var(--navy2));
+  padding:20px 26px;display:flex;align-items:center;gap:14px;
+  border-bottom:1px solid var(--line);color:var(--gold-bright);
+}
+.ck-head h3{font-family:var(--serif);font-size:20px;font-weight:600;letter-spacing:.08em;color:var(--gold-bright)}
+.ck-head .m-x{position:static;margin-left:auto}
+.ck-steps{
+  display:flex;align-items:center;gap:10px;padding:14px 26px;
+  border-bottom:1px solid var(--line-soft);background:rgba(250,245,233,.6);
+}
+.ck-steps span{font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--muted-2);white-space:nowrap}
+.ck-steps span.on{color:var(--gold-soft)}
+.ck-steps i{flex:1;height:1px;background:linear-gradient(90deg,var(--gold),transparent)}
+.ck-body{padding:22px 26px 20px}
+.ck-step{display:none}
+.ck-step.on{display:block;animation:pgin .3s ease both}
+.ck-empty{text-align:center;color:var(--muted);padding:34px 10px;font-size:14px}
+.ck-empty svg{margin:0 auto 12px;color:var(--gold-soft);opacity:.7}
+.ck-empty b{color:var(--gold-soft)}
+.ck-row{display:flex;align-items:center;gap:14px;padding:13px 0;border-bottom:1px dashed var(--line-soft)}
+.ck-info{flex:1;min-width:0}
+.ck-info h5{font-size:13.5px;font-weight:600;color:var(--pearl);line-height:1.35}
+.ck-info span{font-size:12px;color:var(--muted-2)}
+.ck-qty{display:flex;align-items:center;gap:2px;border:1px solid var(--line);border-radius:999px;padding:2px}
+.ck-qty button{width:28px;height:28px;border-radius:50%;display:grid;place-items:center;color:var(--gold-soft);font-size:15px;transition:background .2s,color .2s}
+.ck-qty button:hover{background:var(--navy);color:var(--cream2)}
+.ck-qty b{min-width:26px;text-align:center;font-size:13.5px;color:var(--pearl)}
+.ck-line{font-family:var(--serif);font-weight:700;font-size:14.5px;color:var(--gold-soft);min-width:92px;text-align:right}
+.ck-rm{width:30px;height:30px;border-radius:50%;display:grid;place-items:center;color:var(--muted-2);font-size:12px;transition:background .2s,color .2s}
+.ck-rm:hover{background:rgba(168,53,44,.12);color:var(--vermilion)}
+.ck-total{
+  display:flex;justify-content:space-between;align-items:center;
+  padding:16px 0 4px;font-size:13.5px;color:var(--muted);
+}
+.ck-total b{font-family:var(--serif);font-size:22px;color:var(--gold-soft)}
+.ck-cta{width:100%;justify-content:center;margin-top:14px}
+.ck-cta:disabled{opacity:.45;cursor:not-allowed}
+.ck-back{display:block;margin:14px auto 0;font-size:13px;font-weight:600;color:var(--gold-soft)}
+.ck-back:hover{color:var(--navy)}
+.ck-field{margin-bottom:14px}
+.ck-field label{display:block;font-size:12px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--gold-soft);margin-bottom:7px}
+.ck-field label em{color:var(--vermilion);font-style:normal}
+.ck-field input{
+  width:100%;padding:13px 15px;border:1px solid var(--line);border-radius:4px;
+  background:rgba(250,245,233,.7);font-family:var(--sans);font-size:14.5px;color:var(--ink);
+  transition:border-color .2s,box-shadow .2s;min-height:46px;
+}
+.ck-field input::placeholder{color:var(--muted-2)}
+.ck-field input:focus{outline:none;border-color:var(--gold);box-shadow:0 0 0 3px rgba(217,148,63,.16)}
+.ck-err{font-size:12.5px;color:var(--vermilion);min-height:18px;margin:2px 0 4px}
+.ck-qr{display:flex;gap:20px;align-items:center;border:1px dashed var(--gold);border-radius:10px;padding:18px;background:rgba(250,245,233,.6)}
+.ck-qr img{width:170px;height:170px;object-fit:contain;background:#fff;border:1px solid var(--line);border-radius:8px;padding:8px;flex:none}
+.ck-bank{flex:1;min-width:0}
+.ck-brow{display:flex;justify-content:space-between;gap:12px;font-size:12.5px;color:var(--muted);padding:6px 0;border-bottom:1px dashed var(--line-soft)}
+.ck-brow b{color:var(--pearl);text-align:right}
+.ck-brow:last-child{border-bottom:none}
+#ckAmount{color:var(--vermilion);font-size:14px}
+#ckMemo{color:var(--gold-soft);letter-spacing:.04em}
+.ck-hint{font-size:12.5px;color:var(--muted);line-height:1.65;margin-top:14px;text-align:center}
+.ck-done{text-align:center;padding:18px 6px 6px}
+.ck-check{
+  width:64px;height:64px;border-radius:50%;margin:0 auto 16px;display:grid;place-items:center;
+  background:rgba(46,82,51,.12);color:var(--jade);font-size:28px;font-weight:700;
+  border:2px solid var(--jade);
+}
+.ck-done h4{font-family:var(--serif);font-size:24px;font-weight:600;color:var(--pearl);margin-bottom:10px}
+.ck-done p{font-size:13.5px;color:var(--muted);line-height:1.7;margin-bottom:8px}
+.ck-done b{color:var(--gold-soft)}
+@media (max-width:560px){
+  .ck-qr{flex-direction:column}
+  .ck-qr img{width:200px;height:200px}
+  .ck-row{flex-wrap:wrap}
+  .ck-line{min-width:0}
+  .art-next .btn{width:100%;justify-content:center}
+}
