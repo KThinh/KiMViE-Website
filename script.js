@@ -263,6 +263,7 @@ function renderPassport(){
   document.getElementById('ppFill').style.width = (n / 7 * 100) + '%';
   const unseen = Math.max(0, n - ppSeen);              // đã mở hộ chiếu xem rồi thì chấm đỏ biến mất
   const bd = document.getElementById('ppBadge'); bd.textContent = unseen; bd.classList.toggle('show', unseen > 0);
+  document.getElementById('ppBtn').classList.toggle('has-new', unseen > 0);
   document.getElementById('ppReward').innerHTML = n >= 7
     ? '<b style="color:var(--vermilion)">Đủ 7 con dấu — bạn chính thức là NGƯỜI GIỮ LỬA!</b><br>Mã ưu đãi 10% cho đơn tiếp theo — nhập ở bước Giỏ hàng:<br><span class="code">GIULUA10</span>'
     : 'Sưu tập đủ <b>7 con dấu</b> để nhận danh hiệu <b>Người Giữ Lửa</b> + mã ưu đãi 10%.<br><span style="font-size:11px">Bấm vào từng ô dấu để biết cách nhận.</span>';
@@ -531,15 +532,28 @@ if(REDUCE && bgVideo){ bgVideo.removeAttribute('autoplay'); bgVideo.pause(); }
 
 /* ===== ambient audio: wind + flute, fade in/out, flute trails wind by 5s ===== */
 (function(){
-  const wind = document.getElementById('aWind'), flute = document.getElementById('aFlute'), btn = document.getElementById('audioBtn');
-  if(!wind || !flute || !btn) return;
+  const wind = document.getElementById('aWind'), flute = document.getElementById('aFlute');
+  /* 2 nút cùng điều khiển: icon trên header (desktop/tablet) + nút nổi (điện thoại ≤480px) */
+  const btns = [document.getElementById('audioBtn'), document.getElementById('audioFab')].filter(Boolean);
+  if(!wind || !flute || !btns.length) return;
   const WIND_VOL = 0.26, FLUTE_VOL = 0.5, FADE = 2.5;    // wind kept well under the flute so it reads as ambience
   const ICON_ON  = '<svg viewBox="0 0 24 24" width="19" height="19" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M11 5 6 9H3v6h3l5 4z"/><path d="M16 9a4 4 0 0 1 0 6"/><path d="M19 6.5a8 8 0 0 1 0 11"/></svg>';
   const ICON_OFF = '<svg viewBox="0 0 24 24" width="19" height="19" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M11 5 6 9H3v6h3l5 4z"/><path d="m22 9-6 6"/><path d="m16 9 6 6"/></svg>';
   let enabled = localStorage.getItem('kvAudio'); enabled = enabled === null ? true : enabled === '1';
   let playing = false, fluteTimer = null;
 
-  function paint(){ btn.innerHTML = enabled ? ICON_ON : ICON_OFF; btn.classList.toggle('off', !enabled); btn.setAttribute('aria-pressed', enabled ? 'true' : 'false'); }
+  function paint(){ btns.forEach(btn => { btn.innerHTML = enabled ? ICON_ON : ICON_OFF; btn.classList.toggle('off', !enabled); btn.setAttribute('aria-pressed', enabled ? 'true' : 'false'); }); }
+
+  /* iOS/Android chỉ cho phép audio.play() trong thao tác của người dùng — "mở khóa" tiếng sáo
+     ngay trong cử chỉ chạm để 5 giây sau setTimeout phát được mà không bị chặn */
+  let fluteReady = false;
+  function unlockFlute(){
+    if(fluteReady) return; fluteReady = true;
+    flute.muted = true;
+    const p = flute.play();
+    if(p) p.then(() => { flute.pause(); flute.currentTime = 0; flute.muted = false; })
+          .catch(() => { flute.muted = false; fluteReady = false; });
+  }
 
   // per-loop fade envelope (fade in at start of each file, fade out before its end), capped at its own target volume
   [wind, flute].forEach(el => el.addEventListener('timeupdate', () => {
@@ -567,16 +581,21 @@ if(REDUCE && bgVideo){ bgVideo.removeAttribute('autoplay'); bgVideo.pause(); }
       requestAnimationFrame(step);
     });
   }
-  function setEnabled(on){ enabled = on; localStorage.setItem('kvAudio', on ? '1' : '0'); paint(); if(on) start(); else stop(); }
+  function setEnabled(on){ enabled = on; localStorage.setItem('kvAudio', on ? '1' : '0'); paint(); if(on){ unlockFlute(); start(); } else stop(); }
 
-  btn.addEventListener('click', () => setEnabled(!enabled));
+  btns.forEach(btn => btn.addEventListener('click', () => setEnabled(!enabled)));
   paint();
 
   if(enabled){
     start();
-    // autoplay is blocked until a user gesture — kick it off on the first one
-    const kick = () => { if(enabled && wind.paused){ playing = false; start(); } window.removeEventListener('pointerdown', kick); window.removeEventListener('keydown', kick); };
-    window.addEventListener('pointerdown', kick, { once: true });
+    // autoplay is blocked until a user gesture — kick it off on the first one.
+    // NOTE: on touch devices pointerdown does NOT count as user activation (pointerup/touchend/click do),
+    // so listen on pointerup — otherwise mobile browsers keep rejecting play()
+    const kick = () => {
+      if(enabled && wind.paused){ playing = false; unlockFlute(); start(); }
+      window.removeEventListener('pointerup', kick); window.removeEventListener('keydown', kick);
+    };
+    window.addEventListener('pointerup', kick, { once: true });
     window.addEventListener('keydown', kick, { once: true });
   }
 })();
@@ -651,9 +670,9 @@ const VILLAGES = {
       ['Dự án bảo tồn','Bảo tàng Gốm sứ Bát Tràng (đầu tư 150 tỷ đồng, hoạt động từ 2021) — trung tâm nghệ thuật đương đại; định hướng Bảo tàng sinh thái (Eco-museum); wifi miễn phí, máy thuyết minh tự động, xe điện phục vụ du lịch bền vững.']
     ],
     patterns:[
-      ['s-pat-lotus','Hoa sen','Thanh cao, thuần khiết — họa tiết hoa sen vẽ tay dưới men lam, gắn liền với văn hóa Phật giáo.'],
-      ['s-pat-crackle','Tứ linh','Long – Lân – Quy – Phụng: bộ tứ linh vật tượng trưng cho quyền lực, thái bình, trường thọ và thịnh vượng.'],
-      ['s-pat-wave','Cá chép vượt vũ môn','Biểu tượng nỗ lực vượt khó để đỗ đạt, thành tựu — quen thuộc trên bình, đĩa gốm Bát Tràng.']
+      ['gốm sứ bát tràng, hoa sen.jpg','Hoa sen','Thanh cao, thuần khiết — họa tiết hoa sen vẽ tay dưới men lam, gắn liền với văn hóa Phật giáo.'],
+      ['gốm sứ bát tràng, tứ linh.jpg','Tứ linh','Long – Lân – Quy – Phụng: bộ tứ linh vật tượng trưng cho quyền lực, thái bình, trường thọ và thịnh vượng.'],
+      ['gốm sứ bát tràng, Cá chép vượt vũ môn.png','Cá chép vượt vũ môn','Biểu tượng nỗ lực vượt khó để đỗ đạt, thành tựu — quen thuộc trên bình, đĩa gốm Bát Tràng.']
     ],
     prods:['am-tra','hu-tra','dia-sen'] },
 
@@ -716,9 +735,9 @@ const VILLAGES = {
       ['Dự án bảo tồn','Đầu 2026, Hà Nội phê duyệt Quy hoạch chi tiết 1/500 bảo tồn làng nghề kết hợp du lịch; Vạn Phúc vào Đề án phát triển làng nghề gắn du lịch đến 2030 tầm nhìn 2050. Nghề dệt lụa Vạn Phúc được ghi danh Di sản văn hóa phi vật thể quốc gia năm 2023.']
     ],
     patterns:[
-      ['s-pat-cloudm','Vân mây','Hoa văn chìm chỉ hiện khi nghiêng lụa dưới nắng — kỹ thuật dệt vân làm nên tên tuổi Vạn Phúc.'],
-      ['s-lac','Song hạc','Đôi hạc chầu đối xứng — biểu tượng trường thọ, thanh cao trên những tấm lụa quý.'],
-      ['s-pat-lattice','Hoa chanh','Lưới hoa bốn cánh lặp đều — nét duyên kín đáo thường thấy trên lụa may áo dài.']
+      ['lụa vạn phúc, Vân mây.webp','Vân mây','Hoa văn chìm chỉ hiện khi nghiêng lụa dưới nắng — kỹ thuật dệt vân làm nên tên tuổi Vạn Phúc.'],
+      ['lụa vạn phúc, song thọ.webp','Song thọ','Chữ Thọ tròn dệt nổi trên nền lụa vàng — lời chúc trường thọ, phúc lành trên những tấm lụa quý.'],
+      ['lụa vạn phúc, hoa.webp','Hoa dệt chìm','Những đóa hoa nhỏ dệt chìm phủ đều mặt lụa — nét duyên kín đáo thường thấy trên lụa may áo dài.']
     ],
     prods:['cavat-lua','khan-sen','khan-nguson'] },
 
@@ -770,9 +789,9 @@ const VILLAGES = {
     ],
     thuctrang:null,
     patterns:[
-      ['s-pat-w1','Đan lục giác','Sáu nan giao nhau tạo hình cân bằng — kỹ thuật dùng cho các khay, giỏ mây tre xuất khẩu cao cấp.'],
-      ['s-pat-w2','Đan vảy rồng','Các sợi mây xếp lớp mô phỏng vảy rồng — mang ý nghĩa quyền uy và bảo hộ.'],
-      ['s-pat-fish','Tranh phong cảnh từ mây','Nghệ nhân dùng sợi mây nhuộm màu để "vẽ" nên những bức tranh phong cảnh sinh động, tinh xảo.']
+      ['mây tre đan Phú Vinh, lục giác.jpeg','Đan lục giác','Sáu nan giao nhau tạo hình cân bằng — kỹ thuật dùng cho các khay, giỏ mây tre xuất khẩu cao cấp.'],
+      ['Mây tre đan Phú Vinh, vảy rồng.jpeg','Đan vảy rồng','Các sợi mây xếp lớp mô phỏng vảy rồng — mang ý nghĩa quyền uy và bảo hộ.'],
+      ['mây tre đan Phú Vinh, tranh.jpg','Tranh đan từ mây','Nghệ nhân dùng sợi mây nhuộm màu để "vẽ" nên những bức tranh sinh động, tinh xảo trên nan đan.']
     ],
     prods:['hop-may','tui-may','tui-ruot-may'] }
 };
@@ -797,6 +816,7 @@ const DZ_SECTIONS = [
   const body = document.getElementById('dossierBody');
   if(!overview || !zoom || !panel) return;
   const VDIR = 'assets/lang_nghe_img/';
+  const PAT_DIR = 'assets/họa tiết làng nghề/';          // ảnh họa tiết thật thay icon vẽ
   let curV = null;
 
   function setZoomed(z){ overview.hidden = z; zoom.hidden = !z; }
@@ -877,7 +897,7 @@ const DZ_SECTIONS = [
           '</div>').join(''), false) +
       dzSection('hoavan', 'Hoa văn', 'Hoa văn / họa tiết đặc trưng',
         '<div class="pattern-grid">' + v.patterns.map(p =>
-          '<div class="pat"><div class="pbox"><svg class="art" width="72" height="72" viewBox="0 0 60 60"><use href="#' + p[0] + '"/></svg></div>' +
+          '<div class="pat"><div class="pbox"><img src="' + PAT_DIR + p[0] + '" alt="Họa tiết ' + p[1] + ' — ' + v.name + '" loading="lazy"></div>' +
           '<h5>' + p[1] + '</h5><p>' + p[2] + '</p></div>').join('') + '</div>', false) +
       (v.thuctrang ? dzSection('thuctrang', 'Hôm nay & ngày mai', 'Thực trạng & phát triển', dzRows(v.thuctrang), false) : '');
 
@@ -983,18 +1003,18 @@ document.querySelectorAll('[data-village]').forEach(a => a.addEventListener('cli
   const form = document.getElementById('loginForm');
   const profile = document.getElementById('profileBox');
   const loginBtn = document.getElementById('loginBtn');
-  const accDot = document.getElementById('accDot');
+  const loginMenuLink = document.getElementById('loginMenuLink');
   let user = JSON.parse(localStorage.getItem('kvUser') || 'null');
 
   function paint(){
     if(user){
       loginBtn.textContent = user.name;
       loginBtn.title = 'Xem tài khoản của bạn';
-      accDot.hidden = false;
+      loginMenuLink.textContent = 'Tài khoản · ' + user.name;
     } else {
       loginBtn.textContent = 'Đăng nhập';
       loginBtn.removeAttribute('title');
-      accDot.hidden = true;
+      loginMenuLink.textContent = 'Đăng nhập';
     }
   }
   function openModal(){
@@ -1030,7 +1050,11 @@ document.querySelectorAll('[data-village]').forEach(a => a.addEventListener('cli
     showToast('Bạn đã đăng xuất. Hẹn gặp lại ✦');
   });
   loginBtn.addEventListener('click', e => { e.preventDefault(); openModal(); });
-  document.getElementById('accBtn').addEventListener('click', openModal);
+  loginMenuLink.addEventListener('click', e => {
+    e.preventDefault();
+    document.body.classList.remove('nav-open');
+    openModal();
+  });
   modal.querySelectorAll('[data-lx]').forEach(el => el.addEventListener('click', close));
   document.addEventListener('keydown', e => { if(e.key === 'Escape') close(); });
   paint();
@@ -1163,6 +1187,14 @@ document.querySelectorAll('[data-village]').forEach(a => a.addEventListener('cli
     applyTransform(dragging);
   });
   ['pointerup', 'pointercancel'].forEach(ev => itemsBox.addEventListener(ev, () => { dragging = null; }));
+
+  /* bấm ra ngoài (nền ảnh hoặc bất kỳ đâu trên trang): bỏ chọn sản phẩm
+     để khung viền + nút ✕ biến mất, người dùng ngắm trọn bức ảnh */
+  document.addEventListener('pointerdown', e => {
+    if(!active) return;
+    if(e.target.closest('.sim-item, .sim-controls, .sim-tray, .sim-actions')) return;
+    select(null);
+  });
 
   rot.addEventListener('input', () => {
     if(!active) return;
@@ -1368,7 +1400,7 @@ const NN_STORIES = [
     'Ông được phong tặng danh hiệu Nghệ nhân Nhân dân sau danh hiệu Nghệ nhân Ưu tú cùng nhiều giải thưởng trong nước và quốc tế. Việc mở trung tâm đào tạo miễn phí cho người khuyết tật không chỉ bảo tồn nghề truyền thống mà còn mang ý nghĩa nhân văn sâu sắc, tạo sinh kế cho nhiều người có hoàn cảnh khó khăn.']]]},
 
  {v:'pv', name:'Cố nghệ nhân Nguyễn Văn Khiếu', role:'Người đặt nền móng nghệ thuật tạo hình mây tre Việt Nam',
-  date:'26.05.2026', mins:5,
+  date:'26.05.2026', mins:5, img:'assets/bai_viet/Nguyễn Văn Khiếu.jpg',
   sapo:'Cố nghệ nhân Nguyễn Văn Khiếu được xem là một trong những nghệ nhân có ảnh hưởng lớn nhất trong lịch sử làng nghề Phú Vinh — người đầu tiên ở Việt Nam đan thành công chân dung Chủ tịch Hồ Chí Minh bằng mây tre.',
   quote:'Người nghệ nhân phải luôn sáng tạo và không ngừng đổi mới nếu muốn nghề truyền thống tồn tại cùng thời đại.',
   secs:[
