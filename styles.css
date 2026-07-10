@@ -1078,6 +1078,10 @@ footer{color:rgba(250,245,233,.78)}
 .icon-img{width:62%;height:62%;object-fit:contain}
 .j-ic .icon-img{width:66%;height:66%}
 .medal .icon-img{width:70%;height:70%}
+/* icon 3 mục dải bản đồ: nguồn PNG lệch khoảng trắng nên cân tay lại cho đều */
+.feat-panel .feat:nth-child(1) .icon-img{width:78%;height:78%}
+.feat-panel .feat:nth-child(2) .icon-img{width:94%;height:94%}
+.feat-panel .feat:nth-child(3) .icon-img{width:100%;height:100%;transform:scale(1.65)}
 
 /* 3 · hộ chiếu di sản — nổi bật */
 .mis-featured{
