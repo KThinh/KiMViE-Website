@@ -312,7 +312,7 @@ main.active{display:block;animation:pgin .5s ease both}
   color:var(--pearl);padding:100px 0;overflow:hidden;position:relative;
 }
 .expo-band .bg-cloud{position:absolute;color:var(--gold);opacity:.10}
-.expo-band .wrap{display:grid;grid-template-columns:1fr 1.1fr .9fr;gap:42px;align-items:center;position:relative}
+.expo-band .wrap{display:grid;grid-template-columns:1fr 1.35fr .85fr;gap:42px;align-items:center;position:relative}
 .expo-band .kicker{color:var(--gold)}
 .expo-band h2{font-family:var(--serif);font-size:clamp(32px,3.6vw,46px);font-weight:600;line-height:1.1;margin:16px 0 18px;color:var(--pearl)}
 .expo-band .desc{color:var(--muted);font-size:15px;margin-bottom:30px}
