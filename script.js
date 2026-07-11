@@ -15,7 +15,7 @@ function go(p){
   if(window.stamp){ if(p === 'expo') stamp('expo'); if(p === 'article' || p.startsWith('art-')) stamp('read'); }
   window.scrollTo({top:0, behavior:'instant'});
   history.replaceState(null, '', '#' + p);
-  retagReveal();
+  if(window.kvMotion) kvMotion.pageEnter(p); else retagReveal();
 }
 navLinks.forEach(a => a.addEventListener('click', e => { e.preventDefault(); go(a.dataset.go); }));
 
@@ -220,7 +220,7 @@ document.querySelectorAll('.vtab').forEach(t => t.addEventListener('click', () =
   document.querySelectorAll('.vtab').forEach(x => x.classList.remove('on')); t.classList.add('on');
   document.querySelectorAll('.vpanel').forEach(p => p.classList.toggle('on', p.id === 'vp-' + t.dataset.v));
   if(window.stamp) stamp(t.dataset.v);
-  retagReveal();
+  if(window.kvMotion) kvMotion.refresh(); else retagReveal();
 }));
 
 /* ===== heritage passport ===== */
@@ -404,15 +404,21 @@ function renderGallery(p){
   const box = document.querySelector('.m-art'); if(!box) return;
   const v = GAL_VIEWS[galView];
   box.innerHTML =
-    '<div style="overflow:hidden;border-radius:8px;max-width:100%"><img class="m-photo" src="' + PROD_DIR + p.img + '" alt="' + p.name + ' — ' + v.label + '" style="' + v.css + '"></div>' +
-    '<div class="m-gal-nav">' +
+    '<div class="m-frame">' +
+      '<img class="m-photo" src="' + PROD_DIR + p.img + '" alt="' + p.name + ' — ' + v.label + '" style="' + v.css + '">' +
+      '<span class="m-frame-tag">✦ Ảnh thực tế</span>' +
+    '</div>' +
+    '<div class="m-gal-bar">' +
       '<button type="button" id="galPrev" aria-label="Góc trước">‹</button>' +
+      '<div class="m-gal-info"><b>' + v.label + '</b><span>' + (galView + 1) + ' / ' + GAL_VIEWS.length + '</span></div>' +
       '<button type="button" id="galNext" aria-label="Góc sau">›</button>' +
     '</div>' +
-    '<div class="m-gal-cap">' + v.label + ' (' + (galView + 1) + '/' + GAL_VIEWS.length + ') · lướt xem các góc sản phẩm</div>' +
-    '<div class="cap">✦ Ảnh sản phẩm thực tế · KIMVIE ✦</div>';
+    '<div class="m-gal-dots">' +
+      GAL_VIEWS.map((g, i) => '<button type="button" data-gv="' + i + '" class="' + (i === galView ? 'on' : '') + '" aria-label="' + g.label + '"></button>').join('') +
+    '</div>';
   document.getElementById('galPrev').addEventListener('click', () => { galView = (galView + GAL_VIEWS.length - 1) % GAL_VIEWS.length; renderGallery(p); });
   document.getElementById('galNext').addEventListener('click', () => { galView = (galView + 1) % GAL_VIEWS.length; renderGallery(p); });
+  box.querySelectorAll('[data-gv]').forEach(d => d.addEventListener('click', () => { galView = +d.dataset.gv; renderGallery(p); }));
 }
 function openProduct(id){
   const p = PRODUCTS[id]; if(!p) return; curP = p;
@@ -432,6 +438,11 @@ function openProduct(id){
   if(window.setMTab) setMTab('intro');
   if(window.stamp) stamp('relic');
   pModal.classList.add('open');
+  /* chặn "click ma": double-click trên thẻ sản phẩm làm cú click thứ 2 rơi trúng
+     nút gallery/nền vừa hiện ra dưới con trỏ → khoá tương tác 400ms đầu */
+  pModal.style.pointerEvents = 'none';
+  clearTimeout(openProduct._pe);
+  openProduct._pe = setTimeout(() => pModal.style.removeProperty('pointer-events'), 400);
 }
 function closeModal(){ pModal.classList.remove('open'); }
 pModal.querySelectorAll('[data-x]').forEach(el => el.addEventListener('click', closeModal));

@@ -1072,16 +1072,17 @@
 <div class="modal" id="pModal">
   <div class="back" data-x></div>
   <div class="panel">
+    <button class="m-x" data-x aria-label="Đóng">✕</button>
     <div class="m-art">
       <svg class="art" id="mArt" width="190" height="230" viewBox="0 0 100 150"><use id="mUse" href="#s-vase"/></svg>
-      <div class="cap">✦ Vị trí ảnh chụp thực tế tại làng nghề / do nhóm thiết kế ✦</div>
     </div>
     <div class="m-body">
-      <button class="m-x" data-x>✕</button>
       <span class="m-tag" id="mTag"></span>
       <h3 id="mName"></h3>
-      <div class="m-price" id="mPrice"></div>
-      <div class="m-sold" id="mSold"></div>
+      <div class="m-meta">
+        <div class="m-price" id="mPrice"></div>
+        <div class="m-sold" id="mSold"></div>
+      </div>
       <div class="mtabs">
         <button class="mtab on" id="mtIntro">Giới thiệu</button>
         <button class="mtab" id="mtCard">Căn cước số ▣</button>
@@ -1098,7 +1099,7 @@
       </div>
       <div class="m-specs" id="mSpecs"></div>
       <p class="m-desc" id="mDesc"></p>
-      <div style="display:flex;gap:10px;flex-wrap:wrap">
+      <div class="m-cta">
         <a class="btn btn-amber" id="mBuy" href="#market">Mua sản phẩm này →</a>
         <button class="btn btn-line" data-x>Tiếp tục tham quan</button>
       </div>
@@ -1296,6 +1297,9 @@
 <button class="audio-fab" id="audioFab" type="button" aria-label="Bật hoặc tắt âm thanh nền" aria-pressed="false" title="Âm thanh nền"></button>
 <audio id="aWind" src="assets/audio/winds.mp3" loop preload="auto" playsinline></audio>
 <audio id="aFlute" src="assets/audio/flute.mp3" loop preload="auto" playsinline></audio>
+<script src="assets/vendor/gsap.min.js" defer></script>
+<script src="assets/vendor/ScrollTrigger.min.js" defer></script>
+<script src="animations.js" defer></script>
 <script src="script.js" defer></script>
 </body>
 </html>
