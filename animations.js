@@ -54,8 +54,8 @@
   function batchRise(items, opts){
     items = items.filter(fresh);
     if(!items.length) return;
-    const o = Object.assign({ y:34, scale:0, stagger:.09, start:'top 90%' }, opts);
-    const setVars = { y:o.y };
+    const o = Object.assign({ y:34, x:0, scale:0, stagger:.09, start:'top 90%' }, opts);
+    const setVars = { y:o.y, x:o.x };
     if(o.scale) setVars.scale = o.scale;
     hide(items, setVars);
     ScrollTrigger.batch(items, {
@@ -147,6 +147,23 @@
     if(map) gsap.to(map, { y:-10, duration:3.6, ease:'sine.inOut', yoyo:true, repeat:-1 });
   }
 
+  /* ---- chuyển động dành riêng cho điện thoại (transform-only, nhẹ) ------ */
+  function ambientMobile(main){
+    /* ảnh BST + ảnh hồ sơ làng: trôi dọc nhẹ theo cuộn (parallax scrub) */
+    gsap.utils.toArray('.bst-card img, .dossier-head img, .mapv-detail .vhero', main)
+      .forEach(img => {
+        const box = img.closest('.bst-card, .dossier-head, .vtop') || img.parentElement;
+        gsap.set(img, { transition:'none' });   // tắt transition CSS để scrub không bị trễ
+        gsap.fromTo(img, { yPercent:-5, scale:1.12 }, {
+          yPercent:5, scale:1.12, ease:'none',
+          scrollTrigger:{ trigger:box, start:'top bottom', end:'bottom top', scrub:.6 }
+        });
+      });
+    /* bản đồ trên dải expo thở nhẹ */
+    const map = main.querySelector('.room-stage img');
+    if(map) gsap.to(map, { y:-6, duration:3.2, ease:'sine.inOut', yoyo:true, repeat:-1 });
+  }
+
   /* ---- entrance khi vào trang -------------------------------------------- */
   function entrance(main, page, isMobile){
     const tl = gsap.timeline({ defaults:{ ease:'power3.out' } });
@@ -164,8 +181,9 @@
         .from('.hero-left .hero-cta > *', { y:18, autoAlpha:0, duration:.7, stagger:.08, clearProps:CLEAR }, .5)
         .from('.hero-left .play', { y:14, autoAlpha:0, duration:.6,  clearProps:CLEAR }, .64)
         .from('.hero .deco-cloud', { autoAlpha:0, duration:1.5, ease:'none' }, .45);
-      if(!isMobile && main.querySelector('.hero-slider'))
-        tl.from('.hero-slider', { autoAlpha:0, y:26, scale:1.05, duration:1.15, clearProps:CLEAR }, .3);
+      const slider = main.querySelector('.hero-slider');
+      if(slider && slider.offsetParent !== null)   // hiển thị ở desktop và ≤768 (ẩn 769–1024)
+        tl.from(slider, { autoAlpha:0, y:26, scale:1.05, duration:1.15, clearProps:CLEAR }, .3);
     }
   }
 
@@ -187,7 +205,10 @@
       batchRise(gsap.utils.toArray('.v-card, .mis, .gian, .b-card, .e-card, .art-card, .pat, .feat, .bst-card', main),
                 { y:dist, scale:.985, stagger:stag });
       batchRise(gsap.utils.toArray('.p-card', main), { y:dist, stagger:stag, start:'top 94%' });
-      batchRise(gsap.utils.toArray('.j-step', main), { y:28, stagger:isMobile ? .1 : .14, start:'top 88%' });
+      /* timeline dọc trên mobile: từng bước lướt vào từ trái theo trục */
+      batchRise(gsap.utils.toArray('.j-step', main),
+                isMobile ? { x:-26, y:0, stagger:.12, start:'top 92%' }
+                         : { y:28, stagger:.14, start:'top 88%' });
       splitReveals(main, isMobile);
       rowReveals(main);
 
@@ -195,6 +216,7 @@
       batchRise(gsap.utils.toArray('footer .f-grid > *, footer .f-news > *'), { y:26, stagger:.08 });
 
       ambient(main, isDesktop);
+      if(isMobile) ambientMobile(main);
     });
     ScrollTrigger.refresh();
   }
@@ -213,6 +235,25 @@
 
   /* thanh điều hướng chào một lần khi tải */
   gsap.from('.nav > *', { y:-16, autoAlpha:0, duration:.65, stagger:.07, ease:'power2.out', clearProps:CLEAR });
+
+  /* menu điện thoại: các mục trượt vào nối nhau mỗi lần mở */
+  const mobileMenu = document.querySelector('.menu');
+  if(mobileMenu){
+    let navWas = document.body.classList.contains('nav-open');
+    new MutationObserver(() => {
+      const open = document.body.classList.contains('nav-open');
+      if(open && !navWas && window.matchMedia('(max-width: 768px)').matches)
+        gsap.from(mobileMenu.querySelectorAll('li'),
+          { x:-22, autoAlpha:0, duration:.45, stagger:.055, ease:'power3.out', clearProps:CLEAR });
+      navWas = open;
+    }).observe(document.body, { attributes:true, attributeFilter:['class'] });
+  }
+
+  /* nút nhạc nền nổi (chỉ hiện ≤480px): nảy vào sau khi trang ổn định */
+  const audioFab = document.getElementById('audioFab');
+  if(audioFab && window.matchMedia('(max-width: 480px)').matches)
+    gsap.from(audioFab, { scale:0, rotation:-30, autoAlpha:0, duration:.6, delay:1.1,
+      ease:'back.out(2)', clearProps:CLEAR });
 
   /* modal mở: nền mờ dần, panel nổi lên, nội dung nối nhau */
   document.querySelectorAll('.modal').forEach(m => {

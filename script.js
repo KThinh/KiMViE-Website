@@ -844,18 +844,12 @@ const DZ_SECTIONS = [
         '<p>Di chuột lên từng miền để làm nổi vùng, rồi <b>nhấn Miền Bắc</b> để phóng to và xem danh sách làng nghề.</p>' +
       '</div>';
   }
+  /* người dùng chọn làng trực tiếp trên bản đồ (ghim .vpin) — không render ô danh sách */
   function renderList(){
-    setZoomed(true); setPins(null);
+    setZoomed(true);
     panel.innerHTML =
       '<div class="mapv-listhead">Làng nghề Miền Bắc</div>' +
-      '<div class="mapv-listsub">Chọn một làng nghề để mở hồ sơ di sản đầy đủ phía dưới.</div>' +
-      '<div class="mapv-list">' +
-      Object.entries(VILLAGES).map(([k,v]) =>
-        '<button class="mapv-card' + (curV === k ? ' on' : '') + '" type="button" data-v="' + k + '">' +
-          '<img src="' + VDIR + v.img + '" alt="' + v.name + '" loading="lazy">' +
-          '<div><div class="vk">' + v.region + '</div><h4>' + v.name + '</h4><p>' + v.blurb + '</p></div>' +
-        '</button>').join('') +
-      '</div>';
+      '<div class="mapv-listsub">Chạm vào từng điểm ghim trên bản đồ để mở hồ sơ di sản của làng nghề.</div>';
   }
 
   function dzRows(rows){ return rows.map(r => '<p><b>' + r[0] + ':</b> ' + r[1] + '</p>').join(''); }
