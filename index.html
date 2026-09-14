@@ -260,6 +260,7 @@
       <li><a href="#expo" data-go="expo">Bản đồ làng nghề</a></li>
       <li><a href="#market" data-go="market">Sản phẩm</a></li>
       <li><a href="#story" data-go="story">Bài viết</a></li>
+      <li class="menu-seller" id="menuSellerItem" hidden><a href="#seller" data-go="seller">Kênh người bán</a></li>
       <li class="menu-login"><a href="#" id="loginMenuLink">Đăng nhập</a></li>
     </ul>
     <div class="nav-right">
@@ -695,6 +696,99 @@
           <summary>KIMVIE có nhận đặt riêng / quà tặng doanh nghiệp?</summary>
           <div class="fa">Có. KIMVIE nhận đặt sản phẩm theo yêu cầu (khắc tên, hoa văn riêng, hộp quà thương hiệu) từ 20 sản phẩm. Liên hệ CSKH để được báo giá trong 24h.</div>
         </details>
+      </div>
+    </div>
+  </section>
+</main>
+
+<!-- ================= KÊNH NGƯỜI BÁN ================= -->
+<main data-page="seller">
+  <section class="page-hero">
+    <img class="cloud-r deco-cloud bright" src="assets/deco/mây.png" alt="" style="width:200px" loading="lazy">
+    <img class="cloud-l deco-cloud bright flip" src="assets/deco/mây.png" alt="" style="width:150px" loading="lazy">
+    <div class="wrap">
+      <div class="crumb">Trang chủ ✦ Kênh người bán</div>
+      <h1>Kênh người bán</h1>
+      <p id="sellerHeroDesc">Quản lý gian hàng, đăng sản phẩm mới và theo dõi hoạt động bán hàng của bạn trên KIMVIE.</p>
+    </div>
+  </section>
+
+  <section class="pad">
+    <div class="wrap">
+      <div class="seller-tabs" role="tablist" aria-label="Chuyển đổi khu vực kênh người bán">
+        <button class="chip on" data-sv="dash" type="button" role="tab" aria-selected="true">Tổng quan</button>
+        <button class="chip" data-sv="myp" type="button" role="tab" aria-selected="false">Sản phẩm của tôi</button>
+        <button class="chip" data-sv="post" type="button" role="tab" aria-selected="false">Đăng sản phẩm</button>
+      </div>
+
+      <!-- TỔNG QUAN -->
+      <div class="seller-view on" id="sv-dash" role="tabpanel">
+        <div class="stat-grid" id="sellerStats"></div>
+        <div class="sec-head" style="text-align:left;max-width:none;margin:0 0 20px">
+          <span class="kicker">Gần đây</span>
+          <h2 class="lc" style="font-size:clamp(22px,2.6vw,28px)">Sản phẩm đăng gần đây</h2>
+        </div>
+        <div class="p-grid wide" id="sellerRecent"></div>
+      </div>
+
+      <!-- SẢN PHẨM CỦA TÔI -->
+      <div class="seller-view" id="sv-myp" role="tabpanel">
+        <div class="m-head">
+          <div><span class="kicker">Gian hàng của bạn</span><h2>Sản phẩm của tôi</h2></div>
+          <button class="btn btn-amber" data-sv="post" type="button">+ Đăng sản phẩm mới</button>
+        </div>
+        <div class="p-grid wide" id="sellerProducts"></div>
+      </div>
+
+      <!-- ĐĂNG SẢN PHẨM -->
+      <div class="seller-view" id="sv-post" role="tabpanel">
+        <div class="sec-head" style="text-align:left;max-width:640px;margin:0 0 32px">
+          <span class="kicker">Gian hàng của bạn</span>
+          <h2 class="lc" id="postFormTitle" style="font-size:clamp(22px,2.6vw,28px)">Đăng sản phẩm mới</h2>
+        </div>
+        <form class="seller-form ck-field-group" id="sellerForm" novalidate>
+          <input type="hidden" id="spEditId">
+          <div class="ck-field">
+            <label for="spName">Tên sản phẩm <em>*</em></label>
+            <input type="text" id="spName" placeholder="VD: Bình gốm men lam" required>
+          </div>
+          <div class="ck-field">
+            <label for="spVillage">Làng nghề <em>*</em></label>
+            <select id="spVillage" required>
+              <option value="">— Chọn làng nghề —</option>
+              <option value="bt">Bát Tràng — Gốm</option>
+              <option value="vp">Vạn Phúc — Lụa</option>
+              <option value="pv">Phú Vinh — Mây tre đan</option>
+            </select>
+          </div>
+          <div class="ck-field">
+            <label for="spPrice">Giá bán (đ) <em>*</em></label>
+            <input type="number" id="spPrice" min="1000" step="1000" placeholder="VD: 450000" required>
+          </div>
+          <div class="ck-field">
+            <label for="spStock">Số lượng tồn kho <em>*</em></label>
+            <input type="number" id="spStock" min="0" step="1" placeholder="VD: 20" required>
+          </div>
+          <div class="ck-field">
+            <label for="spDesc">Mô tả sản phẩm</label>
+            <textarea id="spDesc" rows="4" placeholder="Chất liệu, kích thước, câu chuyện sản phẩm…"></textarea>
+          </div>
+          <div class="ck-field">
+            <label for="spImg">Hình ảnh sản phẩm</label>
+            <div class="img-upload">
+              <label class="btn btn-line" for="spImg" style="cursor:pointer">Chọn ảnh</label>
+              <input type="file" id="spImg" accept="image/*" hidden>
+              <span class="img-upload-name" id="spImgName">Chưa chọn ảnh</span>
+            </div>
+            <div class="img-preview" id="spImgPreview" hidden>
+              <img id="spImgPreviewImg" alt="Ảnh sản phẩm xem trước">
+              <button type="button" id="spImgClear" aria-label="Xóa ảnh đã chọn">✕</button>
+            </div>
+          </div>
+          <p class="ck-err" id="spErr" role="alert"></p>
+          <button class="btn btn-amber ck-cta" type="submit" id="spSubmitBtn">Đăng sản phẩm →</button>
+          <button class="ck-back" type="button" id="spCancelEdit" hidden>← Hủy chỉnh sửa</button>
+        </form>
       </div>
     </div>
   </section>
@@ -1286,7 +1380,48 @@
         <div class="idrow"><span>Email</span><b id="pfEmail">—</b></div>
         <div class="idrow"><span>Số điện thoại</span><b id="pfPhone">—</b></div>
         <div class="idrow"><span>Hạng thành viên</span><b>Lữ khách KIMVIE</b></div>
-        <button class="btn btn-line ck-cta" id="logoutBtn" type="button" style="margin-top:20px">Đăng xuất</button>
+
+        <div class="seller-cta" id="sellerCta">
+          <p>Bạn có sản phẩm làng nghề muốn bán trên KIMVIE?</p>
+          <button class="btn btn-line" id="becomeSellerBtn" type="button" style="width:100%;justify-content:center">Đăng ký làm người bán</button>
+        </div>
+        <div class="seller-mini" id="sellerMini" hidden>
+          <span class="seller-mini-tag">Kênh người bán</span>
+          <h5 id="sellerMiniName"></h5>
+          <button class="btn btn-amber" id="goSellerBtn" type="button" style="width:100%;justify-content:center">Vào trang quản lý →</button>
+        </div>
+
+        <button class="btn btn-line ck-cta" id="logoutBtn" type="button" style="margin-top:12px">Đăng xuất</button>
+      </div>
+      <!-- đăng ký làm người bán -->
+      <div id="sellerRegisterBox" hidden>
+        <form id="sellerRegisterForm" novalidate>
+          <div class="ck-field">
+            <label for="srShop">Tên gian hàng / Nghệ nhân <em>*</em></label>
+            <input type="text" id="srShop" placeholder="VD: Gốm Minh Long" required>
+          </div>
+          <div class="ck-field">
+            <label for="srVillage">Làng nghề <em>*</em></label>
+            <select id="srVillage" required>
+              <option value="">— Chọn làng nghề —</option>
+              <option value="bt">Bát Tràng — Gốm</option>
+              <option value="vp">Vạn Phúc — Lụa</option>
+              <option value="pv">Phú Vinh — Mây tre đan</option>
+            </select>
+          </div>
+          <div class="ck-field">
+            <label for="srPhone">Số điện thoại liên hệ <em>*</em></label>
+            <input type="tel" id="srPhone" placeholder="09xx xxx xxx" required>
+          </div>
+          <div class="ck-field">
+            <label for="srBio">Giới thiệu ngắn</label>
+            <textarea id="srBio" rows="3" placeholder="Vài dòng về gian hàng của bạn…"></textarea>
+          </div>
+          <p class="ck-err" id="srErr" role="alert"></p>
+          <button class="btn btn-amber ck-cta" type="submit">Hoàn tất đăng ký →</button>
+          <button class="ck-back" type="button" id="srCancel">← Quay lại</button>
+          <p class="demo-note" style="margin-top:14px">✦ Bản demo — thông tin chỉ lưu trên trình duyệt của bạn ✦</p>
+        </form>
       </div>
     </div>
   </div>

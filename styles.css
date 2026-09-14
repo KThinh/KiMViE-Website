@@ -1045,13 +1045,15 @@ footer{color:rgba(250,245,233,.78)}
 .ck-field{margin-bottom:14px}
 .ck-field label{display:block;font-size:12px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--gold-soft);margin-bottom:7px}
 .ck-field label em{color:var(--vermilion);font-style:normal}
-.ck-field input{
+.ck-field input,.ck-field select,.ck-field textarea{
   width:100%;padding:13px 15px;border:1px solid var(--line);border-radius:4px;
   background:rgba(250,245,233,.7);font-family:var(--sans);font-size:14.5px;color:var(--ink);
   transition:border-color .2s,box-shadow .2s;min-height:46px;
 }
-.ck-field input::placeholder{color:var(--muted-2)}
-.ck-field input:focus{outline:none;border-color:var(--gold);box-shadow:0 0 0 3px rgba(217,148,63,.16)}
+.ck-field textarea{min-height:0;resize:vertical;line-height:1.6}
+.ck-field select{cursor:pointer}
+.ck-field input::placeholder,.ck-field textarea::placeholder{color:var(--muted-2)}
+.ck-field input:focus,.ck-field select:focus,.ck-field textarea:focus{outline:none;border-color:var(--gold);box-shadow:0 0 0 3px rgba(217,148,63,.16)}
 .ck-err{font-size:12.5px;color:var(--vermilion);min-height:18px;margin:2px 0 4px}
 .ck-qr{display:flex;gap:20px;align-items:center;border:1px dashed var(--gold);border-radius:10px;padding:18px;background:rgba(250,245,233,.6)}
 .ck-qr img{width:170px;height:170px;object-fit:contain;background:#fff;border:1px solid var(--line);border-radius:8px;padding:8px;flex:none}
@@ -1404,6 +1406,58 @@ footer{color:rgba(250,245,233,.78)}
 .profile-hero h4{font-family:var(--serif);font-size:21px;color:var(--pearl)}
 .profile-hero p{font-size:12px;color:var(--muted)}
 
+/* =========================================================================
+   KÊNH NGƯỜI BÁN (seller channel)
+   ========================================================================= */
+.seller-cta{border:1px dashed var(--gold);border-radius:8px;padding:16px;margin:18px 0 0;text-align:center}
+.seller-cta p{font-size:12.5px;color:var(--muted);margin-bottom:12px}
+.seller-mini{border:1px solid var(--line);border-radius:8px;padding:16px;margin:18px 0 0;background:rgba(217,148,63,.08)}
+.seller-mini-tag{display:block;font-size:11px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--gold-soft);margin-bottom:6px}
+.seller-mini h5{font-family:var(--serif);font-size:17px;color:var(--pearl);margin-bottom:12px}
+
+.seller-tabs{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:40px}
+.seller-view{display:none}
+.seller-view.on{display:block}
+
+.stat-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:18px;margin-bottom:52px}
+.stat-card{
+  background:linear-gradient(165deg,rgba(247,241,226,.82),rgba(242,235,218,.78));
+  border:1px solid var(--line);border-radius:8px;padding:22px;
+}
+.stat-card .stat-label{font-size:11px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--gold-soft)}
+.stat-card .stat-val{font-family:var(--serif);font-size:30px;font-weight:700;color:var(--pearl);margin-top:10px;line-height:1.15}
+.stat-card .stat-sub{font-size:12px;color:var(--muted);margin-top:4px}
+
+.seller-form{max-width:640px}
+.img-upload{display:flex;align-items:center;gap:14px;flex-wrap:wrap}
+.img-upload-name{font-size:12.5px;color:var(--muted)}
+.img-preview{position:relative;margin-top:14px;width:150px}
+.img-preview img{width:150px;height:150px;object-fit:cover;border-radius:6px;border:1px solid var(--line)}
+.img-preview button{
+  position:absolute;top:-9px;right:-9px;width:26px;height:26px;border-radius:50%;
+  background:var(--navy);color:#fff;font-size:12px;display:grid;place-items:center;
+  border:2px solid var(--cream2);
+}
+.img-preview button:hover{background:var(--vermilion)}
+
+.stock-badge{display:inline-block;font-size:11px;font-weight:700;letter-spacing:.04em;padding:3px 10px;border-radius:999px;margin:-4px 0 10px}
+.stock-badge.in{background:rgba(46,82,51,.14);color:var(--jade)}
+.stock-badge.out{background:rgba(168,53,44,.12);color:var(--vermilion)}
+.myp-actions{display:flex;gap:8px;margin-top:12px}
+.myp-actions button{
+  flex:1;padding:10px;border-radius:4px;border:1px solid var(--line);font-size:12.5px;font-weight:600;
+  min-height:40px;transition:background .2s,border-color .2s,color .2s;
+}
+.myp-edit{color:var(--gold-soft)}
+.myp-edit:hover{background:var(--amber-soft);border-color:var(--gold)}
+.myp-del{color:var(--vermilion)}
+.myp-del:hover{background:rgba(168,53,44,.10);border-color:var(--vermilion)}
+
+.seller-empty{
+  grid-column:1/-1;text-align:center;padding:56px 20px;border:1px dashed var(--line);border-radius:10px;color:var(--muted);
+}
+.seller-empty p{margin-bottom:16px;font-size:14px}
+
 /* nút bật tắt nhạc nền nổi — thay cho icon header bị ẩn trên điện thoại */
 .audio-fab{
   position:fixed;right:16px;bottom:16px;z-index:var(--z-fab);
@@ -1639,10 +1693,22 @@ footer{color:rgba(250,245,233,.78)}
   .f-grid h5{font-size:10.5px;margin-bottom:12px}
   .f-grid a.fl{font-size:13px;margin-bottom:9px}
   .f-bottom{padding:14px 0;font-size:11px}
+
+  /* ---- 18 · kênh người bán ---- */
+  .stat-grid{grid-template-columns:repeat(2,1fr);gap:12px;margin-bottom:36px}
+  .stat-card{padding:16px}
+  .stat-card .stat-val{font-size:24px}
+  .seller-tabs{overflow-x:auto;flex-wrap:nowrap;margin:0 -22px 28px;padding:0 22px}
+  .seller-tabs::-webkit-scrollbar{display:none}
+  .seller-tabs .chip{flex:none}
 }
 
 /* điện thoại nhỏ: giữ lưới sản phẩm 2 cột (1 cột phóng ảnh quá to) */
 @media (max-width:420px){
   .p-grid,.p-grid.wide{grid-template-columns:repeat(2,1fr);gap:10px}
   .bst-card{flex-basis:80%}
+}
+
+@media (max-width:480px){
+  .stat-grid{grid-template-columns:1fr}
 }

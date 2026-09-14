@@ -7,6 +7,10 @@
 const pages = document.querySelectorAll('main[data-page]');
 const navLinks = document.querySelectorAll('[data-go]');
 function go(p){
+  if(p === 'seller' && !(window.kvIsSeller && window.kvIsSeller())){
+    showToast('Hãy đăng ký làm người bán để mở Kênh người bán ✦');
+    p = 'home';
+  }
   if(![...pages].some(m => m.dataset.page === p)) p = 'home';   // trang cũ (vd: lang) -> về trang chủ
   pages.forEach(m => m.classList.toggle('active', m.dataset.page === p));
   const nk = (p === 'article' || p.startsWith('art-')) ? 'story' : p;
@@ -24,6 +28,10 @@ const navToggle = document.getElementById('navToggle');
 if(navToggle){
   navToggle.addEventListener('click', () => document.body.classList.toggle('nav-open'));
 }
+
+/* ===== kênh người bán — hằng số dùng chung ===== */
+const KV_SELLER_KEY = 'kvSellerProducts';
+const VILLAGE_LABEL = {bt:'Bát Tràng', vp:'Vạn Phúc', pv:'Phú Vinh'};
 
 /* ===== cart + checkout (mô phỏng) ===== */
 const CART_KEY = 'kvCart';
@@ -57,6 +65,30 @@ document.querySelectorAll('.cart-btn').forEach(b => b.addEventListener('click', 
   addToCart(b.dataset.name || 'Sản phẩm', price);
 }));
 saveCart();
+
+/* ===== chèn sản phẩm của người bán (đăng từ Kênh người bán) vào Sàn thương mại =====
+   có thể gọi lại bất cứ lúc nào (vd. sau khi đăng/sửa/xóa sản phẩm) để đồng bộ lưới —
+   nên phải tự dọn các thẻ cũ trước khi chèn lại, tránh trùng lặp */
+function kvInjectSellerMarketCards(){
+  const grid = document.getElementById('allProducts');
+  if(!grid) return;
+  grid.querySelectorAll('[data-seller-card]').forEach(el => el.remove());
+  let items = [];
+  try{ items = JSON.parse(localStorage.getItem(KV_SELLER_KEY) || '[]'); }catch(e){ items = []; }
+  items.slice().reverse().forEach(p => {
+    const art = document.createElement('article');
+    art.className = 'p-card'; art.dataset.p = p.id; art.dataset.v = p.village; art.dataset.sellerCard = '1';
+    art.innerHTML =
+      '<div class="p-art' + (p.img ? ' has-img' : '') + '">' + (p.img ? '<img src="' + p.img + '" alt="' + p.name + '" loading="lazy">' : '') + '</div>' +
+      '<span class="sold">★ Sản phẩm của bạn</span>' +
+      '<h4>' + p.name + '</h4><div class="pl">' + (VILLAGE_LABEL[p.village] || '') + '</div>' +
+      '<div class="p-foot"><span class="price">' + fmtVnd(p.price) + '</span><button class="cart-btn" aria-label="Thêm vào giỏ hàng" type="button"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M5 7h14l-1.2 10.3a2 2 0 0 1-2 1.7H8.2a2 2 0 0 1-2-1.7Z"/><path d="M9 7a3 3 0 0 1 6 0"/></svg></button></div>';
+    art.querySelector('.cart-btn').addEventListener('click', e => { e.stopPropagation(); addToCart(p.name, p.price); });
+    grid.insertBefore(art, grid.firstChild);
+  });
+  if(window.kvRefreshMarket) window.kvRefreshMarket();
+}
+kvInjectSellerMarketCards();
 
 /* checkout modal — 4 steps: cart -> info -> QR -> done */
 const cartModal = document.getElementById('cartModal');
@@ -460,14 +492,17 @@ document.getElementById('mBuy').addEventListener('click', e => {
   }
 });
 
-/* ===== market filters + pagination — 12 sản phẩm/trang, lấp đầy lưới (4·3·2·1 cột) rồi mới sang trang ===== */
+/* ===== market filters + pagination — 12 sản phẩm/trang, lấp đầy lưới (4·3·2·1 cột) rồi mới sang trang =====
+   truy vấn lại .p-card mỗi lần render (thay vì chỉ 1 lần) vì kvInjectSellerMarketCards() có thể
+   thêm/xóa thẻ sau khi trang đã tải (đăng/sửa/xóa sản phẩm từ Kênh người bán) */
 (function(){
   const PER_PAGE = 12;
   let curFilter = 'all', curPage = 1;
-  const cards = [...document.querySelectorAll('#allProducts .p-card')];
   const pager = document.getElementById('marketPager');
-  if(!cards.length || !pager) return;
+  if(!document.querySelector('#allProducts .p-card') || !pager) return;
+  window.kvRefreshMarket = renderMarket;
   function renderMarket(){
+    const cards = [...document.querySelectorAll('#allProducts .p-card')];
     const vis = cards.filter(p => curFilter === 'all' || p.dataset.v === curFilter);
     const pages = Math.max(1, Math.ceil(vis.length / PER_PAGE));
     if(curPage > pages) curPage = pages;
@@ -1009,7 +1044,19 @@ document.querySelectorAll('[data-village]').forEach(a => a.addEventListener('cli
   const profile = document.getElementById('profileBox');
   const loginBtn = document.getElementById('loginBtn');
   const loginMenuLink = document.getElementById('loginMenuLink');
+  const menuSellerItem = document.getElementById('menuSellerItem');
+  const sellerCta = document.getElementById('sellerCta');
+  const sellerMini = document.getElementById('sellerMini');
+  const sellerMiniName = document.getElementById('sellerMiniName');
+  const becomeSellerBtn = document.getElementById('becomeSellerBtn');
+  const goSellerBtn = document.getElementById('goSellerBtn');
+  const sellerRegisterBox = document.getElementById('sellerRegisterBox');
+  const sellerRegisterForm = document.getElementById('sellerRegisterForm');
+  const srCancel = document.getElementById('srCancel');
+  const srErr = document.getElementById('srErr');
   let user = JSON.parse(localStorage.getItem('kvUser') || 'null');
+
+  window.kvIsSeller = () => !!(user && user.isSeller);
 
   function paint(){
     if(user){
@@ -1021,10 +1068,20 @@ document.querySelectorAll('[data-village]').forEach(a => a.addEventListener('cli
       loginBtn.removeAttribute('title');
       loginMenuLink.textContent = 'Đăng nhập';
     }
+    if(menuSellerItem) menuSellerItem.hidden = !window.kvIsSeller();
+  }
+  function showProfileView(){
+    document.getElementById('loginTitle').textContent = 'Tài khoản của bạn';
+    profile.hidden = false; sellerRegisterBox.hidden = true;
+    const isSeller = window.kvIsSeller();
+    sellerCta.hidden = isSeller;
+    sellerMini.hidden = !isSeller;
+    if(isSeller) sellerMiniName.textContent = user.seller.shopName;
   }
   function openModal(){
     const logged = !!user;
-    form.hidden = logged; profile.hidden = !logged;
+    form.hidden = logged;
+    sellerRegisterBox.hidden = true;
     document.getElementById('loginTitle').textContent = logged ? 'Tài khoản của bạn' : 'Đăng nhập KIMVIE';
     if(logged){
       document.getElementById('pfName').textContent = user.name;
@@ -1032,6 +1089,9 @@ document.querySelectorAll('[data-village]').forEach(a => a.addEventListener('cli
       document.getElementById('pfMeta').textContent = 'Thành viên từ ' + user.since;
       document.getElementById('pfEmail').textContent = user.email || '—';
       document.getElementById('pfPhone').textContent = user.phone || '—';
+      showProfileView();
+    } else {
+      profile.hidden = true;
     }
     modal.classList.add('open');
   }
@@ -1039,11 +1099,13 @@ document.querySelectorAll('[data-village]').forEach(a => a.addEventListener('cli
 
   form.addEventListener('submit', e => {
     e.preventDefault();                                  // demo: chấp nhận mọi thông tin
+    const prevSeller = user && user.isSeller ? {isSeller:user.isSeller, seller:user.seller} : null;
     user = {
       name: document.getElementById('lgName').value.trim() || 'Khách KIMVIE',
       email: document.getElementById('lgEmail').value.trim(),
       phone: document.getElementById('lgPhone').value.trim(),
-      since: new Date().toLocaleDateString('vi-VN')
+      since: new Date().toLocaleDateString('vi-VN'),
+      ...(prevSeller || {})
     };
     localStorage.setItem('kvUser', JSON.stringify(user));
     paint(); close();
@@ -1062,7 +1124,232 @@ document.querySelectorAll('[data-village]').forEach(a => a.addEventListener('cli
   });
   modal.querySelectorAll('[data-lx]').forEach(el => el.addEventListener('click', close));
   document.addEventListener('keydown', e => { if(e.key === 'Escape') close(); });
+
+  /* ---- đăng ký làm người bán ---- */
+  becomeSellerBtn.addEventListener('click', () => {
+    profile.hidden = true; sellerRegisterBox.hidden = false;
+    document.getElementById('loginTitle').textContent = 'Đăng ký làm người bán';
+    srErr.textContent = '';
+  });
+  srCancel.addEventListener('click', () => showProfileView());
+  goSellerBtn.addEventListener('click', () => { close(); go('seller'); });
+  sellerRegisterForm.addEventListener('submit', e => {
+    e.preventDefault();
+    const shop = document.getElementById('srShop').value.trim();
+    const village = document.getElementById('srVillage').value;
+    const phone = document.getElementById('srPhone').value.trim();
+    const bio = document.getElementById('srBio').value.trim();
+    if(!shop || !village || !phone){
+      srErr.textContent = 'Vui lòng điền đầy đủ các mục có dấu *.';
+      return;
+    }
+    user.isSeller = true;
+    user.seller = {shopName:shop, village, phone, bio, since:new Date().toLocaleDateString('vi-VN')};
+    localStorage.setItem('kvUser', JSON.stringify(user));
+    paint();
+    sellerRegisterForm.reset();
+    close();
+    showToast('✦ Chào mừng người bán <b>' + shop + '</b> đến với KIMVIE!');
+    go('seller');
+  });
+
   paint();
+})();
+
+/* =========================================================================
+   KÊNH NGƯỜI BÁN — tổng quan, quản lý sản phẩm, đăng sản phẩm (demo, lưu local)
+   ========================================================================= */
+(function(){
+  const form = document.getElementById('sellerForm');
+  if(!form) return;
+
+  let products = [];
+  try{ products = JSON.parse(localStorage.getItem(KV_SELLER_KEY) || '[]'); }catch(e){ products = []; }
+  const save = () => {
+    localStorage.setItem(KV_SELLER_KEY, JSON.stringify(products));
+    if(window.kvInjectSellerMarketCards) window.kvInjectSellerMarketCards();
+  };
+
+  /* ---- chuyển tab (Tổng quan / Sản phẩm của tôi / Đăng sản phẩm) ----
+     dùng ủy quyền sự kiện vì nút CTA của trạng thái rỗng được chèn động sau này */
+  const sellerPage = document.querySelector('main[data-page="seller"]');
+  function setTab(name){
+    document.querySelectorAll('.seller-tabs .chip').forEach(c => {
+      const on = c.dataset.sv === name;
+      c.classList.toggle('on', on); c.setAttribute('aria-selected', on ? 'true' : 'false');
+    });
+    document.querySelectorAll('.seller-view').forEach(v => v.classList.toggle('on', v.id === 'sv-' + name));
+    if(name !== 'post') cancelEdit();
+    const tabsEl = document.querySelector('.seller-tabs');
+    if(tabsEl) tabsEl.scrollIntoView({behavior:'smooth', block:'start'});
+  }
+  sellerPage.addEventListener('click', e => {
+    const t = e.target.closest('[data-sv]');
+    if(t) setTab(t.dataset.sv);
+  });
+
+  /* ---- thẻ sản phẩm dùng chung cho Tổng quan / Sản phẩm của tôi ---- */
+  function cardHTML(p, manage){
+    const inStock = p.stock > 0;
+    return (
+      '<article class="p-card" data-id="' + p.id + '">' +
+        '<div class="p-art' + (p.img ? ' has-img' : '') + '">' + (p.img ? '<img src="' + p.img + '" alt="' + p.name + '" loading="lazy">' : '') + '</div>' +
+        '<span class="stock-badge ' + (inStock ? 'in' : 'out') + '">' + (inStock ? 'Còn ' + p.stock + ' sản phẩm' : 'Hết hàng') + '</span>' +
+        '<h4>' + p.name + '</h4><div class="pl">' + (VILLAGE_LABEL[p.village] || '') + '</div>' +
+        '<div class="p-foot"><span class="price">' + fmtVnd(p.price) + '</span></div>' +
+        (manage ?
+          '<div class="myp-actions">' +
+            '<button type="button" class="myp-edit" data-edit="' + p.id + '">Sửa</button>' +
+            '<button type="button" class="myp-del" data-del="' + p.id + '">Xóa</button>' +
+          '</div>' : '') +
+      '</article>'
+    );
+  }
+  function emptyHTML(msg){
+    return '<div class="seller-empty"><p>' + msg + '</p><button class="btn btn-amber" data-sv="post" type="button">Đăng sản phẩm đầu tiên →</button></div>';
+  }
+
+  function renderStats(){
+    const box = document.getElementById('sellerStats'); if(!box) return;
+    const total = products.length;
+    const inStock = products.filter(p => p.stock > 0).length;
+    const outStock = total - inStock;
+    const value = products.reduce((s, p) => s + p.price * p.stock, 0);
+    box.innerHTML =
+      '<div class="stat-card"><span class="stat-label">Tổng sản phẩm</span><div class="stat-val">' + total + '</div><div class="stat-sub">đã đăng lên gian hàng</div></div>' +
+      '<div class="stat-card"><span class="stat-label">Còn hàng</span><div class="stat-val">' + inStock + '</div><div class="stat-sub">sản phẩm sẵn sàng bán</div></div>' +
+      '<div class="stat-card"><span class="stat-label">Hết hàng</span><div class="stat-val">' + outStock + '</div><div class="stat-sub">cần nhập thêm tồn kho</div></div>' +
+      '<div class="stat-card"><span class="stat-label">Giá trị kho ước tính</span><div class="stat-val" style="font-size:22px">' + fmtVnd(value) + '</div><div class="stat-sub">theo giá bán hiện tại</div></div>';
+  }
+  function renderRecent(){
+    const box = document.getElementById('sellerRecent'); if(!box) return;
+    if(!products.length){ box.innerHTML = emptyHTML('Bạn chưa đăng sản phẩm nào. Hãy bắt đầu với món hàng thủ công đầu tiên của bạn.'); return; }
+    box.innerHTML = products.slice().reverse().slice(0, 4).map(p => cardHTML(p, false)).join('');
+  }
+  function renderMyProducts(){
+    const box = document.getElementById('sellerProducts'); if(!box) return;
+    if(!products.length){ box.innerHTML = emptyHTML('Gian hàng của bạn hiện chưa có sản phẩm nào.'); return; }
+    box.innerHTML = products.slice().reverse().map(p => cardHTML(p, true)).join('');
+  }
+  function renderAll(){ renderStats(); renderRecent(); renderMyProducts(); }
+
+  /* ---- ảnh sản phẩm: đọc file, nén xuống tối đa 640px để nhẹ localStorage ---- */
+  const spImg = document.getElementById('spImg');
+  const spImgName = document.getElementById('spImgName');
+  const spImgPreview = document.getElementById('spImgPreview');
+  const spImgPreviewImg = document.getElementById('spImgPreviewImg');
+  const spImgClear = document.getElementById('spImgClear');
+  let pendingImg = '';
+  let imgCleared = false;
+  function setPreview(src){
+    pendingImg = src || '';
+    if(pendingImg){ spImgPreviewImg.src = pendingImg; spImgPreview.hidden = false; }
+    else { spImgPreview.hidden = true; spImgPreviewImg.src = ''; }
+  }
+  spImg.addEventListener('change', () => {
+    const file = spImg.files && spImg.files[0]; if(!file) return;
+    spImgName.textContent = file.name;
+    const reader = new FileReader();
+    reader.onload = () => {
+      const img = new Image();
+      img.onload = () => {
+        const maxW = 640;
+        const scale = Math.min(1, maxW / img.width);
+        const canvas = document.createElement('canvas');
+        canvas.width = img.width * scale; canvas.height = img.height * scale;
+        canvas.getContext('2d').drawImage(img, 0, 0, canvas.width, canvas.height);
+        setPreview(canvas.toDataURL('image/jpeg', 0.82));
+      };
+      img.src = reader.result;
+    };
+    reader.readAsDataURL(file);
+    imgCleared = false;
+  });
+  spImgClear.addEventListener('click', () => {
+    spImg.value = ''; spImgName.textContent = 'Chưa chọn ảnh'; setPreview('');
+    imgCleared = true;
+  });
+
+  /* ---- đăng / cập nhật sản phẩm ---- */
+  const spErr = document.getElementById('spErr');
+  const spEditId = document.getElementById('spEditId');
+  const spSubmitBtn = document.getElementById('spSubmitBtn');
+  const spCancelEdit = document.getElementById('spCancelEdit');
+  const postFormTitle = document.getElementById('postFormTitle');
+
+  function fillForm(p){
+    document.getElementById('spName').value = p.name;
+    document.getElementById('spVillage').value = p.village;
+    document.getElementById('spPrice').value = p.price;
+    document.getElementById('spStock').value = p.stock;
+    document.getElementById('spDesc').value = p.desc || '';
+    spImgName.textContent = p.img ? 'Đã có ảnh — chọn ảnh khác nếu muốn đổi' : 'Chưa chọn ảnh';
+    setPreview(p.img || '');
+    imgCleared = false;
+  }
+  function cancelEdit(){
+    spEditId.value = '';
+    form.reset();
+    setPreview('');
+    imgCleared = false;
+    spImgName.textContent = 'Chưa chọn ảnh';
+    spSubmitBtn.textContent = 'Đăng sản phẩm →';
+    spCancelEdit.hidden = true;
+    postFormTitle.textContent = 'Đăng sản phẩm mới';
+    spErr.textContent = '';
+  }
+  spCancelEdit.addEventListener('click', cancelEdit);
+
+  function startEdit(id){
+    const p = products.find(x => x.id === id); if(!p) return;
+    spEditId.value = id;
+    fillForm(p);
+    spSubmitBtn.textContent = 'Cập nhật sản phẩm →';
+    spCancelEdit.hidden = false;
+    postFormTitle.textContent = 'Chỉnh sửa sản phẩm';
+    setTab('post');
+  }
+  function removeProduct(id){
+    if(!confirm('Xóa sản phẩm này khỏi gian hàng của bạn?')) return;
+    products = products.filter(x => x.id !== id);
+    save(); renderAll();
+    showToast('Đã xóa sản phẩm khỏi gian hàng.');
+  }
+
+  document.getElementById('sellerProducts').addEventListener('click', e => {
+    const editBtn = e.target.closest('[data-edit]');
+    const delBtn = e.target.closest('[data-del]');
+    if(editBtn) startEdit(editBtn.dataset.edit);
+    if(delBtn) removeProduct(delBtn.dataset.del);
+  });
+
+  form.addEventListener('submit', e => {
+    e.preventDefault();
+    const name = document.getElementById('spName').value.trim();
+    const village = document.getElementById('spVillage').value;
+    const price = parseInt(document.getElementById('spPrice').value, 10);
+    const stock = parseInt(document.getElementById('spStock').value, 10);
+    const desc = document.getElementById('spDesc').value.trim();
+    if(!name || !village || !price || price <= 0 || isNaN(stock) || stock < 0){
+      spErr.textContent = 'Vui lòng điền đầy đủ các mục có dấu * với giá trị hợp lệ.';
+      return;
+    }
+    const editId = spEditId.value;
+    if(editId){
+      const p = products.find(x => x.id === editId);
+      Object.assign(p, {name, village, price, stock, desc, img: imgCleared ? '' : (pendingImg || p.img)});
+      showToast('✦ Đã cập nhật <b>' + name + '</b>.');
+    } else {
+      products.push({id:'sp_' + Date.now(), name, village, price, stock, desc, img:pendingImg, createdAt:Date.now()});
+      showToast('✦ Đã đăng <b>' + name + '</b> lên gian hàng của bạn!');
+    }
+    save();
+    cancelEdit();
+    renderAll();
+    setTab('myp');
+  });
+
+  renderAll();
 })();
 
 /* =========================================================================
