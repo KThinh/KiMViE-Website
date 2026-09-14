@@ -12,6 +12,7 @@ function go(p){
     p = 'home';
   }
   if(![...pages].some(m => m.dataset.page === p)) p = 'home';   // trang cũ (vd: lang) -> về trang chủ
+  if(p === 'seller' && window.kvRefreshSellerDashboard) window.kvRefreshSellerDashboard();
   pages.forEach(m => m.classList.toggle('active', m.dataset.page === p));
   const nk = (p === 'article' || p.startsWith('art-')) ? 'story' : p;
   document.querySelectorAll('.menu a').forEach(a => a.classList.toggle('on', a.dataset.go === nk));
@@ -29,11 +30,34 @@ if(navToggle){
   navToggle.addEventListener('click', () => document.body.classList.toggle('nav-open'));
 }
 
-/* ===== kênh người bán — hằng số dùng chung ===== */
-const KV_SELLER_KEY = 'kvSellerProducts';
-const VILLAGE_LABEL = {bt:'Bát Tràng', vp:'Vạn Phúc', pv:'Phú Vinh'};
+/* =========================================================================
+   KIMVIE backend API (FastAPI + SQLite) — helper gọi API dùng chung toàn bộ file.
+   Mặc định gọi cùng origin (server FastAPI mount luôn trang tĩnh này); có thể trỏ
+   sang origin khác lúc dev bằng cách đặt window.KV_API_BASE trước khi script chạy.
+   ========================================================================= */
+const KV_API_BASE = window.KV_API_BASE || '';
+function kvToken(){ return localStorage.getItem('kvToken'); }
+async function kvApi(path, opts){
+  opts = opts || {};
+  const headers = Object.assign({'Content-Type':'application/json'}, opts.headers || {});
+  const t = kvToken();
+  if(t) headers.Authorization = 'Bearer ' + t;
+  const res = await fetch(KV_API_BASE + path, Object.assign({}, opts, {headers}));
+  let data = null;
+  try{ data = await res.json(); }catch(e){ /* vd. 204 No Content khi xoá */ }
+  if(!res.ok){
+    const msg = data && data.detail ? (typeof data.detail === 'string' ? data.detail : JSON.stringify(data.detail)) : ('Lỗi máy chủ (' + res.status + ')');
+    throw new Error(msg);
+  }
+  return data;
+}
+let CURRENT_USER = null;   // gán bởi khối đăng nhập bên dưới — dùng để đánh dấu "★ Sản phẩm của bạn"
 
-/* ===== cart + checkout (mô phỏng) ===== */
+/* ===== kênh người bán — nhãn làng nghề dùng chung (khớp code trong database) ===== */
+const VILLAGE_LABEL = {bt:'Bát Tràng', vp:'Vạn Phúc', pv:'Phú Vinh'};
+const CRAFT_LABEL = {bt:'Gốm sứ', vp:'Lụa tơ tằm', pv:'Mây tre đan'};
+
+/* ===== cart + checkout ===== */
 const CART_KEY = 'kvCart';
 let cartItems = JSON.parse(localStorage.getItem(CART_KEY) || '[]');
 const badge = document.getElementById('cartBadge');
@@ -43,7 +67,7 @@ function showToast(html){
   toast.innerHTML = html; toast.classList.add('show');
   clearTimeout(toastT); toastT = setTimeout(() => toast.classList.remove('show'), 2400);
 }
-function fmtVnd(n){ return n.toLocaleString('vi-VN') + 'đ'; }
+function fmtVnd(n){ return Math.round(n).toLocaleString('vi-VN') + 'đ'; }
 function cartCount(){ return cartItems.reduce((s, i) => s + i.qty, 0); }
 function cartTotal(){ return cartItems.reduce((s, i) => s + i.price * i.qty, 0); }
 function saveCart(){
@@ -51,54 +75,35 @@ function saveCart(){
   const n = cartCount();
   badge.textContent = n; badge.classList.toggle('show', n > 0);
 }
-function addToCart(name, price){
-  const it = cartItems.find(i => i.name === name);
-  if(it) it.qty++; else cartItems.push({name, price, qty:1});
+/* id = mã sản phẩm thật trong database (bắt buộc để đặt hàng thật lúc thanh toán) */
+function addToCart(id, name, price){
+  const it = cartItems.find(i => i.id === id);
+  if(it) it.qty++; else cartItems.push({id, name, price, qty:1});
   saveCart();
   showToast('Đã thêm <b>' + name + '</b> vào giỏ hàng ✦');
   if(window.stamp) stamp('cart');
 }
 document.querySelectorAll('.cart-btn').forEach(b => b.addEventListener('click', (e) => {
   e.stopPropagation();
-  const priceEl = b.closest('.p-foot') ? b.closest('.p-foot').querySelector('.price') : null;
+  const card = b.closest('.p-card'); if(!card) return;
+  const priceEl = card.querySelector('.p-foot .price');
   const price = priceEl ? parseInt(priceEl.textContent.replace(/\D/g, ''), 10) || 0 : 0;
-  addToCart(b.dataset.name || 'Sản phẩm', price);
+  const h4 = card.querySelector('h4');
+  addToCart(card.dataset.p, h4 ? h4.textContent : 'Sản phẩm', price);
 }));
 saveCart();
 
-/* ===== chèn sản phẩm của người bán (đăng từ Kênh người bán) vào Sàn thương mại =====
-   có thể gọi lại bất cứ lúc nào (vd. sau khi đăng/sửa/xóa sản phẩm) để đồng bộ lưới —
-   nên phải tự dọn các thẻ cũ trước khi chèn lại, tránh trùng lặp */
-function kvInjectSellerMarketCards(){
-  const grid = document.getElementById('allProducts');
-  if(!grid) return;
-  grid.querySelectorAll('[data-seller-card]').forEach(el => el.remove());
-  let items = [];
-  try{ items = JSON.parse(localStorage.getItem(KV_SELLER_KEY) || '[]'); }catch(e){ items = []; }
-  items.slice().reverse().forEach(p => {
-    const art = document.createElement('article');
-    art.className = 'p-card'; art.dataset.p = p.id; art.dataset.v = p.village; art.dataset.sellerCard = '1';
-    art.innerHTML =
-      '<div class="p-art' + (p.img ? ' has-img' : '') + '">' + (p.img ? '<img src="' + p.img + '" alt="' + p.name + '" loading="lazy">' : '') + '</div>' +
-      '<span class="sold">★ Sản phẩm của bạn</span>' +
-      '<h4>' + p.name + '</h4><div class="pl">' + (VILLAGE_LABEL[p.village] || '') + '</div>' +
-      '<div class="p-foot"><span class="price">' + fmtVnd(p.price) + '</span><button class="cart-btn" aria-label="Thêm vào giỏ hàng" type="button"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M5 7h14l-1.2 10.3a2 2 0 0 1-2 1.7H8.2a2 2 0 0 1-2-1.7Z"/><path d="M9 7a3 3 0 0 1 6 0"/></svg></button></div>';
-    art.querySelector('.cart-btn').addEventListener('click', e => { e.stopPropagation(); addToCart(p.name, p.price); });
-    grid.insertBefore(art, grid.firstChild);
-  });
-  if(window.kvRefreshMarket) window.kvRefreshMarket();
-}
-kvInjectSellerMarketCards();
-
-/* checkout modal — 4 steps: cart -> info -> QR -> done */
+/* checkout modal — 4 steps: cart -> info -> QR -> done
+   Bước 1-2 tính tạm ở client để hiện số ngay (UX mượt); đơn hàng THẬT + số tiền
+   cuối cùng luôn lấy từ phản hồi của server (POST /api/orders) — server là nơi
+   quyết định giá/giảm giá/tồn kho, tránh client tự ý tính sai hoặc giả mạo. */
 const cartModal = document.getElementById('cartModal');
-/* ===== voucher (1 mã / hóa đơn, dùng xong hoặc quá hạn sẽ mất) ===== */
+/* ===== voucher — khớp đúng bảng VOUCHERS phía backend (app/routers/orders.py) ===== */
 const VOUCHERS = {
   GIULUA10:{type:'pct', val:10,    label:'Người Giữ Lửa — giảm 10%'},
   TINHHOA15:{type:'pct', val:15,   label:'Tinh hoa — giảm 15%'},
   FREESHIP:{type:'amt', val:30000, label:'Miễn 30.000đ phí vận chuyển'}
 };
-let usedVouchers = JSON.parse(localStorage.getItem('kvUsedVouchers') || '[]');
 let voucher = null;                                    // mã đang áp cho hóa đơn hiện tại
 function discountOf(total){
   if(!voucher) return 0;
@@ -109,7 +114,7 @@ function discountOf(total){
   if(!cartModal) return;
   const list = document.getElementById('cartList');
   const titles = {1:'Giỏ hàng của bạn', 2:'Thông tin nhận hàng', 3:'Quét QR để thanh toán', 4:'Hoàn tất đơn hàng'};
-  let step = 1, orderCode = '';
+  let step = 1;
 
   function setStep(s){
     step = s;
@@ -158,7 +163,6 @@ function discountOf(total){
     if(!code){ setVcMsg('Vui lòng nhập mã giảm giá.', true); return; }
     if(voucher){ setVcMsg('Chỉ được áp dụng 1 voucher cho mỗi hóa đơn — hãy bỏ mã hiện tại trước.', true); return; }
     if(!VOUCHERS[code]){ setVcMsg('Mã "' + code + '" không hợp lệ.', true); return; }
-    if(usedVouchers.includes(code)){ setVcMsg('Mã "' + code + '" đã được sử dụng hoặc hết hạn.', true); return; }
     voucher = code;
     document.getElementById('vcInput').value = '';
     setVcMsg('✓ Đã áp dụng: ' + VOUCHERS[code].label, false);
@@ -183,35 +187,67 @@ function discountOf(total){
     saveCart(); renderCart();
   });
 
-  document.getElementById('ckToInfo').addEventListener('click', () => { if(cartItems.length) setStep(2); });
+  let currentOrder = null;   // đơn hàng 'pending' vừa tạo ở server, chờ xác nhận thanh toán
 
-  document.getElementById('ckForm').addEventListener('submit', e => {
+  document.getElementById('ckToInfo').addEventListener('click', () => {
+    if(!cartItems.length) return;
+    if(!window.kvCurrentUser || !window.kvCurrentUser()){
+      closeCart();
+      showToast('Vui lòng đăng nhập để tiến hành thanh toán ✦');
+      if(window.kvOpenLogin) kvOpenLogin();
+      return;
+    }
+    setStep(2);
+  });
+
+  document.getElementById('ckForm').addEventListener('submit', async e => {
     e.preventDefault();
     const email = document.getElementById('ckEmail').value.trim();
+    const name = document.getElementById('ckName').value.trim();
     const addr = document.getElementById('ckAddr').value.trim();
     const err = document.getElementById('ckErr');
     if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)){ err.textContent = 'Vui lòng nhập địa chỉ email hợp lệ.'; return; }
     if(!addr){ err.textContent = 'Vui lòng nhập địa chỉ nhận hàng.'; return; }
     err.textContent = '';
-    orderCode = 'KIMVIE KV' + String(Date.now()).slice(-6);
-    document.getElementById('ckAmount').textContent = fmtVnd(cartTotal() - discountOf(cartTotal()));
-    document.getElementById('ckMemo').textContent = orderCode;
-    setStep(3);
+    const submitBtn = e.target.querySelector('[type=submit]');
+    submitBtn.disabled = true;
+    try{
+      currentOrder = await kvApi('/api/orders', {method:'POST', body: JSON.stringify({
+        recipient_name: name || 'Khách KIMVIE',
+        recipient_email: email,
+        shipping_address: addr,
+        voucher_code: voucher || null,
+        items: cartItems.map(i => ({product_id: +i.id, quantity: i.qty}))
+      })});
+      document.getElementById('ckAmount').textContent = fmtVnd(currentOrder.total_price);
+      document.getElementById('ckMemo').textContent = 'KIMVIE DH' + currentOrder.id;
+      setStep(3);
+    }catch(ex){
+      err.textContent = ex.message;
+    }finally{
+      submitBtn.disabled = false;
+    }
   });
 
-  document.getElementById('ckPaid').addEventListener('click', () => {
-    const email = document.getElementById('ckEmail').value.trim();
-    const paid = cartTotal() - discountOf(cartTotal());
-    document.getElementById('ckDoneMsg').innerHTML =
-      'Đơn hàng <b>' + orderCode.replace('KIMVIE ', '') + '</b> (' + fmtVnd(paid) + ') đã được ghi nhận.<br>Xác nhận demo sẽ được gửi tới <b>' + email + '</b>.';
-    if(voucher){                                       // voucher dùng xong sẽ mất
-      usedVouchers.push(voucher);
-      localStorage.setItem('kvUsedVouchers', JSON.stringify(usedVouchers));
+  document.getElementById('ckPaid').addEventListener('click', async () => {
+    if(!currentOrder) return;
+    const btn = document.getElementById('ckPaid');
+    btn.disabled = true;
+    try{
+      const confirmed = await kvApi('/api/orders/' + currentOrder.id + '/confirm-payment', {method:'POST'});
+      document.getElementById('ckDoneMsg').innerHTML =
+        'Đơn hàng <b>KIMVIE DH' + confirmed.id + '</b> (' + fmtVnd(confirmed.total_price) + ') đã được ghi nhận vào hệ thống.<br>Xác nhận sẽ được gửi tới <b>' + confirmed.recipient_email + '</b>.';
       voucher = null;
       document.getElementById('vcMsg').textContent = '';
+      cartItems = []; saveCart();
+      currentOrder = null;
+      kvSyncMarketFromApi();   // tồn kho/đã bán vừa được trigger DB cập nhật — làm mới Sàn thương mại
+      setStep(4);
+    }catch(ex){
+      showToast(ex.message);
+    }finally{
+      btn.disabled = false;
     }
-    cartItems = []; saveCart();
-    setStep(4);
   });
 
   /* "Xem thử sản phẩm" -> mô phỏng sử dụng sản phẩm */
@@ -225,16 +261,6 @@ function discountOf(total){
 
   document.addEventListener('keydown', e => { if(e.key === 'Escape') closeCart(); });
 })();
-
-/* ===== sold counts on product cards ===== */
-const SOLD = {'Bộ ấm trà men hỏa biến':'980','Hũ đựng trà Mã Đáo Thành Công':'1,1k','Đĩa trưng bày hoa sen ánh trăng':'640','Cà vạt lụa tơ tằm':'2,3k','Khăn lụa vân sen hồng':'1,7k','Hộp đựng đồ mây tre đan':'860','Túi đeo chéo mây tre đan':'1,4k','Bình hút lộc Mã Đáo Thành Công':'420','Bình sen vàng kim men xanh đồng':'260','Đĩa sứ bầu dục men lam':'730','Khăn tơ ngũ sắc xanh cam':'1,2k','Áo dài lụa tơ tằm Hà Đông':'180','Túi đan ruột mây hình chữ nhật':'540'};
-document.querySelectorAll('.p-card').forEach(c => {
-  const h = c.querySelector('h4'), pl = c.querySelector('.pl');
-  if(h && pl && SOLD[h.textContent.trim()]){
-    const d = document.createElement('div'); d.className = 'sold';
-    d.textContent = '★ 4.9 · Đã bán ' + SOLD[h.textContent.trim()]; pl.after(d);
-  }
-});
 
 /* ===== footer quick links -> filtered market ===== */
 document.querySelectorAll('[data-mf]').forEach(a => a.addEventListener('click', e => {
@@ -376,44 +402,49 @@ window.fillIdCard = function(p){
 window.setMTab = function(t){
   document.getElementById('mtIntro').classList.toggle('on', t === 'intro');
   document.getElementById('mtCard').classList.toggle('on', t === 'card');
+  document.getElementById('mtReviews').classList.toggle('on', t === 'reviews');
   document.getElementById('mCard').classList.toggle('on', t === 'card');
+  document.getElementById('mReviews').classList.toggle('on', t === 'reviews');
+  document.getElementById('mSpecs').hidden = (t === 'reviews');
+  document.getElementById('mDesc').hidden = (t === 'card' || t === 'reviews');
 };
 document.getElementById('mtIntro').addEventListener('click', () => setMTab('intro'));
 document.getElementById('mtCard').addEventListener('click', () => setMTab('card'));
+document.getElementById('mtReviews').addEventListener('click', () => setMTab('reviews'));
 
 /* ===== "Điểm khác biệt" CTA buttons ===== */
 document.getElementById('newPass').addEventListener('click', openPP);
-document.getElementById('newId').addEventListener('click', () => { openProduct('am-tra'); setMTab('card'); });
+document.getElementById('newId').addEventListener('click', () => { openProduct('1'); setMTab('card'); });
 document.getElementById('newSnd').addEventListener('click', () => go('expo'));
 
 /* ===== product catalogue + modal ===== */
 const PROD_DIR = 'assets/product_img/';
 const PRODUCTS = {
- 'am-tra':{name:'Bộ ấm trà men hỏa biến',tag:'Gốm Bát Tràng',f:'bt',price:'1.450.000đ',img:'Bộ Ấm Trà Đĩa Men Hỏa Biến Xanh Khay Hoa Xanh.png',
+ '1':{name:'Bộ ấm trà men hỏa biến',tag:'Gốm Bát Tràng',f:'bt',price:'1.450.000đ',img:'Bộ Ấm Trà Đĩa Men Hỏa Biến Xanh Khay Hoa Xanh.png',
   desc:'Bộ ấm trà phủ men hỏa biến xanh ngọc — sắc men biến ảo theo nhiệt độ lò nung, kèm đĩa và khay hoa xanh. Mỗi mẻ ra lò cho một dải màu độc nhất, không chiếc nào giống chiếc nào.'},
- 'hu-tra':{name:'Hũ đựng trà Mã Đáo Thành Công',tag:'Gốm Bát Tràng',f:'bt',price:'1.180.000đ',img:'Hũ Đựng Trà Men Xanh Mã Đáo Thành Công Vẽ Vàng.png',
+ '2':{name:'Hũ đựng trà Mã Đáo Thành Công',tag:'Gốm Bát Tràng',f:'bt',price:'1.180.000đ',img:'Hũ Đựng Trà Men Xanh Mã Đáo Thành Công Vẽ Vàng.png',
   desc:'Hũ sứ men xanh vẽ vàng họa tiết "Mã Đáo Thành Công" — biểu tượng cát tường, may mắn. Nắp khít giữ hương trà thơm lâu; từng nét vàng kim được vẽ tay thủ công.'},
- 'dia-sen':{name:'Đĩa trưng bày hoa sen ánh trăng',tag:'Gốm Bát Tràng',f:'bt',price:'1.350.000đ',img:'Đĩa Trưng Bày Đắp Nổi Vẽ Màu Hoa Sen Ánh Trăng.png',
+ '3':{name:'Đĩa trưng bày hoa sen ánh trăng',tag:'Gốm Bát Tràng',f:'bt',price:'1.350.000đ',img:'Đĩa Trưng Bày Đắp Nổi Vẽ Màu Hoa Sen Ánh Trăng.png',
   desc:'Đĩa trưng bày đắp nổi, vẽ màu hoa sen dưới ánh trăng — tinh xảo trong từng cánh sen, từng gợn nước. Một tác phẩm trang trí mang hồn Việt cho không gian sống.'},
- 'cavat-lua':{name:'Cà vạt lụa tơ tằm',tag:'Lụa Vạn Phúc',f:'vp',price:'680.000đ',img:'CARAVAT LỤA TƠ TẰM NGHỆ NHÂN đỏ đô.png',
+ '4':{name:'Cà vạt lụa tơ tằm',tag:'Lụa Vạn Phúc',f:'vp',price:'680.000đ',img:'CARAVAT LỤA TƠ TẰM NGHỆ NHÂN đỏ đô.png',
   desc:'Cà vạt dệt 100% lụa tơ tằm Vạn Phúc, sắc đỏ đô sang trọng với hoa văn chìm tinh tế. Kèm hộp gỗ khắc hoa văn — món quà lịch lãm cho phái mạnh.'},
- 'khan-sen':{name:'Khăn lụa vân sen hồng',tag:'Lụa Vạn Phúc',f:'vp',price:'920.000đ',img:'Khăn lụa vân Sen hồng phối màu.png',
+ '5':{name:'Khăn lụa vân sen hồng',tag:'Lụa Vạn Phúc',f:'vp',price:'920.000đ',img:'Khăn lụa vân Sen hồng phối màu.png',
   desc:'Khăn lụa vân sen phối sắc hồng — hoa văn sen ẩn hiện khi soi nắng, mềm mại và thoáng nhẹ như hơi thở. Dệt thủ công trên khung cửi nghìn năm tuổi nghề.'},
- 'hop-may':{name:'Hộp đựng đồ mây tre đan',tag:'Mây tre Phú Vinh',f:'pv',price:'540.000đ',img:'Hộp đựng đồ Mây Tre Đan.png',
+ '6':{name:'Hộp đựng đồ mây tre đan',tag:'Mây tre Phú Vinh',f:'pv',price:'540.000đ',img:'Hộp đựng đồ Mây Tre Đan.png',
   desc:'Hộp đựng đồ đan tay từ mây tre Phú Vinh theo kỹ thuật nong đôi bền chắc, đã xử lý chống mối mọt. Mộc mạc mà tinh tế cho không gian sống hiện đại.'},
- 'tui-may':{name:'Túi đeo chéo mây tre đan',tag:'Mây tre Phú Vinh',f:'pv',price:'750.000đ',img:'Túi Đeo Chéo Mây Tre Đan.png',
+ '7':{name:'Túi đeo chéo mây tre đan',tag:'Mây tre Phú Vinh',f:'pv',price:'750.000đ',img:'Túi Đeo Chéo Mây Tre Đan.png',
   desc:'Túi đeo chéo đan tay phối quai mây tròn, hoa văn xương cá đặc trưng Phú Vinh. Nhẹ, bền và thời trang — đưa mây tre Việt vào nhịp sống đương đại.'},
- 'binh-loc':{name:'Bình hút lộc Mã Đáo Thành Công',tag:'Gốm Bát Tràng',f:'bt',price:'2.200.000đ',img:'Bình hút lộc Bát Tràng vẽ mã đáo thành công.png',
+ '8':{name:'Bình hút lộc Mã Đáo Thành Công',tag:'Gốm Bát Tràng',f:'bt',price:'2.200.000đ',img:'Bình hút lộc Bát Tràng vẽ mã đáo thành công.png',
   desc:'Bình hút lộc dáng tròn đầy, vẽ tay họa tiết "Mã Đáo Thành Công" trên nền men cao cấp — biểu tượng tài lộc, hanh thông. Đặt phòng khách hay bàn làm việc để chiêu tài, giữ vượng khí.'},
- 'binh-sen':{name:'Bình sen vàng kim men xanh đồng',tag:'Gốm Bát Tràng',f:'bt',price:'2.850.000đ',img:'Bình sen vàng kim cao cấp men xanh đồng.png',
+ '9':{name:'Bình sen vàng kim men xanh đồng',tag:'Gốm Bát Tràng',f:'bt',price:'2.850.000đ',img:'Bình sen vàng kim cao cấp men xanh đồng.png',
   desc:'Bình cắm hoa men xanh đồng phủ vàng kim, đắp nổi hoa sen — quốc hoa của Việt Nam. Nước men trầm sang trọng, đường nét vàng vẽ tay tỉ mỉ, tôn dáng cho mọi không gian.'},
- 'dia-bau':{name:'Đĩa sứ bầu dục men lam',tag:'Gốm Bát Tràng',f:'bt',price:'890.000đ',img:'Đĩa sứ bầu dục.png',
+ '10':{name:'Đĩa sứ bầu dục men lam',tag:'Gốm Bát Tràng',f:'bt',price:'890.000đ',img:'Đĩa sứ bầu dục.png',
   desc:'Đĩa sứ dáng bầu dục vẽ men lam cổ điển — vừa để bày biện món ăn, vừa làm vật trang trí. Cốt sứ mỏng, thấu quang, an toàn cho thực phẩm.'},
- 'khan-nguson':{name:'Khăn tơ ngũ sắc xanh cam',tag:'Lụa Vạn Phúc',f:'vp',price:'780.000đ',img:'Khăn tơ ngũ sắc xanh cam.png',
+ '11':{name:'Khăn tơ ngũ sắc xanh cam',tag:'Lụa Vạn Phúc',f:'vp',price:'780.000đ',img:'Khăn tơ ngũ sắc xanh cam.png',
   desc:'Khăn tơ tằm phối ngũ sắc xanh — cam rực rỡ, dệt thủ công tại Vạn Phúc. Chất tơ mềm rủ, lên màu tươi mà vẫn tinh tế — điểm nhấn cho trang phục ngày thường lẫn dự tiệc.'},
- 'aodai-lua':{name:'Áo dài lụa tơ tằm Hà Đông',tag:'Lụa Vạn Phúc',f:'vp',price:'3.600.000đ',img:'Áo dài lụa tơ tằm Hà Đông cẩm giao.png',
+ '12':{name:'Áo dài lụa tơ tằm Hà Đông',tag:'Lụa Vạn Phúc',f:'vp',price:'3.600.000đ',img:'Áo dài lụa tơ tằm Hà Đông cẩm giao.png',
   desc:'Áo dài may từ lụa tơ tằm Hà Đông nguyên tấm, hoa văn cẩm giao trang nhã. Chất lụa óng nhẹ, thoáng mát, ôm dáng mềm mại — tôn vẻ đẹp Á Đông trong từng đường tà.'},
- 'tui-ruot-may':{name:'Túi đan ruột mây hình chữ nhật',tag:'Mây tre Phú Vinh',f:'pv',price:'690.000đ',img:'Túi Đan ruột mây hình chữ nhật.png',
+ '13':{name:'Túi đan ruột mây hình chữ nhật',tag:'Mây tre Phú Vinh',f:'pv',price:'690.000đ',img:'Túi Đan ruột mây hình chữ nhật.png',
   desc:'Túi dáng hộp chữ nhật đan từ ruột mây Phú Vinh, nan mảnh đều tăm tắp. Cứng dáng, bền chắc và thời trang — phụ kiện thủ công đưa mây tre Việt vào phong cách hiện đại.'}
 };
 const pModal = document.getElementById('pModal');
@@ -435,9 +466,15 @@ let galView = 0;
 function renderGallery(p){
   const box = document.querySelector('.m-art'); if(!box) return;
   const v = GAL_VIEWS[galView];
+  /* ảnh 13 sản phẩm mẫu nằm trong assets/product_img/ (p.img); ảnh do người bán tự
+     đăng qua Kênh người bán là URL/data-URI đầy đủ trong p.imgUrl — không có PROD_DIR */
+  const src = p.img ? (PROD_DIR + p.img) : p.imgUrl;
+  const photo = src
+    ? '<img class="m-photo" src="' + src + '" alt="' + p.name + ' — ' + v.label + '" style="' + v.css + '">'
+    : '<div class="m-photo" style="display:grid;place-items:center;color:var(--muted)">Người bán chưa cập nhật ảnh</div>';
   box.innerHTML =
     '<div class="m-frame">' +
-      '<img class="m-photo" src="' + PROD_DIR + p.img + '" alt="' + p.name + ' — ' + v.label + '" style="' + v.css + '">' +
+      photo +
       '<span class="m-frame-tag">✦ Ảnh thực tế</span>' +
     '</div>' +
     '<div class="m-gal-bar">' +
@@ -453,11 +490,14 @@ function renderGallery(p){
   box.querySelectorAll('[data-gv]').forEach(d => d.addEventListener('click', () => { galView = +d.dataset.gv; renderGallery(p); }));
 }
 function openProduct(id){
-  const p = PRODUCTS[id]; if(!p) return; curP = p;
+  const p = PRODUCTS[id]; if(!p) return; curP = p; curP.id = String(id);
   document.getElementById('mName').textContent = p.name;
   document.getElementById('mTag').textContent = p.tag;
   document.getElementById('mPrice').textContent = p.price;
-  document.getElementById('mSold').textContent = '★ 4.9 · Đã bán ' + (SOLD[p.name] || '500+') + ' · Còn hàng';
+  document.getElementById('mSold').textContent = p.stock == null
+    ? '★ ' + (p.rating || 5).toFixed(1) + ' · Đang tải dữ liệu…'
+    : (p.reviewCount > 0 ? '★ ' + p.rating.toFixed(1) + ' (' + p.reviewCount + ' đánh giá) · ' : 'Chưa có đánh giá · ') +
+      'Đã bán ' + p.soldCount + (p.stock > 0 ? ' · Còn hàng' : ' · Hết hàng');
   document.getElementById('mDesc').textContent = p.desc + ' Sản phẩm được đóng gói kèm thẻ căn cước số xác thực nguồn gốc, làm hoàn toàn thủ công bởi nghệ nhân ' + p.tag + ' — mỗi chiếc là một bản thể duy nhất.';
   const sp = SPECS[p.f] || {};
   document.getElementById('mSpecs').innerHTML =
@@ -469,6 +509,7 @@ function openProduct(id){
   if(window.fillIdCard) fillIdCard(p);
   if(window.setMTab) setMTab('intro');
   if(window.stamp) stamp('relic');
+  loadReviews(id);
   pModal.classList.add('open');
   /* chặn "click ma": double-click trên thẻ sản phẩm làm cú click thứ 2 rơi trúng
      nút gallery/nền vừa hiện ra dưới con trỏ → khoá tương tác 400ms đầu */
@@ -485,40 +526,289 @@ document.querySelectorAll('[data-p]').forEach(el => el.addEventListener('click',
 document.getElementById('mBuy').addEventListener('click', e => {
   e.preventDefault(); closeModal();
   if(curP){
-    addToCart(curP.name, parseInt(curP.price.replace(/\D/g, ''), 10) || 0);
+    addToCart(curP.id, curP.name, curP.priceNum != null ? curP.priceNum : (parseInt(curP.price.replace(/\D/g, ''), 10) || 0));
     if(window.openCart) openCart();
   } else {
     go('market');
   }
 });
 
+/* =========================================================================
+   ĐÁNH GIÁ SAO (1-5) + BÌNH LUẬN — tab "Đánh giá" trong popup hiện vật, đọc/ghi
+   thẳng qua API (bảng reviews + trigger tự tính lại products.rating/review_count)
+   ========================================================================= */
+function starsHTML(rating, opts){
+  opts = opts || {};
+  const filled = Math.round(rating);
+  let out = '<span class="stars' + (opts.picker ? ' stars-picker' : '') + '"' +
+    (opts.picker ? ' role="radiogroup" aria-label="Chọn số sao"' : ' role="img" aria-label="' + rating.toFixed(1) + ' trên 5 sao"') + '>';
+  for(let i = 1; i <= 5; i++){
+    const on = i <= filled;
+    out += opts.picker
+      ? '<button type="button" class="star-btn' + (on ? ' on' : '') + '" data-star="' + i + '" aria-label="' + i + ' sao">★</button>'
+      : '<span class="star' + (on ? ' on' : '') + '">★</span>';
+  }
+  return out + '</span>';
+}
+function fmtReviewDate(iso){
+  try{ return new Date(iso.replace(' ', 'T')).toLocaleDateString('vi-VN'); }catch(e){ return iso; }
+}
+let reviewsLoadToken = 0;   // huỷ kết quả trả về trễ nếu người dùng đã mở sản phẩm khác
+async function loadReviews(productId){
+  const token = ++reviewsLoadToken;
+  document.getElementById('rvSummary').textContent = 'Đang tải đánh giá…';
+  document.getElementById('rvFormBox').innerHTML = '';
+  document.getElementById('rvList').innerHTML = '';
+  let data;
+  try{ data = await kvApi('/api/products/' + productId + '/reviews'); }
+  catch(e){ if(token === reviewsLoadToken) document.getElementById('rvSummary').textContent = 'Không tải được đánh giá: ' + e.message; return; }
+  if(token !== reviewsLoadToken) return;   // đã chuyển sang sản phẩm khác trong lúc chờ
+  renderReviews(productId, data);
+}
+function renderReviews(productId, data){
+  document.getElementById('rvSummary').innerHTML = data.review_count > 0
+    ? starsHTML(data.average_rating) + ' <b>' + data.average_rating.toFixed(1) + '</b> trên 5 · ' + data.review_count + ' đánh giá'
+    : 'Sản phẩm chưa có đánh giá — hãy là người đầu tiên!';
+
+  document.getElementById('rvList').innerHTML = data.items.length
+    ? data.items.map(r =>
+        '<div class="rv-item">' +
+          '<div class="rv-item-head">' + starsHTML(r.rating) + ' <b>' + r.buyer_name + '</b> <span class="rv-date">' + fmtReviewDate(r.created_at) + '</span></div>' +
+          (r.comment ? '<p class="rv-comment">' + r.comment + '</p>' : '') +
+        '</div>').join('')
+    : '<p class="rv-empty">Chưa có bình luận nào cho sản phẩm này.</p>';
+
+  renderReviewForm(productId, data.my_review);
+}
+function renderReviewForm(productId, myReview){
+  const box = document.getElementById('rvFormBox');
+  const user = window.kvCurrentUser && kvCurrentUser();
+  if(!user){
+    box.innerHTML = '<p class="rv-login-hint">Đăng nhập để đánh giá sản phẩm này. <a href="#" id="rvLoginLink">Đăng nhập</a></p>';
+    document.getElementById('rvLoginLink').addEventListener('click', e => { e.preventDefault(); if(window.kvOpenLogin) kvOpenLogin(); });
+    return;
+  }
+  if(curP && curP.sellerId === user.id){
+    box.innerHTML = '<p class="rv-login-hint">Đây là sản phẩm của gian hàng bạn — không thể tự đánh giá.</p>';
+    return;
+  }
+  let selected = myReview ? myReview.rating : 0;
+  box.innerHTML =
+    '<h5>' + (myReview ? 'Đánh giá của bạn' : 'Viết đánh giá') + '</h5>' +
+    starsHTML(selected, {picker:true}) +
+    '<textarea id="rvComment" rows="3" placeholder="Chia sẻ cảm nhận của bạn về sản phẩm…">' + (myReview && myReview.comment ? myReview.comment : '') + '</textarea>' +
+    '<p class="ck-err" id="rvErr"></p>' +
+    '<div class="rv-form-actions">' +
+      '<button class="btn btn-amber" type="button" id="rvSubmit">' + (myReview ? 'Cập nhật đánh giá →' : 'Gửi đánh giá →') + '</button>' +
+      (myReview ? '<button class="btn btn-line" type="button" id="rvDelete">Xoá đánh giá</button>' : '') +
+    '</div>';
+
+  const picker = box.querySelector('.stars-picker');
+  picker.querySelectorAll('.star-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      selected = +btn.dataset.star;
+      picker.querySelectorAll('.star-btn').forEach(b => b.classList.toggle('on', +b.dataset.star <= selected));
+    });
+  });
+  document.getElementById('rvSubmit').addEventListener('click', async () => {
+    const err = document.getElementById('rvErr');
+    if(!selected){ err.textContent = 'Vui lòng chọn số sao đánh giá.'; return; }
+    err.textContent = '';
+    try{
+      await kvApi('/api/products/' + productId + '/reviews', {method:'POST', body: JSON.stringify({
+        rating: selected, comment: document.getElementById('rvComment').value.trim() || null
+      })});
+      showToast('✦ Cảm ơn bạn đã đánh giá sản phẩm!');
+      loadReviews(productId);
+      kvSyncMarketFromApi();
+    }catch(e){ err.textContent = e.message; }
+  });
+  const delBtn = document.getElementById('rvDelete');
+  if(delBtn) delBtn.addEventListener('click', async () => {
+    if(!confirm('Xoá đánh giá của bạn cho sản phẩm này?')) return;
+    try{
+      await kvApi('/api/products/' + productId + '/reviews/me', {method:'DELETE'});
+      showToast('Đã xoá đánh giá của bạn.');
+      loadReviews(productId);
+      kvSyncMarketFromApi();
+    }catch(e){ showToast(e.message); }
+  });
+}
+
+/* =========================================================================
+   ĐỒNG BỘ SÀN THƯƠNG MẠI VỚI DATABASE THẬT qua API
+   - 13 sản phẩm mẫu (id 1-13) đã có sẵn thẻ HTML tĩnh + ảnh/mô tả trong PRODUCTS{} —
+     hàm này chỉ "tưới" thêm số liệu thật (giá, tồn kho, đã bán, rating) lấy từ server.
+   - sản phẩm do người bán đăng qua Kênh người bán (id > 13) chưa có thẻ tĩnh nào —
+     được chèn thành thẻ mới, y hệt cách hiển thị 13 thẻ kia. Vì dữ liệu giờ nằm
+     trong database dùng chung, MỌI khách ghé site đều thấy được sản phẩm của MỌI
+     người bán — khác với bản cũ (localStorage) chỉ người đăng mới tự thấy sản phẩm mình.
+   ========================================================================= */
+const CART_BTN_SVG = '<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M5 7h14l-1.2 10.3a2 2 0 0 1-2 1.7H8.2a2 2 0 0 1-2-1.7Z"/><path d="M9 7a3 3 0 0 1 6 0"/></svg>';
+
+function productBadgeText(p){
+  if(p.stock == null) return '';
+  const ratingPart = p.reviewCount > 0 ? '★ ' + p.rating.toFixed(1) + ' (' + p.reviewCount + ') · ' : '';
+  const stockPart = p.stock > 0 ? ratingPart + 'Đã bán ' + p.soldCount : 'Hết hàng';
+  const mine = CURRENT_USER && p.sellerId === CURRENT_USER.id;
+  return (mine ? '★ Sản phẩm của bạn · ' : '') + stockPart;
+}
+/* dựng lại thẻ .p-card từ dữ liệu đã "tưới" trong PRODUCTS{} — dùng khi 1 sản phẩm
+   (kể cả 1 trong 13 mẫu tĩnh) chưa có thẻ nào trong lưới, vd. lần đầu xuất hiện
+   hoặc vừa được seller "Hiện lại" sau khi đã ẩn (thẻ HTML gốc đã bị gỡ trước đó) */
+function marketCardHTML(entry){
+  const imgSrc = entry.img ? (PROD_DIR + entry.img) : entry.imgUrl;
+  return (
+    '<div class="p-art' + (imgSrc ? ' has-img' : '') + '">' + (imgSrc ? '<img src="' + imgSrc + '" alt="' + entry.name + '" loading="lazy">' : '') + '</div>' +
+    '<span class="sold"></span>' +
+    '<h4>' + entry.name + '</h4><div class="pl">' + entry.tag + '</div>' +
+    '<div class="p-foot"><span class="price">' + entry.price + '</span><button class="cart-btn" aria-label="Thêm vào giỏ hàng" type="button">' + CART_BTN_SVG + '</button></div>'
+  );
+}
+async function kvSyncMarketFromApi(){
+  const grid = document.getElementById('allProducts');
+  if(!grid) return;
+  let data;
+  try{ data = await kvApi('/api/products?per_page=100'); }
+  catch(e){ console.warn('Không tải được sản phẩm từ server:', e.message); return; }
+
+  const activeIds = new Set(data.items.map(sp => String(sp.id)));
+
+  data.items.forEach(sp => {
+    const id = String(sp.id);
+    let entry = PRODUCTS[id];
+    if(entry){
+      // 1 trong 13 sản phẩm mẫu: giữ nguyên ảnh/mô tả tĩnh, chỉ cập nhật số liệu thật
+      entry.id = id;
+      entry.priceNum = sp.price; entry.price = fmtVnd(sp.price);
+      entry.stock = sp.stock; entry.soldCount = sp.sold_count; entry.rating = sp.rating;
+      entry.reviewCount = sp.review_count;
+      entry.sellerId = sp.seller_id; entry.status = sp.status;
+    } else {
+      // sản phẩm mới do người bán đăng — chưa có trong PRODUCTS{} lẫn HTML tĩnh
+      entry = PRODUCTS[id] = {
+        id, name: sp.name, tag: sp.village_name, f: sp.village_code,
+        price: fmtVnd(sp.price), priceNum: sp.price, img: null, imgUrl: sp.image_url,
+        desc: sp.description || 'Sản phẩm thủ công từ ' + sp.village_name + '.',
+        stock: sp.stock, soldCount: sp.sold_count, rating: sp.rating, reviewCount: sp.review_count,
+        sellerId: sp.seller_id, status: sp.status
+      };
+    }
+    if(!grid.querySelector('.p-card[data-p="' + id + '"]')){
+      const art = document.createElement('article');
+      art.className = 'p-card'; art.dataset.p = id; art.dataset.v = sp.village_code;
+      art.innerHTML = marketCardHTML(entry);
+      art.addEventListener('click', e => { if(!e.target.closest('.cart-btn')) openProduct(id); });
+      art.querySelector('.cart-btn').addEventListener('click', e => {
+        e.stopPropagation(); addToCart(id, entry.name, entry.priceNum);
+      });
+      grid.insertBefore(art, grid.firstChild);
+    }
+  });
+
+  // gỡ khỏi lưới những thẻ KHÔNG còn active (chủ shop vừa ẩn, hoặc sản phẩm không tồn tại) —
+  // tính lại từ activeIds mỗi lần đồng bộ nên không bị lệch dữ liệu cũ
+  grid.querySelectorAll('.p-card[data-p]').forEach(card => {
+    if(!activeIds.has(card.dataset.p)) card.remove();
+  });
+
+  // cập nhật badge "★ rating · Đã bán N" / "Hết hàng" / "Sản phẩm của bạn" trên mọi thẻ còn lại,
+  // đồng thời "gắn thẻ" data-price/rating/sold để tìm kiếm + sắp xếp phía dưới đọc trực tiếp,
+  // khỏi phải tách chuỗi lại từ nội dung hiển thị (dễ vỡ khi đổi định dạng hiển thị sau này)
+  grid.querySelectorAll('.p-card[data-p]').forEach(card => {
+    const p = PRODUCTS[card.dataset.p]; if(!p) return;
+    let bd = card.querySelector('.sold');
+    if(!bd){ bd = document.createElement('span'); bd.className = 'sold'; card.querySelector('.pl').after(bd); }
+    bd.textContent = productBadgeText(p);
+    card.dataset.price = p.priceNum != null ? p.priceNum : '';
+    card.dataset.rating = p.rating != null ? p.rating : 0;
+    card.dataset.sold = p.soldCount != null ? p.soldCount : 0;
+  });
+
+  if(window.kvRefreshMarket) window.kvRefreshMarket();
+}
+kvSyncMarketFromApi();
+
 /* ===== market filters + pagination — 12 sản phẩm/trang, lấp đầy lưới (4·3·2·1 cột) rồi mới sang trang =====
-   truy vấn lại .p-card mỗi lần render (thay vì chỉ 1 lần) vì kvInjectSellerMarketCards() có thể
-   thêm/xóa thẻ sau khi trang đã tải (đăng/sửa/xóa sản phẩm từ Kênh người bán) */
+   truy vấn lại .p-card mỗi lần render (thay vì chỉ 1 lần) vì kvSyncMarketFromApi() có thể
+   thêm/xóa thẻ bất cứ lúc nào (đăng/sửa/ẩn/xoá sản phẩm từ Kênh người bán, hoặc đăng nhập lại) */
 (function(){
   const PER_PAGE = 12;
-  let curFilter = 'all', curPage = 1;
+  let curFilter = 'all', curPage = 1, curSearch = '', curSort = 'featured';
   const pager = document.getElementById('marketPager');
+  const grid = document.getElementById('allProducts');
+  const emptyBox = document.getElementById('marketEmpty');
+  const searchInput = document.getElementById('marketSearch');
+  const searchClear = document.getElementById('marketSearchClear');
+  const sortSelect = document.getElementById('marketSort');
   if(!document.querySelector('#allProducts .p-card') || !pager) return;
   window.kvRefreshMarket = renderMarket;
+
+  /* bỏ dấu tiếng Việt để tìm không cần gõ đúng dấu (vd. gõ "dia" vẫn ra "đĩa") */
+  function normalizeVN(str){
+    // NFD tách chữ có dấu thành chữ gốc + dấu phụ (vd. "á" -> "a" + dấu phụ riêng) rồi bỏ
+    // hết dải mã Unicode 0x0300-0x036F (các dấu phụ combining). Dựng range bằng charCode
+    // thay vì gõ thẳng ký tự có dấu vào regex, tránh lỗi encoding khó phát hiện khi đọc lại.
+    const combiningMarks = new RegExp('[' + String.fromCharCode(0x0300) + '-' + String.fromCharCode(0x036f) + ']', 'g');
+    return String(str).normalize('NFD').replace(combiningMarks, '')
+      .replace(/đ/g, 'd').replace(/Đ/g, 'D').toLowerCase();
+  }
+  function matchesSearch(card, q){
+    if(!q) return true;
+    const h4 = card.querySelector('h4'), pl = card.querySelector('.pl');
+    const craft = CRAFT_LABEL[card.dataset.v] || '';
+    const haystack = normalizeVN((h4 ? h4.textContent : '') + ' ' + (pl ? pl.textContent : '') + ' ' + craft);
+    return haystack.includes(q);
+  }
+  function sortCards(list){
+    if(curSort === 'featured') return list;
+    const key = curSort === 'price-asc' || curSort === 'price-desc' ? 'price'
+      : curSort === 'rating-desc' ? 'rating' : 'sold';
+    const dir = curSort === 'price-asc' ? 1 : -1;
+    return list.slice().sort((a, b) => (+a.dataset[key] - +b.dataset[key]) * dir);
+  }
+
   function renderMarket(){
     const cards = [...document.querySelectorAll('#allProducts .p-card')];
-    const vis = cards.filter(p => curFilter === 'all' || p.dataset.v === curFilter);
+    const filtered = cards.filter(c => (curFilter === 'all' || c.dataset.v === curFilter) && matchesSearch(c, curSearch));
+    const vis = sortCards(filtered);
     const pages = Math.max(1, Math.ceil(vis.length / PER_PAGE));
     if(curPage > pages) curPage = pages;
-    cards.forEach(p => { p.style.display = 'none'; });
-    vis.forEach((p, i) => {
-      if(Math.floor(i / PER_PAGE) + 1 === curPage) p.style.display = 'flex';
+    cards.forEach(c => { c.style.display = 'none'; c.style.order = ''; });
+    vis.forEach((c, i) => {
+      c.style.order = i;   // giữ đúng thứ tự đã sắp xếp trong CSS grid
+      if(Math.floor(i / PER_PAGE) + 1 === curPage) c.style.display = 'flex';
     });
+    emptyBox.hidden = vis.length > 0;
+    grid.hidden = vis.length === 0;
     pager.innerHTML = pages < 2 ? '' : Array.from({length: pages}, (_, i) =>
       '<button class="chip' + (i + 1 === curPage ? ' on' : '') + '" type="button" data-pg="' + (i + 1) + '">' + (i + 1) + '</button>').join(' ');
   }
+
   document.querySelectorAll('.filters .chip').forEach(c => c.addEventListener('click', () => {
     c.parentElement.querySelectorAll('.chip').forEach(x => x.classList.remove('on'));
     c.classList.add('on');
     curFilter = c.dataset.f; curPage = 1;
     renderMarket();
   }));
+
+  let searchT;
+  searchInput.addEventListener('input', () => {
+    searchClear.hidden = !searchInput.value;
+    clearTimeout(searchT);
+    searchT = setTimeout(() => {
+      curSearch = normalizeVN(searchInput.value.trim());
+      curPage = 1;
+      renderMarket();
+    }, 200);
+  });
+  searchClear.addEventListener('click', () => {
+    searchInput.value = ''; searchClear.hidden = true; curSearch = ''; curPage = 1;
+    renderMarket(); searchInput.focus();
+  });
+
+  sortSelect.addEventListener('change', () => { curSort = sortSelect.value; curPage = 1; renderMarket(); });
+
   pager.addEventListener('click', e => {
     const b = e.target.closest('[data-pg]'); if(!b) return;
     curPage = +b.dataset.pg;
@@ -720,7 +1010,7 @@ const VILLAGES = {
       ['gốm sứ bát tràng, tứ linh.jpg','Tứ linh','Long – Lân – Quy – Phụng: bộ tứ linh vật tượng trưng cho quyền lực, thái bình, trường thọ và thịnh vượng.'],
       ['gốm sứ bát tràng, Cá chép vượt vũ môn.png','Cá chép vượt vũ môn','Biểu tượng nỗ lực vượt khó để đỗ đạt, thành tựu — quen thuộc trên bình, đĩa gốm Bát Tràng.']
     ],
-    prods:['am-tra','hu-tra','dia-sen'] },
+    prods:['1','2','3'] },
 
   vp:{ name:'Lụa Vạn Phúc', region:'Hà Đông · Hà Nội', img:'LỤA TƠ TẰM.jpg',
     blurb:'Nghìn năm tiếng thoi đưa — quê hương của "lụa tiến vua".',
@@ -785,7 +1075,7 @@ const VILLAGES = {
       ['lụa vạn phúc, song thọ.webp','Song thọ','Chữ Thọ tròn dệt nổi trên nền lụa vàng — lời chúc trường thọ, phúc lành trên những tấm lụa quý.'],
       ['lụa vạn phúc, hoa.webp','Hoa dệt chìm','Những đóa hoa nhỏ dệt chìm phủ đều mặt lụa — nét duyên kín đáo thường thấy trên lụa may áo dài.']
     ],
-    prods:['cavat-lua','khan-sen','khan-nguson'] },
+    prods:['4','5','11'] },
 
   pv:{ name:'Mây tre đan Phú Vinh', region:'Chương Mỹ · Hà Nội', img:'MÂY ĐAN TRE.png',
     blurb:'400 năm "đan nắng gió vào nan tre".',
@@ -839,7 +1129,7 @@ const VILLAGES = {
       ['Mây tre đan Phú Vinh, vảy rồng.jpeg','Đan vảy rồng','Các sợi mây xếp lớp mô phỏng vảy rồng — mang ý nghĩa quyền uy và bảo hộ.'],
       ['mây tre đan Phú Vinh, tranh.jpg','Tranh đan từ mây','Nghệ nhân dùng sợi mây nhuộm màu để "vẽ" nên những bức tranh sinh động, tinh xảo trên nan đan.']
     ],
-    prods:['hop-may','tui-may','tui-ruot-may'] }
+    prods:['6','7','13'] }
 };
 
 /* các mục nội dung — mặc định hiện: tổng quan, sản phẩm đặc trưng; ẩn: còn lại */
@@ -1054,9 +1344,23 @@ document.querySelectorAll('[data-village]').forEach(a => a.addEventListener('cli
   const sellerRegisterForm = document.getElementById('sellerRegisterForm');
   const srCancel = document.getElementById('srCancel');
   const srErr = document.getElementById('srErr');
-  let user = JSON.parse(localStorage.getItem('kvUser') || 'null');
+  const lgErr = document.getElementById('lgErr');
+  const lgNameField = document.getElementById('lgNameField');
+  const lgPhoneField = document.getElementById('lgPhoneField');
+  const authModeHint = document.getElementById('authModeHint');
+  const loginSubmitBtn = document.getElementById('loginSubmitBtn');
 
-  window.kvIsSeller = () => !!(user && user.isSeller);
+  let user = null;
+  let authMode = 'login';   // 'login' | 'register'
+
+  window.kvIsSeller = () => !!(user && user.is_seller);
+  window.kvCurrentUser = () => user;
+
+  function setUser(u){
+    user = u;
+    CURRENT_USER = u;
+    paint();
+  }
 
   function paint(){
     if(user){
@@ -1070,51 +1374,91 @@ document.querySelectorAll('[data-village]').forEach(a => a.addEventListener('cli
     }
     if(menuSellerItem) menuSellerItem.hidden = !window.kvIsSeller();
   }
+
+  /* ---- chuyển giữa "Đăng nhập" / "Đăng ký" trên cùng 1 form ---- */
+  function bindAuthToggle(){
+    const t = document.getElementById('authModeToggle');
+    if(t) t.addEventListener('click', e => { e.preventDefault(); setAuthMode(authMode === 'register' ? 'login' : 'register'); });
+  }
+  function setAuthMode(mode){
+    authMode = mode;
+    const isRegister = mode === 'register';
+    lgNameField.hidden = !isRegister;
+    lgPhoneField.hidden = !isRegister;
+    document.getElementById('loginTitle').textContent = isRegister ? 'Tạo tài khoản KIMVIE' : 'Đăng nhập KIMVIE';
+    loginSubmitBtn.textContent = isRegister ? 'Đăng ký →' : 'Đăng nhập →';
+    authModeHint.innerHTML = isRegister
+      ? 'Đã có tài khoản? <a href="#" id="authModeToggle" style="color:var(--amber2);font-weight:700">Đăng nhập</a>'
+      : 'Chưa có tài khoản? <a href="#" id="authModeToggle" style="color:var(--amber2);font-weight:700">Đăng ký ngay</a>';
+    bindAuthToggle();
+    lgErr.textContent = '';
+  }
+
   function showProfileView(){
     document.getElementById('loginTitle').textContent = 'Tài khoản của bạn';
     profile.hidden = false; sellerRegisterBox.hidden = true;
     const isSeller = window.kvIsSeller();
     sellerCta.hidden = isSeller;
     sellerMini.hidden = !isSeller;
-    if(isSeller) sellerMiniName.textContent = user.seller.shopName;
+    if(isSeller) sellerMiniName.textContent = user.seller.shop_name;
   }
   function openModal(){
     const logged = !!user;
     form.hidden = logged;
     sellerRegisterBox.hidden = true;
-    document.getElementById('loginTitle').textContent = logged ? 'Tài khoản của bạn' : 'Đăng nhập KIMVIE';
     if(logged){
       document.getElementById('pfName').textContent = user.name;
       document.getElementById('pfAva').textContent = (user.name.trim()[0] || 'K').toUpperCase();
-      document.getElementById('pfMeta').textContent = 'Thành viên từ ' + user.since;
+      document.getElementById('pfMeta').textContent = 'Thành viên từ ' + new Date(user.created_at).toLocaleDateString('vi-VN');
       document.getElementById('pfEmail').textContent = user.email || '—';
       document.getElementById('pfPhone').textContent = user.phone || '—';
       showProfileView();
     } else {
       profile.hidden = true;
+      form.reset();
+      setAuthMode('login');
     }
     modal.classList.add('open');
   }
+  window.kvOpenLogin = openModal;
   const close = () => modal.classList.remove('open');
 
-  form.addEventListener('submit', e => {
-    e.preventDefault();                                  // demo: chấp nhận mọi thông tin
-    const prevSeller = user && user.isSeller ? {isSeller:user.isSeller, seller:user.seller} : null;
-    user = {
-      name: document.getElementById('lgName').value.trim() || 'Khách KIMVIE',
-      email: document.getElementById('lgEmail').value.trim(),
-      phone: document.getElementById('lgPhone').value.trim(),
-      since: new Date().toLocaleDateString('vi-VN'),
-      ...(prevSeller || {})
-    };
-    localStorage.setItem('kvUser', JSON.stringify(user));
-    paint(); close();
-    showToast('✦ Xin chào <b>' + user.name + '</b> — đăng nhập thành công!');
+  form.addEventListener('submit', async e => {
+    e.preventDefault();
+    lgErr.textContent = '';
+    const email = document.getElementById('lgEmail').value.trim();
+    const password = document.getElementById('lgPass').value;
+    if(!email || !password){ lgErr.textContent = 'Vui lòng nhập email và mật khẩu.'; return; }
+    loginSubmitBtn.disabled = true;
+    try{
+      let res;
+      if(authMode === 'register'){
+        const name = document.getElementById('lgName').value.trim();
+        const phone = document.getElementById('lgPhone').value.trim();
+        if(!name){ lgErr.textContent = 'Vui lòng nhập tên của bạn.'; return; }
+        if(password.length < 6){ lgErr.textContent = 'Mật khẩu cần ít nhất 6 ký tự.'; return; }
+        res = await kvApi('/api/auth/register', {method:'POST', body: JSON.stringify({name, email, phone: phone || null, password})});
+      } else {
+        res = await kvApi('/api/auth/login', {method:'POST', body: JSON.stringify({email, password})});
+      }
+      localStorage.setItem('kvToken', res.access_token);
+      setUser(res.user);
+      close();
+      showToast('✦ Xin chào <b>' + res.user.name + '</b> — đăng nhập thành công!');
+      kvSyncMarketFromApi();
+    }catch(err){
+      lgErr.textContent = err.message;
+    }finally{
+      loginSubmitBtn.disabled = false;
+    }
   });
+
   document.getElementById('logoutBtn').addEventListener('click', () => {
-    user = null; localStorage.removeItem('kvUser');
-    paint(); close();
+    localStorage.removeItem('kvToken');
+    setUser(null);
+    close();
     showToast('Bạn đã đăng xuất. Hẹn gặp lại ✦');
+    kvSyncMarketFromApi();
   });
   loginBtn.addEventListener('click', e => { e.preventDefault(); openModal(); });
   loginMenuLink.addEventListener('click', e => {
@@ -1124,6 +1468,7 @@ document.querySelectorAll('[data-village]').forEach(a => a.addEventListener('cli
   });
   modal.querySelectorAll('[data-lx]').forEach(el => el.addEventListener('click', close));
   document.addEventListener('keydown', e => { if(e.key === 'Escape') close(); });
+  bindAuthToggle();
 
   /* ---- đăng ký làm người bán ---- */
   becomeSellerBtn.addEventListener('click', () => {
@@ -1133,42 +1478,60 @@ document.querySelectorAll('[data-village]').forEach(a => a.addEventListener('cli
   });
   srCancel.addEventListener('click', () => showProfileView());
   goSellerBtn.addEventListener('click', () => { close(); go('seller'); });
-  sellerRegisterForm.addEventListener('submit', e => {
+  sellerRegisterForm.addEventListener('submit', async e => {
     e.preventDefault();
-    const shop = document.getElementById('srShop').value.trim();
-    const village = document.getElementById('srVillage').value;
+    const shop_name = document.getElementById('srShop').value.trim();
+    const village_code = document.getElementById('srVillage').value;
     const phone = document.getElementById('srPhone').value.trim();
     const bio = document.getElementById('srBio').value.trim();
-    if(!shop || !village || !phone){
+    if(!shop_name || !village_code || !phone){
       srErr.textContent = 'Vui lòng điền đầy đủ các mục có dấu *.';
       return;
     }
-    user.isSeller = true;
-    user.seller = {shopName:shop, village, phone, bio, since:new Date().toLocaleDateString('vi-VN')};
-    localStorage.setItem('kvUser', JSON.stringify(user));
-    paint();
-    sellerRegisterForm.reset();
-    close();
-    showToast('✦ Chào mừng người bán <b>' + shop + '</b> đến với KIMVIE!');
-    go('seller');
+    srErr.textContent = '';
+    try{
+      const updated = await kvApi('/api/seller/register', {method:'POST', body: JSON.stringify({shop_name, village_code, phone, bio: bio || null})});
+      setUser(updated);
+      sellerRegisterForm.reset();
+      close();
+      showToast('✦ Chào mừng người bán <b>' + shop_name + '</b> đến với KIMVIE!');
+      go('seller');
+    }catch(err){
+      srErr.textContent = err.message;
+    }
   });
+
+  /* ---- khôi phục phiên đăng nhập nếu token còn hợp lệ ----
+     boot ở cuối file chờ promise này trước khi vào trang ban đầu (vd. #seller sau F5) —
+     nếu không, kvIsSeller() sẽ luôn trả về false lúc boot (token chưa kịp xác thực) và
+     đá nhầm seller thật về trang chủ. */
+  window.kvSessionReady = (async function restoreSession(){
+    if(!localStorage.getItem('kvToken')) return;
+    try{
+      setUser(await kvApi('/api/auth/me'));
+      kvSyncMarketFromApi();
+    }catch(e){
+      localStorage.removeItem('kvToken');
+    }
+  })();
 
   paint();
 })();
 
 /* =========================================================================
-   KÊNH NGƯỜI BÁN — tổng quan, quản lý sản phẩm, đăng sản phẩm (demo, lưu local)
+   KÊNH NGƯỜI BÁN — tổng quan, quản lý sản phẩm, đăng sản phẩm
+   (đọc/ghi thẳng vào database qua API — không còn localStorage)
    ========================================================================= */
 (function(){
   const form = document.getElementById('sellerForm');
   if(!form) return;
 
-  let products = [];
-  try{ products = JSON.parse(localStorage.getItem(KV_SELLER_KEY) || '[]'); }catch(e){ products = []; }
-  const save = () => {
-    localStorage.setItem(KV_SELLER_KEY, JSON.stringify(products));
-    if(window.kvInjectSellerMarketCards) window.kvInjectSellerMarketCards();
-  };
+  let products = [];   // cache cục bộ của GET /api/seller/products, tải lại mỗi khi vào trang
+
+  async function loadProducts(){
+    try{ products = await kvApi('/api/seller/products'); }
+    catch(e){ products = []; showToast('Không tải được danh sách sản phẩm: ' + e.message); }
+  }
 
   /* ---- chuyển tab (Tổng quan / Sản phẩm của tôi / Đăng sản phẩm) ----
      dùng ủy quyền sự kiện vì nút CTA của trạng thái rỗng được chèn động sau này */
@@ -1190,16 +1553,22 @@ document.querySelectorAll('[data-village]').forEach(a => a.addEventListener('cli
 
   /* ---- thẻ sản phẩm dùng chung cho Tổng quan / Sản phẩm của tôi ---- */
   function cardHTML(p, manage){
+    const hidden = p.status === 'hidden';
     const inStock = p.stock > 0;
+    const badge = hidden ? '<span class="stock-badge out">Đã ẩn khỏi Sàn thương mại</span>'
+      : '<span class="stock-badge ' + (inStock ? 'in' : 'out') + '">' + (inStock ? 'Còn ' + p.stock + ' sản phẩm' : 'Hết hàng') + '</span>';
     return (
       '<article class="p-card" data-id="' + p.id + '">' +
-        '<div class="p-art' + (p.img ? ' has-img' : '') + '">' + (p.img ? '<img src="' + p.img + '" alt="' + p.name + '" loading="lazy">' : '') + '</div>' +
-        '<span class="stock-badge ' + (inStock ? 'in' : 'out') + '">' + (inStock ? 'Còn ' + p.stock + ' sản phẩm' : 'Hết hàng') + '</span>' +
-        '<h4>' + p.name + '</h4><div class="pl">' + (VILLAGE_LABEL[p.village] || '') + '</div>' +
+        '<div class="p-art' + (p.image_url ? ' has-img' : '') + '">' + (p.image_url ? '<img src="' + p.image_url + '" alt="' + p.name + '" loading="lazy">' : '') + '</div>' +
+        badge +
+        '<h4>' + p.name + '</h4><div class="pl">' + p.village_name + ' · ' +
+          (p.review_count > 0 ? '★ ' + p.rating.toFixed(1) + ' (' + p.review_count + ')' : 'Chưa có đánh giá') +
+          ' · Đã bán ' + p.sold_count + '</div>' +
         '<div class="p-foot"><span class="price">' + fmtVnd(p.price) + '</span></div>' +
         (manage ?
           '<div class="myp-actions">' +
             '<button type="button" class="myp-edit" data-edit="' + p.id + '">Sửa</button>' +
+            '<button type="button" class="myp-edit" data-toggle="' + p.id + '">' + (hidden ? 'Hiện lại' : 'Ẩn') + '</button>' +
             '<button type="button" class="myp-del" data-del="' + p.id + '">Xóa</button>' +
           '</div>' : '') +
       '</article>'
@@ -1209,17 +1578,17 @@ document.querySelectorAll('[data-village]').forEach(a => a.addEventListener('cli
     return '<div class="seller-empty"><p>' + msg + '</p><button class="btn btn-amber" data-sv="post" type="button">Đăng sản phẩm đầu tiên →</button></div>';
   }
 
-  function renderStats(){
+  async function renderStats(){
     const box = document.getElementById('sellerStats'); if(!box) return;
-    const total = products.length;
-    const inStock = products.filter(p => p.stock > 0).length;
-    const outStock = total - inStock;
-    const value = products.reduce((s, p) => s + p.price * p.stock, 0);
+    let s;
+    try{ s = await kvApi('/api/seller/stats'); }catch(e){ return; }
     box.innerHTML =
-      '<div class="stat-card"><span class="stat-label">Tổng sản phẩm</span><div class="stat-val">' + total + '</div><div class="stat-sub">đã đăng lên gian hàng</div></div>' +
-      '<div class="stat-card"><span class="stat-label">Còn hàng</span><div class="stat-val">' + inStock + '</div><div class="stat-sub">sản phẩm sẵn sàng bán</div></div>' +
-      '<div class="stat-card"><span class="stat-label">Hết hàng</span><div class="stat-val">' + outStock + '</div><div class="stat-sub">cần nhập thêm tồn kho</div></div>' +
-      '<div class="stat-card"><span class="stat-label">Giá trị kho ước tính</span><div class="stat-val" style="font-size:22px">' + fmtVnd(value) + '</div><div class="stat-sub">theo giá bán hiện tại</div></div>';
+      '<div class="stat-card"><span class="stat-label">Tổng sản phẩm</span><div class="stat-val">' + s.total_products + '</div><div class="stat-sub">đã đăng lên gian hàng</div></div>' +
+      '<div class="stat-card"><span class="stat-label">Còn hàng</span><div class="stat-val">' + s.in_stock + '</div><div class="stat-sub">sản phẩm sẵn sàng bán</div></div>' +
+      '<div class="stat-card"><span class="stat-label">Hết hàng</span><div class="stat-val">' + s.out_of_stock + '</div><div class="stat-sub">cần nhập thêm tồn kho</div></div>' +
+      '<div class="stat-card"><span class="stat-label">Giá trị kho ước tính</span><div class="stat-val" style="font-size:22px">' + fmtVnd(s.inventory_value) + '</div><div class="stat-sub">theo giá bán hiện tại</div></div>' +
+      '<div class="stat-card"><span class="stat-label">Tổng đã bán</span><div class="stat-val">' + s.total_sold + '</div><div class="stat-sub">sản phẩm, tính từ đơn hàng thật</div></div>' +
+      '<div class="stat-card"><span class="stat-label">Doanh thu ước tính</span><div class="stat-val" style="font-size:22px">' + fmtVnd(s.total_revenue) + '</div><div class="stat-sub">theo giá bán × số đã bán</div></div>';
   }
   function renderRecent(){
     const box = document.getElementById('sellerRecent'); if(!box) return;
@@ -1231,7 +1600,13 @@ document.querySelectorAll('[data-village]').forEach(a => a.addEventListener('cli
     if(!products.length){ box.innerHTML = emptyHTML('Gian hàng của bạn hiện chưa có sản phẩm nào.'); return; }
     box.innerHTML = products.slice().reverse().map(p => cardHTML(p, true)).join('');
   }
-  function renderAll(){ renderStats(); renderRecent(); renderMyProducts(); }
+  async function renderAll(){
+    await loadProducts();
+    renderStats();       // API riêng, không cần chờ loadProducts
+    renderRecent();
+    renderMyProducts();
+  }
+  window.kvRefreshSellerDashboard = renderAll;
 
   /* ---- ảnh sản phẩm: đọc file, nén xuống tối đa 640px để nhẹ localStorage ---- */
   const spImg = document.getElementById('spImg');
@@ -1279,12 +1654,12 @@ document.querySelectorAll('[data-village]').forEach(a => a.addEventListener('cli
 
   function fillForm(p){
     document.getElementById('spName').value = p.name;
-    document.getElementById('spVillage').value = p.village;
+    document.getElementById('spVillage').value = p.village_code;
     document.getElementById('spPrice').value = p.price;
     document.getElementById('spStock').value = p.stock;
-    document.getElementById('spDesc').value = p.desc || '';
-    spImgName.textContent = p.img ? 'Đã có ảnh — chọn ảnh khác nếu muốn đổi' : 'Chưa chọn ảnh';
-    setPreview(p.img || '');
+    document.getElementById('spDesc').value = p.description || '';
+    spImgName.textContent = p.image_url ? 'Đã có ảnh — chọn ảnh khác nếu muốn đổi' : 'Chưa chọn ảnh';
+    setPreview(p.image_url || '');
     imgCleared = false;
   }
   function cancelEdit(){
@@ -1301,7 +1676,7 @@ document.querySelectorAll('[data-village]').forEach(a => a.addEventListener('cli
   spCancelEdit.addEventListener('click', cancelEdit);
 
   function startEdit(id){
-    const p = products.find(x => x.id === id); if(!p) return;
+    const p = products.find(x => x.id === +id); if(!p) return;
     spEditId.value = id;
     fillForm(p);
     spSubmitBtn.textContent = 'Cập nhật sản phẩm →';
@@ -1309,47 +1684,69 @@ document.querySelectorAll('[data-village]').forEach(a => a.addEventListener('cli
     postFormTitle.textContent = 'Chỉnh sửa sản phẩm';
     setTab('post');
   }
-  function removeProduct(id){
+  async function removeProduct(id){
     if(!confirm('Xóa sản phẩm này khỏi gian hàng của bạn?')) return;
-    products = products.filter(x => x.id !== id);
-    save(); renderAll();
-    showToast('Đã xóa sản phẩm khỏi gian hàng.');
+    try{
+      await kvApi('/api/products/' + id, {method:'DELETE'});
+      showToast('Đã xóa sản phẩm khỏi gian hàng.');
+    }catch(e){
+      showToast(e.message);   // vd. 409: sản phẩm đã có trong đơn hàng — gợi ý dùng "Ẩn" thay vì xoá
+    }
+    await renderAll();
+    kvSyncMarketFromApi();
+  }
+  async function toggleStatus(id){
+    const p = products.find(x => x.id === +id); if(!p) return;
+    try{
+      await kvApi('/api/products/' + id, {method:'PUT', body: JSON.stringify({status: p.status === 'hidden' ? 'active' : 'hidden'})});
+      showToast(p.status === 'hidden' ? 'Đã hiện lại sản phẩm trên Sàn thương mại.' : 'Đã ẩn sản phẩm khỏi Sàn thương mại.');
+    }catch(e){ showToast(e.message); }
+    await renderAll();
+    kvSyncMarketFromApi();
   }
 
   document.getElementById('sellerProducts').addEventListener('click', e => {
     const editBtn = e.target.closest('[data-edit]');
+    const toggleBtn = e.target.closest('[data-toggle]');
     const delBtn = e.target.closest('[data-del]');
-    if(editBtn) startEdit(editBtn.dataset.edit);
+    if(toggleBtn) toggleStatus(toggleBtn.dataset.toggle);
+    else if(editBtn) startEdit(editBtn.dataset.edit);
     if(delBtn) removeProduct(delBtn.dataset.del);
   });
 
-  form.addEventListener('submit', e => {
+  form.addEventListener('submit', async e => {
     e.preventDefault();
     const name = document.getElementById('spName').value.trim();
-    const village = document.getElementById('spVillage').value;
+    const village_code = document.getElementById('spVillage').value;
     const price = parseInt(document.getElementById('spPrice').value, 10);
     const stock = parseInt(document.getElementById('spStock').value, 10);
-    const desc = document.getElementById('spDesc').value.trim();
-    if(!name || !village || !price || price <= 0 || isNaN(stock) || stock < 0){
+    const description = document.getElementById('spDesc').value.trim();
+    if(!name || !village_code || !price || price <= 0 || isNaN(stock) || stock < 0){
       spErr.textContent = 'Vui lòng điền đầy đủ các mục có dấu * với giá trị hợp lệ.';
       return;
     }
+    spErr.textContent = '';
     const editId = spEditId.value;
-    if(editId){
-      const p = products.find(x => x.id === editId);
-      Object.assign(p, {name, village, price, stock, desc, img: imgCleared ? '' : (pendingImg || p.img)});
-      showToast('✦ Đã cập nhật <b>' + name + '</b>.');
-    } else {
-      products.push({id:'sp_' + Date.now(), name, village, price, stock, desc, img:pendingImg, createdAt:Date.now()});
-      showToast('✦ Đã đăng <b>' + name + '</b> lên gian hàng của bạn!');
+    const payload = {name, village_code, price, stock, description};
+    if(imgCleared) payload.image_url = '';
+    else if(pendingImg) payload.image_url = pendingImg;
+    try{
+      if(editId){
+        await kvApi('/api/products/' + editId, {method:'PUT', body: JSON.stringify(payload)});
+        showToast('✦ Đã cập nhật <b>' + name + '</b>.');
+      } else {
+        await kvApi('/api/products', {method:'POST', body: JSON.stringify(payload)});
+        showToast('✦ Đã đăng <b>' + name + '</b> lên gian hàng của bạn!');
+      }
+    }catch(e){
+      spErr.textContent = e.message;
+      return;
     }
-    save();
     cancelEdit();
-    renderAll();
+    await renderAll();
+    kvSyncMarketFromApi();
     setTab('myp');
   });
-
-  renderAll();
 })();
 
 /* =========================================================================
@@ -1511,7 +1908,7 @@ document.querySelectorAll('[data-village]').forEach(a => a.addEventListener('cli
   document.getElementById('simBuy').addEventListener('click', () => {
     items().forEach(el => {
       const p = PRODUCTS[stateOf(el).id]; if(!p) return;
-      addToCart(p.name, parseInt(p.price.replace(/\D/g, ''), 10) || 0);
+      addToCart(p.id, p.name, p.priceNum != null ? p.priceNum : (parseInt(p.price.replace(/\D/g, ''), 10) || 0));
     });
     if(window.openCart) openCart();                      // nhảy đến giỏ hàng / thanh toán
   });
@@ -1774,4 +2171,6 @@ const NN_STORIES = [
 /* ===== boot ===== */
 const bootPage = (location.hash || '#home').slice(1) || 'home';
 /* bài nghệ nhân được đổ nội dung động — tải lại trang thì quay về danh sách bài viết */
-go(bootPage === 'art-nn' ? 'story' : bootPage);
+Promise.resolve(window.kvSessionReady).then(() => {
+  go(bootPage === 'art-nn' ? 'story' : bootPage);
+});

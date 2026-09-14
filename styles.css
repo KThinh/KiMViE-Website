@@ -444,10 +444,38 @@ html:not(.gsap-on) main.active{animation:pgin .5s ease both}
    SUBPAGE SHARED — filters, split, stats, quote
    ========================================================================= */
 .filters{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-bottom:40px}
-.chip{padding:10px 22px;border-radius:999px;border:1px solid var(--line);font-size:13px;font-weight:600;color:var(--muted);transition:.2s;background:rgba(250,245,233,.5);min-height:42px}
+.chip{padding:10px 22px;border-radius:999px;border:1px solid var(--line);font-size:13px;font-weight:600;color:var(--muted);transition:.2s;background:rgba(250,245,233,.5);min-height:42px;cursor:pointer}
 .chip:hover{border-color:var(--gold);color:var(--gold-soft)}
 .chip.on{background:var(--navy);color:var(--cream2);border-color:var(--gold)}
-.sort{margin-left:auto;font-size:13px;color:var(--muted);border:1px solid var(--line);border-radius:999px;padding:10px 18px;background:rgba(250,245,233,.5)}
+.sort{margin-left:auto;display:flex;align-items:center;gap:8px;font-size:13px;color:var(--muted);border:1px solid var(--line);border-radius:999px;padding:0 8px 0 18px;background:rgba(250,245,233,.5);min-height:42px;cursor:pointer}
+.sort select{
+  border:none;background:transparent;color:var(--pearl);font-family:var(--sans);font-size:13px;font-weight:600;
+  padding:10px 26px 10px 4px;cursor:pointer;min-height:42px;
+  appearance:none;-webkit-appearance:none;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%236E6450' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
+  background-repeat:no-repeat;background-position:right 2px center;background-size:14px;
+}
+.sort select:focus{outline:none}
+.sort:focus-within{border-color:var(--gold)}
+
+.search-box{
+  display:flex;align-items:center;gap:10px;margin-bottom:18px;padding:0 16px;
+  border:1px solid var(--line);border-radius:999px;background:rgba(250,245,233,.5);
+  transition:border-color .2s,box-shadow .2s;color:var(--muted-2);
+}
+.search-box:focus-within{border-color:var(--gold);box-shadow:0 0 0 3px rgba(217,148,63,.14)}
+.search-box svg{flex:none}
+.search-box input{
+  flex:1;min-width:0;border:none;background:transparent;font-family:var(--sans);font-size:14px;color:var(--ink);
+  padding:13px 0;min-height:46px;
+}
+.search-box input:focus{outline:none}
+.search-box input::placeholder{color:var(--muted-2)}
+.search-box input::-webkit-search-cancel-button{display:none}
+.search-box #marketSearchClear{flex:none;color:var(--muted);font-size:13px;padding:6px;border-radius:50%;min-width:28px;min-height:28px;cursor:pointer}
+.search-box #marketSearchClear:hover{color:var(--vermilion);background:rgba(168,53,44,.08)}
+
+.market-empty{text-align:center;color:var(--muted);font-size:14px;padding:60px 20px;border:1px dashed var(--line);border-radius:10px;margin-bottom:20px}
 .split{display:grid;grid-template-columns:1fr 1fr;gap:56px;align-items:center;padding:72px 0;border-bottom:1px solid var(--line-soft)}
 .split:last-of-type{border-bottom:none}
 .split .s-art{background:rgba(250,245,233,.6);border:1px solid var(--line);border-radius:8px;min-height:340px;display:grid;place-items:center;color:var(--gold-soft);position:relative;overflow:hidden}
@@ -593,6 +621,43 @@ html:not(.gsap-on) .modal.open{animation:pgin .3s ease both}
 .qr-wrap #mQr svg{background:#fff;border:1px solid var(--line);border-radius:6px;padding:6px;display:block}
 .qr-wrap p{font-size:11.5px;color:var(--muted);line-height:1.6}
 .m-desc{font-size:14.5px;color:var(--muted);line-height:1.75;margin-bottom:20px}
+
+/* =========================================================================
+   ĐÁNH GIÁ SAO + BÌNH LUẬN (tab "Đánh giá" trong popup hiện vật)
+   ========================================================================= */
+#mReviews{display:none;margin-bottom:20px}
+#mReviews.on{display:block}
+.stars{display:inline-flex;gap:2px;line-height:1}
+.stars .star{font-size:16px;color:var(--line)}
+.stars .star.on{color:var(--gold)}
+.stars.stars-picker{gap:4px}
+.star-btn{font-size:22px;color:var(--line);transition:color .15s,transform .15s;line-height:1}
+.star-btn:hover{transform:scale(1.12)}
+.star-btn.on{color:var(--gold)}
+
+.rv-summary{display:flex;align-items:center;gap:10px;margin-bottom:16px;font-size:13.5px;color:var(--muted)}
+.rv-summary b{color:var(--pearl);font-family:var(--serif);font-size:17px}
+
+.rv-form-box{border:1px solid var(--line);border-radius:10px;padding:16px 18px;margin-bottom:20px;background:rgba(250,245,233,.5)}
+.rv-form-box h5{font-family:var(--serif);font-size:15.5px;color:var(--pearl);margin-bottom:10px}
+.rv-form-box textarea{
+  width:100%;margin-top:10px;padding:11px 13px;border:1px solid var(--line);border-radius:4px;
+  background:#fff;font-family:var(--sans);font-size:13.5px;color:var(--ink);resize:vertical;min-height:72px;
+}
+.rv-form-box textarea:focus{outline:none;border-color:var(--gold);box-shadow:0 0 0 3px rgba(217,148,63,.16)}
+.rv-form-actions{display:flex;gap:10px;margin-top:12px;flex-wrap:wrap}
+.rv-form-actions .btn{min-height:40px;padding:10px 18px;font-size:12.5px}
+.rv-login-hint{font-size:13px;color:var(--muted)}
+.rv-login-hint a{color:var(--amber2);font-weight:700}
+
+.rv-list{display:flex;flex-direction:column;gap:14px}
+.rv-item{border-bottom:1px dashed var(--line-soft);padding-bottom:14px}
+.rv-item:last-child{border-bottom:none;padding-bottom:0}
+.rv-item-head{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:6px}
+.rv-item-head b{font-size:13px;color:var(--pearl)}
+.rv-date{font-size:11.5px;color:var(--muted-2)}
+.rv-comment{font-size:13.5px;color:var(--muted);line-height:1.65}
+.rv-empty{font-size:13.5px;color:var(--muted);text-align:center;padding:18px 0}
 
 /* passport */
 .modal .panel.pp{display:block;max-width:640px;grid-template-columns:1fr}
@@ -1630,7 +1695,8 @@ footer{color:rgba(250,245,233,.78)}
     padding:2px 22px 8px;scrollbar-width:none;-webkit-overflow-scrolling:touch}
   .filters::-webkit-scrollbar{display:none}
   .chip{padding:9px 16px;font-size:12.5px;min-height:42px;white-space:nowrap;flex:none}
-  .sort{display:none}
+  .sort{margin-left:0;flex:none}
+  .search-box{margin:0 -22px 18px;border-radius:0;border-left:none;border-right:none;padding:0 22px}
   .p-grid,.p-grid.wide{grid-template-columns:repeat(2,1fr);gap:12px}
   .p-card{padding:10px 10px 12px}
   .p-grid.wide .p-art,.p-art{height:clamp(128px,42vw,180px);margin-bottom:10px}
