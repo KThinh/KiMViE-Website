@@ -37,19 +37,72 @@ if(navToggle){
    ========================================================================= */
 const KV_API_BASE = window.KV_API_BASE || '';
 function kvToken(){ return localStorage.getItem('kvToken'); }
+
+/* ===== "đang khởi động máy chủ" — backend host free (Render...) tự ngủ khi rảnh, lần gọi
+   đầu tiên sau đó có thể mất tới ~1-2 phút mới phản hồi (cold start). Nếu 1 lệnh gọi kvApi
+   chưa xong sau KV_WAKE_DELAY_MS thì hiện popup + đếm ngược, thay vì để trang đơ không rõ
+   lý do. Đếm nhiều request cùng lúc bằng kvWakePendingCount — chỉ đóng popup khi TẤT CẢ đã xong. ===== */
+const KV_WAKE_DELAY_MS = 4000;
+const KV_WAKE_COUNTDOWN_S = 90;
+let kvWakePendingCount = 0;
+let kvWakeCountdownTimer = null;
+let kvWakeSecondsLeft = KV_WAKE_COUNTDOWN_S;
+
+function kvUpdateWakeCountdown(){
+  const count = document.getElementById('wakeCount');
+  const bar = document.getElementById('wakeBarFill');
+  const msg = document.getElementById('wakeMsg');
+  const s = Math.max(0, kvWakeSecondsLeft);
+  if(count) count.textContent = Math.floor(s / 60) + ':' + String(s % 60).padStart(2, '0');
+  if(bar) bar.style.width = Math.max(0, (s / KV_WAKE_COUNTDOWN_S) * 100) + '%';
+  if(msg) msg.textContent = s > 0
+    ? 'Vui lòng đợi trong giây lát…'
+    : 'Đang lâu hơn dự kiến — thử tải lại trang.';
+}
+function kvShowWakeModal(){
+  const modal = document.getElementById('wakeModal');
+  if(!modal || modal.classList.contains('open')) return;
+  kvWakeSecondsLeft = KV_WAKE_COUNTDOWN_S;
+  kvUpdateWakeCountdown();
+  modal.classList.add('open');
+  clearInterval(kvWakeCountdownTimer);
+  kvWakeCountdownTimer = setInterval(() => {
+    kvWakeSecondsLeft--;
+    kvUpdateWakeCountdown();
+    if(kvWakeSecondsLeft <= 0) clearInterval(kvWakeCountdownTimer);
+  }, 1000);
+}
+function kvHideWakeModal(){
+  const modal = document.getElementById('wakeModal');
+  if(modal) modal.classList.remove('open');
+  clearInterval(kvWakeCountdownTimer);
+}
+(function bindWakeModalClose(){
+  document.querySelectorAll('#wakeModal [data-wx]').forEach(el => el.addEventListener('click', kvHideWakeModal));
+})();
+
 async function kvApi(path, opts){
   opts = opts || {};
   const headers = Object.assign({'Content-Type':'application/json'}, opts.headers || {});
   const t = kvToken();
   if(t) headers.Authorization = 'Bearer ' + t;
-  const res = await fetch(KV_API_BASE + path, Object.assign({}, opts, {headers}));
-  let data = null;
-  try{ data = await res.json(); }catch(e){ /* vd. 204 No Content khi xoá */ }
-  if(!res.ok){
-    const msg = data && data.detail ? (typeof data.detail === 'string' ? data.detail : JSON.stringify(data.detail)) : ('Lỗi máy chủ (' + res.status + ')');
-    throw new Error(msg);
+
+  kvWakePendingCount++;
+  const wakeTimer = setTimeout(kvShowWakeModal, KV_WAKE_DELAY_MS);
+  try{
+    const res = await fetch(KV_API_BASE + path, Object.assign({}, opts, {headers}));
+    let data = null;
+    try{ data = await res.json(); }catch(e){ /* vd. 204 No Content khi xoá */ }
+    if(!res.ok){
+      const msg = data && data.detail ? (typeof data.detail === 'string' ? data.detail : JSON.stringify(data.detail)) : ('Lỗi máy chủ (' + res.status + ')');
+      throw new Error(msg);
+    }
+    return data;
+  } finally {
+    clearTimeout(wakeTimer);
+    kvWakePendingCount = Math.max(0, kvWakePendingCount - 1);
+    if(kvWakePendingCount === 0) kvHideWakeModal();
   }
-  return data;
 }
 let CURRENT_USER = null;   // gán bởi khối đăng nhập bên dưới — dùng để đánh dấu "★ Sản phẩm của bạn"
 
@@ -740,7 +793,14 @@ kvSyncMarketFromApi();
   const emptyBox = document.getElementById('marketEmpty');
   const searchInput = document.getElementById('marketSearch');
   const searchClear = document.getElementById('marketSearchClear');
-  const sortSelect = document.getElementById('marketSort');
+  const sortBox = document.getElementById('sortBox');
+  const sortBtn = document.getElementById('sortBtn');
+  const sortMenu = document.getElementById('sortMenu');
+  const sortValue = document.getElementById('sortValue');
+  const SORT_LABELS = {
+    featured: 'Nổi bật', 'price-asc': 'Giá: thấp đến cao', 'price-desc': 'Giá: cao đến thấp',
+    'rating-desc': 'Đánh giá cao nhất', 'sold-desc': 'Bán chạy nhất',
+  };
   if(!document.querySelector('#allProducts .p-card') || !pager) return;
   window.kvRefreshMarket = renderMarket;
 
@@ -807,7 +867,46 @@ kvSyncMarketFromApi();
     renderMarket(); searchInput.focus();
   });
 
-  sortSelect.addEventListener('change', () => { curSort = sortSelect.value; curPage = 1; renderMarket(); });
+  /* dropdown "Sắp xếp" tự dựng (ARIA listbox) thay <select> mặc định — mobile không mở
+     popup hệ điều hành nữa, style khớp giao diện site và không bị cuộn khuất khỏi màn hình */
+  function closeSortMenu(){
+    sortMenu.hidden = true;
+    sortBox.dataset.open = 'false';
+    sortBtn.setAttribute('aria-expanded', 'false');
+  }
+  function openSortMenu(){
+    sortMenu.hidden = false;
+    sortBox.dataset.open = 'true';
+    sortBtn.setAttribute('aria-expanded', 'true');
+    const current = sortMenu.querySelector('[aria-selected="true"]');
+    (current || sortMenu.firstElementChild).focus();
+  }
+  function selectSort(value){
+    curSort = value; curPage = 1;
+    sortValue.textContent = SORT_LABELS[value] || value;
+    sortMenu.querySelectorAll('[role="option"]').forEach(li =>
+      li.setAttribute('aria-selected', String(li.dataset.value === value)));
+    renderMarket();
+  }
+  sortBtn.addEventListener('click', () => { sortMenu.hidden ? openSortMenu() : closeSortMenu(); });
+  sortMenu.addEventListener('click', e => {
+    const li = e.target.closest('[role="option"]'); if(!li) return;
+    selectSort(li.dataset.value);
+    closeSortMenu();
+    sortBtn.focus();
+  });
+  sortMenu.addEventListener('keydown', e => {
+    const opts = [...sortMenu.querySelectorAll('[role="option"]')];
+    const idx = opts.indexOf(document.activeElement);
+    if(e.key === 'ArrowDown'){ e.preventDefault(); (opts[idx + 1] || opts[0]).focus(); }
+    else if(e.key === 'ArrowUp'){ e.preventDefault(); (opts[idx - 1] || opts[opts.length - 1]).focus(); }
+    else if(e.key === 'Enter' || e.key === ' '){
+      e.preventDefault();
+      const li = document.activeElement;
+      if(li && li.matches('[role="option"]')){ selectSort(li.dataset.value); closeSortMenu(); sortBtn.focus(); }
+    } else if(e.key === 'Escape'){ closeSortMenu(); sortBtn.focus(); }
+  });
+  document.addEventListener('click', e => { if(!sortBox.contains(e.target)) closeSortMenu(); });
 
   pager.addEventListener('click', e => {
     const b = e.target.closest('[data-pg]'); if(!b) return;

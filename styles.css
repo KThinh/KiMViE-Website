@@ -443,20 +443,32 @@ html:not(.gsap-on) main.active{animation:pgin .5s ease both}
 /* =========================================================================
    SUBPAGE SHARED — filters, split, stats, quote
    ========================================================================= */
-.filters{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-bottom:40px}
+.filters{display:flex;gap:10px 14px;flex-wrap:wrap;align-items:center;margin-bottom:40px}
+.chip-row{display:flex;gap:10px;flex-wrap:wrap}
 .chip{padding:10px 22px;border-radius:999px;border:1px solid var(--line);font-size:13px;font-weight:600;color:var(--muted);transition:.2s;background:rgba(250,245,233,.5);min-height:42px;cursor:pointer}
 .chip:hover{border-color:var(--gold);color:var(--gold-soft)}
 .chip.on{background:var(--navy);color:var(--cream2);border-color:var(--gold)}
-.sort{margin-left:auto;display:flex;align-items:center;gap:8px;font-size:13px;color:var(--muted);border:1px solid var(--line);border-radius:999px;padding:0 8px 0 18px;background:rgba(250,245,233,.5);min-height:42px;cursor:pointer}
-.sort select{
-  border:none;background:transparent;color:var(--pearl);font-family:var(--sans);font-size:13px;font-weight:600;
-  padding:10px 26px 10px 4px;cursor:pointer;min-height:42px;
-  appearance:none;-webkit-appearance:none;
-  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%236E6450' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
-  background-repeat:no-repeat;background-position:right 2px center;background-size:14px;
+
+/* dropdown "Sắp xếp" tự dựng (thay <select> mặc định — mobile mở popup hệ điều hành, không
+   style được và không khớp giao diện site) — nút mở/đóng danh sách kiểu ARIA listbox */
+.sortbox{position:relative;margin-left:auto}
+.sortbox-btn{
+  display:flex;align-items:center;gap:8px;font-size:13px;color:var(--muted);font-family:var(--sans);
+  border:1px solid var(--line);border-radius:999px;padding:0 16px 0 18px;background:rgba(250,245,233,.5);
+  min-height:42px;cursor:pointer;transition:border-color .2s;white-space:nowrap;
 }
-.sort select:focus{outline:none}
-.sort:focus-within{border-color:var(--gold)}
+.sortbox-btn:hover{border-color:var(--gold)}
+.sortbox[data-open="true"] .sortbox-btn{border-color:var(--gold)}
+.sortbox-value{font-weight:600;color:var(--ink)}
+.sortbox-chev{flex:none;color:var(--muted);transition:transform .2s}
+.sortbox[data-open="true"] .sortbox-chev{transform:rotate(180deg)}
+.sortbox-menu{
+  position:absolute;top:calc(100% + 8px);right:0;z-index:20;min-width:230px;margin:0;padding:6px;list-style:none;
+  background:var(--panel);border:1px solid var(--line);border-radius:12px;box-shadow:0 18px 44px rgba(22,30,69,.18);
+}
+.sortbox-menu li{padding:11px 14px;border-radius:8px;font-size:13.5px;color:var(--ink);cursor:pointer;min-height:44px;display:flex;align-items:center}
+.sortbox-menu li:hover,.sortbox-menu li:focus{background:rgba(217,148,63,.12);outline:none}
+.sortbox-menu li[aria-selected="true"]{color:var(--gold-soft);font-weight:700}
 
 .search-box{
   display:flex;align-items:center;gap:10px;margin-bottom:18px;padding:0 16px;
@@ -677,6 +689,15 @@ html:not(.gsap-on) .modal.open{animation:pgin .3s ease both}
 .pp-reward{border:1px dashed var(--line);border-radius:8px;padding:18px;text-align:center;margin-top:22px;font-size:13.5px;color:var(--muted)}
 .pp-reward .code{font-weight:800;letter-spacing:.2em;background:rgba(217,148,63,.14);color:var(--gold-soft);padding:5px 16px;border-radius:6px;display:inline-block;margin-top:8px}
 
+/* wake (backend cold-start) */
+.modal .panel.wakep{max-width:440px}
+.wakep .pp-head{gap:14px}
+.wake-spinner{width:34px;height:34px;flex:none;border-radius:50%;border:3px solid rgba(250,245,233,.25);border-top-color:var(--gold-bright);animation:spin .9s linear infinite}
+.wake-msg{font-size:13.5px;color:var(--muted);line-height:1.6;margin-bottom:18px}
+.wake-count{font-family:var(--serif);font-size:32px;letter-spacing:.04em;color:var(--gold-soft);text-align:center;margin-bottom:12px;font-variant-numeric:tabular-nums}
+.wake-bar{height:6px;border-radius:999px;background:rgba(217,148,63,.12);overflow:hidden;margin-bottom:16px}
+.wake-bar i{display:block;height:100%;width:100%;background:linear-gradient(90deg,var(--gold),var(--vermilion));transition:width 1s linear}
+
 /* toast */
 #toast{position:fixed;left:50%;bottom:32px;transform:translate(-50%,20px);z-index:var(--z-modal);background:var(--panel-2);color:var(--pearl);border:1px solid var(--gold);border-radius:6px;padding:14px 22px;font-size:13.5px;box-shadow:0 18px 40px rgba(0,0,0,.5);opacity:0;pointer-events:none;transition:opacity .25s,transform .25s;max-width:min(440px,90vw)}
 #toast.show{opacity:1;transform:translate(-50%,0)}
@@ -757,7 +778,7 @@ html:not(.gsap-on) .modal.open{animation:pgin .3s ease both}
   .split{grid-template-columns:1fr;gap:28px;padding:48px 0}
   .f-news,.f-grid{grid-template-columns:1fr;gap:28px}
   .m-head{flex-direction:column;align-items:flex-start}
-  .sort{margin-left:0}
+  .sortbox{margin-left:0}
   .sec-head{margin-bottom:40px}
   .ev-row{flex-direction:column;align-items:flex-start;gap:14px}
   .hero h1{font-size:clamp(40px,11vw,60px)}
@@ -1690,12 +1711,18 @@ footer{color:rgba(250,245,233,.78)}
   .j-step h4{font-size:14.5px;margin:2px 0 3px}
   .j-step p{font-size:12.5px}
 
-  /* ---- 12 · sàn thương mại: chip lọc vuốt ngang, lưới 2 cột gọn ---- */
-  .filters{flex-wrap:nowrap;overflow-x:auto;margin:0 -22px 26px;
-    padding:2px 22px 8px;scrollbar-width:none;-webkit-overflow-scrolling:touch}
-  .filters::-webkit-scrollbar{display:none}
+  /* ---- 12 · sàn thương mại: chip lọc vuốt ngang, "Sắp xếp" luôn xuống hàng riêng để
+     không bao giờ bị cuộn khuất khỏi màn hình cùng hàng chip ---- */
+  .filters{flex-wrap:wrap;row-gap:12px;margin-bottom:26px}
+  .chip-row{width:100%;flex-wrap:nowrap;overflow-x:auto;margin:0 -22px;
+    padding:2px 22px 6px;scrollbar-width:none;-webkit-overflow-scrolling:touch;
+    mask-image:linear-gradient(90deg,#000 90%,transparent 100%);
+    -webkit-mask-image:linear-gradient(90deg,#000 90%,transparent 100%)}
+  .chip-row::-webkit-scrollbar{display:none}
   .chip{padding:9px 16px;font-size:12.5px;min-height:42px;white-space:nowrap;flex:none}
-  .sort{margin-left:0;flex:none}
+  .sortbox{margin-left:0;width:100%}
+  .sortbox-btn{width:100%;justify-content:space-between}
+  .sortbox-menu{left:0;right:0;min-width:0}
   .search-box{margin:0 -22px 18px;border-radius:0;border-left:none;border-right:none;padding:0 22px}
   .p-grid,.p-grid.wide{grid-template-columns:repeat(2,1fr);gap:12px}
   .p-card{padding:10px 10px 12px}

@@ -554,20 +554,26 @@
         <button type="button" id="marketSearchClear" aria-label="Xóa tìm kiếm" hidden>✕</button>
       </div>
       <div class="filters">
-        <button class="chip on" data-f="all">Tất cả</button>
-        <button class="chip" data-f="bt">Gốm Bát Tràng</button>
-        <button class="chip" data-f="vp">Lụa Vạn Phúc</button>
-        <button class="chip" data-f="pv">Mây tre Phú Vinh</button>
-        <label class="sort" for="marketSort">
-          Sắp xếp:
-          <select id="marketSort" aria-label="Sắp xếp sản phẩm">
-            <option value="featured">Nổi bật</option>
-            <option value="price-asc">Giá: thấp đến cao</option>
-            <option value="price-desc">Giá: cao đến thấp</option>
-            <option value="rating-desc">Đánh giá cao nhất</option>
-            <option value="sold-desc">Bán chạy nhất</option>
-          </select>
-        </label>
+        <div class="chip-row" role="group" aria-label="Lọc theo làng nghề">
+          <button class="chip on" data-f="all">Tất cả</button>
+          <button class="chip" data-f="bt">Gốm Bát Tràng</button>
+          <button class="chip" data-f="vp">Lụa Vạn Phúc</button>
+          <button class="chip" data-f="pv">Mây tre Phú Vinh</button>
+        </div>
+        <div class="sortbox" id="sortBox">
+          <button type="button" class="sortbox-btn" id="sortBtn" aria-haspopup="listbox" aria-expanded="false" aria-controls="sortMenu">
+            <span class="sortbox-label">Sắp xếp:</span>
+            <span class="sortbox-value" id="sortValue">Nổi bật</span>
+            <svg class="sortbox-chev" viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg>
+          </button>
+          <ul class="sortbox-menu" id="sortMenu" role="listbox" aria-label="Sắp xếp sản phẩm" hidden>
+            <li role="option" data-value="featured" aria-selected="true" tabindex="-1">Nổi bật</li>
+            <li role="option" data-value="price-asc" aria-selected="false" tabindex="-1">Giá: thấp đến cao</li>
+            <li role="option" data-value="price-desc" aria-selected="false" tabindex="-1">Giá: cao đến thấp</li>
+            <li role="option" data-value="rating-desc" aria-selected="false" tabindex="-1">Đánh giá cao nhất</li>
+            <li role="option" data-value="sold-desc" aria-selected="false" tabindex="-1">Bán chạy nhất</li>
+          </ul>
+        </div>
       </div>
       <p class="market-empty" id="marketEmpty" hidden>Không tìm thấy sản phẩm phù hợp — thử từ khoá khác hoặc bỏ bớt bộ lọc.</p>
       <div class="p-grid wide" id="allProducts">
@@ -1242,6 +1248,26 @@
       <div class="pp-detail" id="ppDetail"></div>
       <div class="pp-reward" id="ppReward"></div>
       <p class="demo-note" style="margin-top:16px">Con dấu lưu trên trình duyệt của bạn · <a href="#" id="ppReset" style="color:var(--amber2);font-weight:700">Làm mới hành trình (demo)</a></p>
+    </div>
+  </div>
+</div>
+
+<!-- Thông báo backend đang khởi động (hosting free cho tự ngủ khi không có ai dùng) -->
+<div class="modal" id="wakeModal">
+  <div class="back" data-wx></div>
+  <div class="panel pp wakep">
+    <div class="pp-head">
+      <span class="wake-spinner" aria-hidden="true"></span>
+      <div>
+        <h3>Đang khởi động máy chủ</h3>
+        <small>Máy chủ đang được đánh thức sau thời gian nghỉ</small>
+      </div>
+    </div>
+    <div class="pp-body">
+      <p class="wake-msg" id="wakeMsg">Vui lòng đợi trong giây lát…</p>
+      <div class="wake-count" id="wakeCount">1:30</div>
+      <div class="wake-bar"><i id="wakeBarFill"></i></div>
+      <p class="hint">Trang vẫn dùng được bình thường trong lúc chờ.</p>
     </div>
   </div>
 </div>
