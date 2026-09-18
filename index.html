@@ -12,6 +12,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,600;0,700;0,800;0,900;1,600&family=Be+Vietnam+Pro:wght@400;500;600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="styles.css">
+<link rel="stylesheet" href="pages.css">
 </head>
 <body>
 <!-- ===== full-page lacquer video ground ===== -->
@@ -261,15 +262,22 @@
     </a>
     <ul class="menu">
       <li><a href="#home" data-go="home" class="on">Trang chủ</a></li>
-      <li><a href="#expo" data-go="expo">Bản đồ làng nghề</a></li>
-      <li><a href="#market" data-go="market">Sản phẩm</a></li>
+      <li><a href="shop.html">Shop</a></li>
+      <li><a href="shop.html#categories">Danh mục</a></li>
+      <li><a href="shop.html?sort=newest">Mới về</a></li>
+      <li><a href="shop.html?sale=1">Giảm giá</a></li>
       <li><a href="#story" data-go="story">Bài viết</a></li>
       <li class="menu-seller" id="menuSellerItem" hidden><a href="#seller" data-go="seller">Kênh người bán</a></li>
       <li class="menu-login"><a href="#" id="loginMenuLink">Đăng nhập</a></li>
     </ul>
     <div class="nav-right">
+      <form class="nav-search" id="navSearchForm" role="search">
+        <input type="search" id="navSearchInput" placeholder="Tìm sản phẩm…" aria-label="Tìm sản phẩm">
+        <button type="submit" aria-label="Tìm kiếm"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg></button>
+      </form>
       <button class="ic" id="contactBtn" type="button" title="Liên hệ với chúng tôi" aria-label="Liên hệ với chúng tôi"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.9v3a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3.1 19.5 19.5 0 0 1-6-6A19.8 19.8 0 0 1 2.1 4.2 2 2 0 0 1 4.1 2h3a2 2 0 0 1 2 1.7c.13.96.36 1.9.7 2.8a2 2 0 0 1-.45 2.1L8.1 9.9a16 16 0 0 0 6 6l1.3-1.3a2 2 0 0 1 2.1-.45c.9.34 1.84.57 2.8.7A2 2 0 0 1 22 16.9z"/></svg></button>
       <button class="ic" id="ppBtn" type="button" title="Hộ chiếu di sản" aria-label="Hộ chiếu di sản"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="3" width="14" height="18" rx="2"/><circle cx="12" cy="10" r="2.6"/><path d="M9 16h6"/></svg><span class="badge" id="ppBadge">0</span></button>
+      <a class="ic" href="wishlist.html" title="Sản phẩm yêu thích" aria-label="Sản phẩm yêu thích"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M20.8 8.6c0 4.8-8.8 10.4-8.8 10.4S3.2 13.4 3.2 8.6a4.6 4.6 0 0 1 8.8-1.8 4.6 4.6 0 0 1 8.8 1.8Z"/></svg><span class="badge" id="wishBadge">0</span></a>
       <button class="ic" id="cartBtn" type="button" title="Giỏ hàng" aria-label="Giỏ hàng"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M5 7h14l-1.2 10.3a2 2 0 0 1-2 1.7H8.2a2 2 0 0 1-2-1.7Z"/><path d="M9 7a3 3 0 0 1 6 0"/></svg><span class="badge" id="cartBadge">0</span></button>
       <button class="ic" id="audioBtn" type="button" aria-label="Bật hoặc tắt âm thanh nền" aria-pressed="false" title="Âm thanh nền"></button>
       <a class="btn btn-navy login" id="loginBtn" href="#">Đăng nhập</a>
@@ -743,17 +751,43 @@
       <div class="seller-tabs" role="tablist" aria-label="Chuyển đổi khu vực kênh người bán">
         <button class="chip on" data-sv="dash" type="button" role="tab" aria-selected="true">Tổng quan</button>
         <button class="chip" data-sv="myp" type="button" role="tab" aria-selected="false">Sản phẩm của tôi</button>
+        <button class="chip" data-sv="orders" type="button" role="tab" aria-selected="false">Đơn hàng</button>
+        <button class="chip" data-sv="pay" type="button" role="tab" aria-selected="false">Giao dịch</button>
         <button class="chip" data-sv="post" type="button" role="tab" aria-selected="false">Đăng sản phẩm</button>
       </div>
 
       <!-- TỔNG QUAN -->
       <div class="seller-view on" id="sv-dash" role="tabpanel">
+        <div class="acct-card" style="margin-bottom:24px">
+          <h6 style="margin-bottom:10px">Mã QR nhận tiền của gian hàng</h6>
+          <p style="font-size:12.5px;color:var(--muted);margin-bottom:10px">Người mua sẽ chuyển khoản trực tiếp vào mã QR này khi đặt hàng của bạn.</p>
+          <div class="img-upload">
+            <label class="btn btn-line" for="sellerQrInput" style="cursor:pointer">Chọn ảnh QR</label>
+            <input type="file" id="sellerQrInput" accept="image/*" hidden>
+            <span class="img-upload-name" id="sellerQrName">Chưa chọn ảnh</span>
+          </div>
+          <img id="sellerQrPreview" src="" alt="" style="width:140px;height:140px;object-fit:contain;background:#fff;border:1px solid var(--line);border-radius:8px;margin-top:10px;display:none">
+          <p class="ck-err" id="sellerQrErr"></p>
+        </div>
         <div class="stat-grid" id="sellerStats"></div>
         <div class="sec-head" style="text-align:left;max-width:none;margin:0 0 20px">
           <span class="kicker">Gần đây</span>
           <h2 class="lc" style="font-size:clamp(22px,2.6vw,28px)">Sản phẩm đăng gần đây</h2>
         </div>
         <div class="p-grid wide" id="sellerRecent"></div>
+      </div>
+
+      <!-- ĐƠN HÀNG (cập nhật trạng thái vận chuyển từng dòng hàng của mình) -->
+      <div class="seller-view" id="sv-orders" role="tabpanel">
+        <div id="sellerOrdersList"></div>
+      </div>
+
+      <!-- GIAO DỊCH (xác nhận đã nhận tiền cho từng đơn) -->
+      <div class="seller-view" id="sv-pay" role="tabpanel">
+        <div style="display:flex;justify-content:flex-end;margin-bottom:14px">
+          <button class="btn btn-amber" id="confirmAllBtn" type="button">✓ Xác nhận đã nhận tất cả</button>
+        </div>
+        <div id="sellerTxList"></div>
       </div>
 
       <!-- SẢN PHẨM CỦA TÔI -->
@@ -1162,22 +1196,30 @@
       </div>
       <div>
         <h5>Cửa hàng</h5>
-        <a class="fl" id="flNew" href="#tinhhoa">Sản phẩm mới</a>
-        <a class="fl" data-mf="bt" href="#market">Gốm Bát Tràng</a>
-        <a class="fl" data-mf="vp" href="#market">Lụa Vạn Phúc</a>
-        <a class="fl" data-mf="pv" href="#market">Mây tre Phú Vinh</a>
-        <a class="fl" data-go="market" href="#market">Combo / Bộ quà tặng</a>
+        <a class="fl" href="shop.html">Tất cả sản phẩm</a>
+        <a class="fl" href="shop.html?sort=newest">Sản phẩm mới</a>
+        <a class="fl" href="shop.html?sale=1">Đang giảm giá</a>
+        <a class="fl" href="shop.html?village=bt">Gốm Bát Tràng</a>
+        <a class="fl" href="shop.html?village=vp">Lụa Vạn Phúc</a>
+        <a class="fl" href="shop.html?village=pv">Mây tre Phú Vinh</a>
       </div>
       <div>
-        <h5>Đặt hàng & Hỗ trợ</h5>
-        <a class="fl" href="#">Hỏi đáp</a>
+        <h5>Tài khoản</h5>
+        <a class="fl" href="account.html">Tài khoản của tôi</a>
+        <a class="fl" href="account.html#orders">Đơn hàng của tôi</a>
+        <a class="fl" href="wishlist.html">Sản phẩm yêu thích</a>
+        <a class="fl" href="cart.html">Giỏ hàng</a>
+      </div>
+      <div>
+        <h5>Vận chuyển & Đổi trả</h5>
+        <a class="fl" href="#">Chính sách giao hàng</a>
+        <a class="fl" href="#">Chính sách đổi trả</a>
         <a class="fl" href="#">Hướng dẫn mua hàng</a>
-        <a class="fl" href="#">Chính sách bán hàng & đổi trả</a>
         <a class="fl" href="#">Điều khoản bảo mật</a>
-        <a class="fl" data-cs href="#">Liên hệ chúng tôi</a>
       </div>
       <div>
-        <h5>Về KIMVIE</h5>
+        <h5>Liên hệ & Về KIMVIE</h5>
+        <a class="fl" data-cs href="#">Liên hệ chúng tôi</a>
         <a class="fl" data-go="article" href="#article">Câu chuyện thương hiệu</a>
         <a class="fl" data-go="story" href="#story">Bài viết</a>
         <a class="fl" data-go="expo" href="#expo">Bản đồ làng nghề</a>
@@ -1405,6 +1447,10 @@
           <input type="text" id="lgName" placeholder="Nguyễn Văn A" autocomplete="name">
         </div>
         <div class="ck-field">
+          <label for="lgUsername">Tên đăng nhập <em>*</em></label>
+          <input type="text" id="lgUsername" placeholder="vd: nguyenvana" autocomplete="username">
+        </div>
+        <div class="ck-field" id="lgEmailField" hidden>
           <label for="lgEmail">Email <em>*</em></label>
           <input type="email" id="lgEmail" placeholder="ban@email.com" autocomplete="email">
         </div>
@@ -1429,6 +1475,7 @@
             <p id="pfMeta"></p>
           </div>
         </div>
+        <div class="idrow"><span>Tên đăng nhập</span><b id="pfUsername">—</b></div>
         <div class="idrow"><span>Email</span><b id="pfEmail">—</b></div>
         <div class="idrow"><span>Số điện thoại</span><b id="pfPhone">—</b></div>
         <div class="idrow"><span>Hạng thành viên</span><b>Lữ khách KIMVIE</b></div>
@@ -1443,7 +1490,8 @@
           <button class="btn btn-amber" id="goSellerBtn" type="button" style="width:100%;justify-content:center">Vào trang quản lý →</button>
         </div>
 
-        <button class="btn btn-line ck-cta" id="logoutBtn" type="button" style="margin-top:12px">Đăng xuất</button>
+        <a class="btn btn-amber ck-cta" id="goAccountBtn" href="account.html" style="margin-top:12px;justify-content:center">Trang tài khoản đầy đủ →</a>
+        <button class="btn btn-line ck-cta" id="logoutBtn" type="button" style="margin-top:10px">Đăng xuất</button>
       </div>
       <!-- đăng ký làm người bán -->
       <div id="sellerRegisterBox" hidden>

@@ -250,7 +250,9 @@ function discountOf(total){
       if(window.kvOpenLogin) kvOpenLogin();
       return;
     }
-    setStep(2);
+    // Thanh toán đầy đủ (địa chỉ đã lưu, vận chuyển, QR riêng từng người bán, xác nhận 2 chiều)
+    // giờ nằm ở trang checkout.html riêng — modal này chỉ còn để xem nhanh giỏ hàng.
+    window.location.href = 'checkout.html';
   });
 
   document.getElementById('ckForm').addEventListener('submit', async e => {
@@ -314,6 +316,14 @@ function discountOf(total){
 
   document.addEventListener('keydown', e => { if(e.key === 'Escape') closeCart(); });
 })();
+
+/* ===== ô tìm kiếm trên header -> trang kết quả tìm kiếm riêng ===== */
+const navSearchForm = document.getElementById('navSearchForm');
+if(navSearchForm) navSearchForm.addEventListener('submit', e => {
+  e.preventDefault();
+  const q = document.getElementById('navSearchInput').value.trim();
+  if(q) window.location.href = 'search.html?q=' + encodeURIComponent(q);
+});
 
 /* ===== footer quick links -> filtered market ===== */
 document.querySelectorAll('[data-mf]').forEach(a => a.addEventListener('click', e => {
@@ -1445,6 +1455,7 @@ document.querySelectorAll('[data-village]').forEach(a => a.addEventListener('cli
   const srErr = document.getElementById('srErr');
   const lgErr = document.getElementById('lgErr');
   const lgNameField = document.getElementById('lgNameField');
+  const lgEmailField = document.getElementById('lgEmailField');
   const lgPhoneField = document.getElementById('lgPhoneField');
   const authModeHint = document.getElementById('authModeHint');
   const loginSubmitBtn = document.getElementById('loginSubmitBtn');
@@ -1472,6 +1483,15 @@ document.querySelectorAll('[data-village]').forEach(a => a.addEventListener('cli
       loginMenuLink.textContent = 'Đăng nhập';
     }
     if(menuSellerItem) menuSellerItem.hidden = !window.kvIsSeller();
+    syncWishBadge();
+  }
+  function syncWishBadge(){
+    const bd = document.getElementById('wishBadge');
+    if(!bd) return;
+    if(!user){ bd.textContent = '0'; bd.classList.remove('show'); return; }
+    kvApi('/api/wishlist').then(items => {
+      bd.textContent = items.length; bd.classList.toggle('show', items.length > 0);
+    }).catch(() => {});
   }
 
   /* ---- chuyển giữa "Đăng nhập" / "Đăng ký" trên cùng 1 form ---- */
@@ -1483,6 +1503,7 @@ document.querySelectorAll('[data-village]').forEach(a => a.addEventListener('cli
     authMode = mode;
     const isRegister = mode === 'register';
     lgNameField.hidden = !isRegister;
+    lgEmailField.hidden = !isRegister;
     lgPhoneField.hidden = !isRegister;
     document.getElementById('loginTitle').textContent = isRegister ? 'Tạo tài khoản KIMVIE' : 'Đăng nhập KIMVIE';
     loginSubmitBtn.textContent = isRegister ? 'Đăng ký →' : 'Đăng nhập →';
@@ -1509,6 +1530,7 @@ document.querySelectorAll('[data-village]').forEach(a => a.addEventListener('cli
       document.getElementById('pfName').textContent = user.name;
       document.getElementById('pfAva').textContent = (user.name.trim()[0] || 'K').toUpperCase();
       document.getElementById('pfMeta').textContent = 'Thành viên từ ' + new Date(user.created_at).toLocaleDateString('vi-VN');
+      document.getElementById('pfUsername').textContent = user.username || '—';
       document.getElementById('pfEmail').textContent = user.email || '—';
       document.getElementById('pfPhone').textContent = user.phone || '—';
       showProfileView();
@@ -1525,20 +1547,25 @@ document.querySelectorAll('[data-village]').forEach(a => a.addEventListener('cli
   form.addEventListener('submit', async e => {
     e.preventDefault();
     lgErr.textContent = '';
-    const email = document.getElementById('lgEmail').value.trim();
+    const username = document.getElementById('lgUsername').value.trim();
     const password = document.getElementById('lgPass').value;
-    if(!email || !password){ lgErr.textContent = 'Vui lòng nhập email và mật khẩu.'; return; }
+    if(!username || !password){ lgErr.textContent = 'Vui lòng nhập tên đăng nhập và mật khẩu.'; return; }
     loginSubmitBtn.disabled = true;
     try{
       let res;
       if(authMode === 'register'){
         const name = document.getElementById('lgName').value.trim();
+        const email = document.getElementById('lgEmail').value.trim();
         const phone = document.getElementById('lgPhone').value.trim();
         if(!name){ lgErr.textContent = 'Vui lòng nhập tên của bạn.'; return; }
+        if(!email){ lgErr.textContent = 'Vui lòng nhập email.'; return; }
+        if(!/^[a-zA-Z0-9_.]+$/.test(username) || username.length < 3){
+          lgErr.textContent = 'Tên đăng nhập cần từ 3 ký tự, chỉ gồm chữ/số/dấu chấm/gạch dưới.'; return;
+        }
         if(password.length < 6){ lgErr.textContent = 'Mật khẩu cần ít nhất 6 ký tự.'; return; }
-        res = await kvApi('/api/auth/register', {method:'POST', body: JSON.stringify({name, email, phone: phone || null, password})});
+        res = await kvApi('/api/auth/register', {method:'POST', body: JSON.stringify({name, username, email, phone: phone || null, password})});
       } else {
-        res = await kvApi('/api/auth/login', {method:'POST', body: JSON.stringify({email, password})});
+        res = await kvApi('/api/auth/login', {method:'POST', body: JSON.stringify({username, password})});
       }
       localStorage.setItem('kvToken', res.access_token);
       setUser(res.user);
@@ -1699,11 +1726,106 @@ document.querySelectorAll('[data-village]').forEach(a => a.addEventListener('cli
     if(!products.length){ box.innerHTML = emptyHTML('Gian hàng của bạn hiện chưa có sản phẩm nào.'); return; }
     box.innerHTML = products.slice().reverse().map(p => cardHTML(p, true)).join('');
   }
+  const STAGE_LABEL = {pending:'Chờ thanh toán', processing:'Đang xử lý', shipped:'Đang giao', delivered:'Đã giao', cancelled:'Đã huỷ'};
+  const ITEM_STAGES = ['processing', 'shipped', 'delivered'];
+
+  async function renderSellerOrders(){
+    const box = document.getElementById('sellerOrdersList'); if(!box) return;
+    let rows;
+    try{ rows = await kvApi('/api/seller/orders'); }catch(e){ box.innerHTML = '<p>Không tải được đơn hàng.</p>'; return; }
+    box.innerHTML = rows.length ? rows.map(r => {
+      const next = ITEM_STAGES[ITEM_STAGES.indexOf(r.item_status) + 1];
+      return '<div class="order-row"><div class="top"><b>Đơn #' + r.order_id + ' · ' + r.product_name + ' × ' + r.quantity + '</b><span class="status-pill status-' + r.item_status + '">' + STAGE_LABEL[r.item_status] + '</span></div>' +
+        '<div style="font-size:12.5px;color:var(--muted)">Người nhận: ' + r.recipient_name + ' · ' + r.shipping_address + '</div>' +
+        (next ? '<button class="btn btn-line" data-adv-order="' + r.order_id + '" data-adv-item="' + r.item_id + '" data-adv-next="' + next + '" type="button" style="margin-top:8px;padding:7px 14px;font-size:12px">Chuyển sang "' + STAGE_LABEL[next] + '" →</button>' : '') +
+        '</div>';
+    }).join('') : '<div class="seller-empty"><p>Chưa có đơn hàng nào chứa sản phẩm của bạn.</p></div>';
+    box.querySelectorAll('[data-adv-order]').forEach(b => b.addEventListener('click', async () => {
+      b.disabled = true;
+      try{
+        await kvApi('/api/orders/' + b.dataset.advOrder + '/items/' + b.dataset.advItem + '/status', {method:'PATCH', body: JSON.stringify({item_status: b.dataset.advNext})});
+        showToast('✦ Đã cập nhật trạng thái vận chuyển.');
+        renderSellerOrders();
+      }catch(e){ showToast(e.message); b.disabled = false; }
+    }));
+  }
+
+  async function renderSellerTx(){
+    const box = document.getElementById('sellerTxList'); if(!box) return;
+    let rows;
+    try{ rows = await kvApi('/api/seller/transactions'); }catch(e){ box.innerHTML = '<p>Không tải được giao dịch.</p>'; return; }
+    box.innerHTML = rows.length ? rows.map(p =>
+      '<div class="pay-seller-block"><div style="display:flex;justify-content:space-between"><b>Đơn #' + p.order_id + ' · ' + p.buyer_name + '</b><span class="pay-status ' + p.status + '">' + (p.status==='completed'?'Đã hoàn tất':p.status==='failed'?'Thất bại':(p.buyer_confirmed_at?'Người mua đã chuyển':'Chờ')) + '</span></div>' +
+      '<p style="font-size:13px;color:var(--muted);margin-top:6px">Số tiền: <b>' + fmtVnd(p.amount) + '</b></p>' +
+      (p.status === 'pending' && !p.seller_confirmed_at ? '<button class="btn btn-amber" data-confirm-order="' + p.order_id + '" data-confirm-seller="' + CURRENT_USER.id + '" type="button" style="width:100%;justify-content:center">Tôi đã nhận được tiền</button>' : '') +
+      '</div>'
+    ).join('') : '<div class="seller-empty"><p>Chưa có giao dịch nào.</p></div>';
+    box.querySelectorAll('[data-confirm-order]').forEach(b => b.addEventListener('click', async () => {
+      b.disabled = true;
+      try{
+        await kvApi('/api/orders/' + b.dataset.confirmOrder + '/payments/' + b.dataset.confirmSeller + '/seller-confirm', {method:'POST'});
+        showToast('✦ Đã xác nhận nhận tiền.');
+        renderSellerTx();
+      }catch(e){ showToast(e.message); b.disabled = false; }
+    }));
+  }
+  document.getElementById('confirmAllBtn').addEventListener('click', async () => {
+    try{
+      const res = await kvApi('/api/seller/transactions/confirm-all', {method:'POST'});
+      showToast('✦ Đã xác nhận ' + res.confirmed + ' giao dịch.');
+      renderSellerTx();
+    }catch(e){ showToast(e.message); }
+  });
+
+  /* ---- QR nhận tiền của gian hàng ---- */
+  const sellerQrInput = document.getElementById('sellerQrInput');
+  const sellerQrPreview = document.getElementById('sellerQrPreview');
+  function showQrPreview(src){
+    if(src){ sellerQrPreview.src = src; sellerQrPreview.style.display = 'block'; }
+    else { sellerQrPreview.style.display = 'none'; }
+  }
+  function resizeImageFile(file, maxW){
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onload = () => {
+        const img = new Image();
+        img.onload = () => {
+          const scale = Math.min(1, maxW / img.width);
+          const canvas = document.createElement('canvas');
+          canvas.width = img.width * scale; canvas.height = img.height * scale;
+          canvas.getContext('2d').drawImage(img, 0, 0, canvas.width, canvas.height);
+          resolve(canvas.toDataURL('image/jpeg', 0.85));
+        };
+        img.onerror = reject;
+        img.src = reader.result;
+      };
+      reader.onerror = reject;
+      reader.readAsDataURL(file);
+    });
+  }
+  sellerQrInput.addEventListener('change', async () => {
+    const file = sellerQrInput.files && sellerQrInput.files[0]; if(!file) return;
+    document.getElementById('sellerQrName').textContent = file.name;
+    const dataUrl = await resizeImageFile(file, 400);
+    showQrPreview(dataUrl);
+    const s = CURRENT_USER.seller;
+    try{
+      const updated = await kvApi('/api/seller/register', {method:'POST', body: JSON.stringify({
+        shop_name: s.shop_name, village_code: s.village_code, phone: s.phone, bio: s.bio, payment_qr_url: dataUrl
+      })});
+      CURRENT_USER = updated;
+      showToast('✦ Đã cập nhật mã QR nhận tiền.');
+    }catch(e){ document.getElementById('sellerQrErr').textContent = e.message; }
+  });
+
   async function renderAll(){
     await loadProducts();
     renderStats();       // API riêng, không cần chờ loadProducts
     renderRecent();
     renderMyProducts();
+    renderSellerOrders();
+    renderSellerTx();
+    if(CURRENT_USER && CURRENT_USER.seller) showQrPreview(CURRENT_USER.seller.payment_qr_url);
   }
   window.kvRefreshSellerDashboard = renderAll;
 

@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Thanh toán — KIMVIE</title>
+<link rel="icon" type="image/png" href="assets/logo.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,600;0,700;0,800;0,900;1,600&family=Be+Vietnam+Pro:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="styles.css">
+<link rel="stylesheet" href="pages.css">
+</head>
+<body>
+
+<header>
+  <div class="wrap nav">
+    <a class="brand" href="index.html"><span class="logo-mark" style="width:46px;height:40px;color:var(--gold-soft)" aria-hidden="true"></span><span class="name">KIMVIE</span></a>
+    <ul class="menu"><li><a href="index.html">Trang chủ</a></li><li><a href="shop.html">Shop</a></li></ul>
+    <div class="nav-right">
+      <a class="ic" href="account.html#notifications" title="Thông báo"><svg viewBox="0 0 24 24" width="19" height="19" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M6 8a6 6 0 1 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/></svg><span class="badge" id="notifBadge">0</span></a>
+      <a class="ic" href="cart.html" title="Giỏ hàng"><svg viewBox="0 0 24 24" width="19" height="19" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M5 7h14l-1.2 10.3a2 2 0 0 1-2 1.7H8.2a2 2 0 0 1-2-1.7Z"/><path d="M9 7a3 3 0 0 1 6 0"/></svg><span class="badge" id="cartBadge">0</span></a>
+      <a class="btn btn-navy login" id="loginBtn" href="#">Đăng nhập</a>
+    </div>
+  </div>
+</header>
+
+<main class="page-body">
+  <div class="wrap" style="max-width:900px">
+    <div class="simple-hero"><h1>Thanh toán</h1></div>
+    <div class="checkout-steps" id="ckSteps">
+      <span class="on" data-s="1">1. Địa chỉ</span><span data-s="2">2. Vận chuyển</span><span data-s="3">3. Xác nhận đơn</span><span data-s="4">4. Thanh toán</span>
+    </div>
+
+    <div id="stepAddr" class="ck-step-page">
+      <h5 style="margin-bottom:14px">Chọn địa chỉ giao hàng</h5>
+      <div id="addrList"></div>
+      <button class="btn btn-line" id="btnNewAddr" type="button" style="margin-bottom:16px">+ Thêm địa chỉ mới</button>
+      <div id="addrForm" hidden class="acct-card">
+        <div class="ck-field"><label>Nhãn (VD: Nhà riêng)</label><input type="text" id="afLabel"></div>
+        <div class="ck-field"><label>Tên người nhận *</label><input type="text" id="afName"></div>
+        <div class="ck-field"><label>Số điện thoại *</label><input type="tel" id="afPhone"></div>
+        <div class="ck-field"><label>Địa chỉ chi tiết *</label><input type="text" id="afAddr"></div>
+        <div class="ck-field"><label><input type="checkbox" id="afDefault"> Đặt làm địa chỉ mặc định</label></div>
+        <button class="btn btn-amber" id="afSave" type="button">Lưu địa chỉ</button>
+      </div>
+      <div class="ck-field"><label>Email nhận xác nhận đơn hàng *</label><input type="email" id="ckEmail"></div>
+      <p class="ck-err" id="addrErr"></p>
+      <button class="btn btn-amber ck-cta" id="toStep2" type="button">Tiếp tục →</button>
+    </div>
+
+    <div id="stepShip" class="ck-step-page" hidden>
+      <h5 style="margin-bottom:14px">Phương thức vận chuyển</h5>
+      <div class="ship-option on" data-m="standard"><div><b>Giao hàng tiêu chuẩn</b><div style="font-size:12px;color:var(--muted)">3–5 ngày làm việc</div></div><b>20.000đ</b></div>
+      <div class="ship-option" data-m="express"><div><b>Giao hàng hoả tốc</b><div style="font-size:12px;color:var(--muted)">1–2 ngày làm việc</div></div><b>45.000đ</b></div>
+      <button class="btn btn-line" id="backStep1" type="button">← Quay lại</button>
+      <button class="btn btn-amber ck-cta" id="toStep3" type="button">Tiếp tục →</button>
+    </div>
+
+    <div id="stepReview" class="ck-step-page" hidden>
+      <h5 style="margin-bottom:14px">Kiểm tra đơn hàng</h5>
+      <div id="reviewLines"></div>
+      <div class="ck-field" style="margin-top:14px"><label>Mã giảm giá</label><input type="text" id="reviewVoucher"></div>
+      <div id="reviewSummary" style="margin-top:14px"></div>
+      <p class="ck-err" id="reviewErr"></p>
+      <button class="btn btn-line" id="backStep2" type="button">← Quay lại</button>
+      <button class="btn btn-amber ck-cta" id="placeOrderBtn" type="button">Đặt hàng →</button>
+    </div>
+
+    <div id="stepPay" class="ck-step-page" hidden>
+      <h5 style="margin-bottom:6px">Thanh toán cho từng gian hàng</h5>
+      <p style="font-size:12.5px;color:var(--muted);margin-bottom:18px">Chuyển khoản đúng số tiền vào mã QR của từng gian hàng, sau đó bấm xác nhận. Đơn hàng chỉ hoàn tất khi cả bạn và người bán cùng xác nhận.</p>
+      <div id="payBlocks"></div>
+      <a class="btn btn-amber ck-cta" id="toTrackOrder" href="#" style="width:100%;justify-content:center;margin-top:10px">Theo dõi đơn hàng →</a>
+    </div>
+  </div>
+</main>
+
+<footer>
+  <div class="wrap">
+    <div class="f-grid">
+      <div class="f-brand"><div style="display:flex;align-items:center;gap:10px"><span class="logo-mark" style="width:44px;height:38px;color:var(--gold-bright)" aria-hidden="true"></span><span class="name">KIMVIE</span></div></div>
+      <div><h5>Cửa hàng</h5><a class="fl" href="shop.html">Tất cả sản phẩm</a></div>
+      <div><h5>Tài khoản</h5><a class="fl" href="account.html">Tài khoản của tôi</a></div>
+      <div><h5>Vận chuyển & Đổi trả</h5><a class="fl" href="#">Chính sách giao hàng</a></div>
+      <div><h5>Liên hệ</h5><a class="fl" href="mailto:hello@kimvie.vn">hello@kimvie.vn</a></div>
+    </div>
+    <div class="f-bottom">© 2026 KIMVIE. All rights reserved.</div>
+  </div>
+</footer>
+
+<div class="modal" id="loginModal">
+  <div class="back" data-lx></div>
+  <div class="panel loginp">
+    <div class="ck-head"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M5 20a7 7 0 0 1 14 0"/></svg><h3 id="loginTitle">Đăng nhập KIMVIE</h3><button class="m-x" data-lx aria-label="Đóng">✕</button></div>
+    <div class="ck-body">
+      <form id="loginForm" novalidate>
+        <div class="ck-field" id="lgNameField" hidden><label for="lgName">Tên của bạn <em>*</em></label><input type="text" id="lgName" placeholder="Nguyễn Văn A" autocomplete="name"></div>
+        <div class="ck-field"><label for="lgUsername">Tên đăng nhập <em>*</em></label><input type="text" id="lgUsername" placeholder="vd: nguyenvana" autocomplete="username"></div>
+        <div class="ck-field" id="lgEmailField" hidden><label for="lgEmail">Email <em>*</em></label><input type="email" id="lgEmail" placeholder="ban@email.com" autocomplete="email"></div>
+        <div class="ck-field" id="lgPhoneField" hidden><label for="lgPhone">Số điện thoại</label><input type="tel" id="lgPhone" placeholder="09xx xxx xxx" autocomplete="tel"></div>
+        <div class="ck-field"><label for="lgPass">Mật khẩu <em>*</em></label><input type="password" id="lgPass" placeholder="••••••••" autocomplete="current-password"></div>
+        <p class="ck-err" id="lgErr" role="alert"></p>
+        <button class="btn btn-amber ck-cta" type="submit" id="loginSubmitBtn">Đăng nhập →</button>
+        <p class="demo-note" style="margin-top:14px" id="authModeHint">Chưa có tài khoản? <a href="#" id="authModeToggle" style="color:var(--amber2);font-weight:700">Đăng ký ngay</a></p>
+      </form>
+      <div id="profileBox" hidden>
+        <div class="profile-hero"><span class="profile-ava" id="pfAva">K</span><div><h4 id="pfName">Khách KIMVIE</h4><p id="pfMeta"></p></div></div>
+        <div class="idrow"><span>Tên đăng nhập</span><b id="pfUsername">—</b></div>
+        <div class="idrow"><span>Email</span><b id="pfEmail">—</b></div>
+        <div class="idrow"><span>Số điện thoại</span><b id="pfPhone">—</b></div>
+        <div class="seller-cta" id="sellerCta"><p>Bạn có sản phẩm làng nghề muốn bán trên KIMVIE?</p><a class="btn btn-line" href="index.html#seller" style="width:100%;justify-content:center">Đăng ký làm người bán</a></div>
+        <div class="seller-mini" id="sellerMini" hidden><span class="seller-mini-tag">Kênh người bán</span><h5 id="sellerMiniName"></h5><a class="btn btn-amber" href="index.html#seller" style="width:100%;justify-content:center">Vào trang quản lý →</a></div>
+        <a class="btn btn-amber ck-cta" href="account.html" style="margin-top:12px;justify-content:center">Trang tài khoản đầy đủ →</a>
+        <button class="btn btn-line ck-cta" id="logoutBtn" type="button" style="margin-top:10px">Đăng xuất</button>
+      </div>
+    </div>
+  </div>
+</div>
+<div id="toast"></div>
+
+<script src="config.js"></script>
+<script src="shared.js"></script>
+<script src="checkout.js"></script>
+</body>
+</html>

@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Tài khoản của tôi — KIMVIE</title>
+<link rel="icon" type="image/png" href="assets/logo.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,600;0,700;0,800;0,900;1,600&family=Be+Vietnam+Pro:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="styles.css">
+<link rel="stylesheet" href="pages.css">
+</head>
+<body>
+
+<header>
+  <div class="wrap nav">
+    <a class="brand" href="index.html"><span class="logo-mark" style="width:46px;height:40px;color:var(--gold-soft)" aria-hidden="true"></span><span class="name">KIMVIE</span></a>
+    <ul class="menu"><li><a href="index.html">Trang chủ</a></li><li><a href="shop.html">Shop</a></li></ul>
+    <div class="nav-right">
+      <a class="ic" href="wishlist.html" title="Yêu thích"><svg viewBox="0 0 24 24" width="19" height="19" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M20.8 8.6c0 4.8-8.8 10.4-8.8 10.4S3.2 13.4 3.2 8.6a4.6 4.6 0 0 1 8.8-1.8 4.6 4.6 0 0 1 8.8 1.8Z"/></svg><span class="badge" id="wishBadge">0</span></a>
+      <a class="ic" href="cart.html" title="Giỏ hàng"><svg viewBox="0 0 24 24" width="19" height="19" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M5 7h14l-1.2 10.3a2 2 0 0 1-2 1.7H8.2a2 2 0 0 1-2-1.7Z"/></svg><span class="badge" id="cartBadge">0</span></a>
+      <a class="btn btn-navy login" id="loginBtn" href="#">Đăng nhập</a>
+    </div>
+  </div>
+</header>
+
+<main class="page-body">
+  <div class="wrap">
+    <div class="simple-hero"><h1>Tài khoản của tôi</h1></div>
+    <div class="acct-layout" style="margin-top:24px">
+      <nav class="acct-nav" id="acctNav">
+        <a href="#dashboard" data-acct="dashboard" class="on">Tổng quan</a>
+        <a href="#profile" data-acct="profile">Hồ sơ của tôi</a>
+        <a href="#orders" data-acct="orders">Đơn hàng của tôi</a>
+        <a href="wishlist.html">Yêu thích</a>
+        <a href="#addresses" data-acct="addresses">Sổ địa chỉ</a>
+        <a href="#payments" data-acct="payments">Thanh toán của tôi</a>
+        <a href="#reviews" data-acct="reviews">Đánh giá của tôi</a>
+        <a href="#notifications" data-acct="notifications">Thông báo</a>
+        <a href="#settings" data-acct="settings">Cài đặt / Đổi mật khẩu</a>
+        <a href="#" id="acctLogout" style="color:var(--vermilion)">Đăng xuất</a>
+      </nav>
+
+      <div>
+        <section class="acct-section on" id="sec-dashboard">
+          <div class="stat-row" id="dashStats"></div>
+          <div class="acct-card"><h6 style="margin-bottom:10px">Đơn hàng gần đây</h6><div id="dashRecentOrders"></div></div>
+        </section>
+
+        <section class="acct-section" id="sec-profile">
+          <div class="acct-card">
+            <div class="ck-field"><label>Họ và tên</label><input type="text" id="pfEditName"></div>
+            <div class="ck-field"><label>Tên đăng nhập</label><input type="text" id="pfEditUsername" disabled></div>
+            <div class="ck-field"><label>Email</label><input type="email" id="pfEditEmail"></div>
+            <div class="ck-field"><label>Số điện thoại</label><input type="tel" id="pfEditPhone"></div>
+            <p class="ck-err" id="pfEditErr"></p>
+            <button class="btn btn-amber" id="pfEditSave" type="button">Lưu thay đổi</button>
+          </div>
+        </section>
+
+        <section class="acct-section" id="sec-orders">
+          <div id="ordersList"></div>
+        </section>
+
+        <section class="acct-section" id="sec-addresses">
+          <div id="addrAcctList"></div>
+          <button class="btn btn-line" id="addrAcctNew" type="button">+ Thêm địa chỉ mới</button>
+          <div id="addrAcctForm" hidden class="acct-card" style="margin-top:14px">
+            <div class="ck-field"><label>Nhãn</label><input type="text" id="aaLabel"></div>
+            <div class="ck-field"><label>Tên người nhận *</label><input type="text" id="aaName"></div>
+            <div class="ck-field"><label>Số điện thoại *</label><input type="tel" id="aaPhone"></div>
+            <div class="ck-field"><label>Địa chỉ chi tiết *</label><input type="text" id="aaAddr"></div>
+            <div class="ck-field"><label><input type="checkbox" id="aaDefault"> Đặt làm mặc định</label></div>
+            <p class="ck-err" id="aaErr"></p>
+            <button class="btn btn-amber" id="aaSave" type="button">Lưu địa chỉ</button>
+          </div>
+        </section>
+
+        <section class="acct-section" id="sec-payments">
+          <div id="paymentsList"></div>
+        </section>
+
+        <section class="acct-section" id="sec-reviews">
+          <div id="reviewsList"></div>
+        </section>
+
+        <section class="acct-section" id="sec-notifications">
+          <div style="display:flex;justify-content:flex-end;margin-bottom:10px"><button class="btn btn-line" id="markAllReadBtn" type="button">Đánh dấu đã đọc tất cả</button></div>
+          <div id="notifList"></div>
+        </section>
+
+        <section class="acct-section" id="sec-settings">
+          <div class="acct-card">
+            <h6 style="margin-bottom:12px">Đổi mật khẩu</h6>
+            <div class="ck-field"><label>Mật khẩu hiện tại</label><input type="password" id="cpCurrent"></div>
+            <div class="ck-field"><label>Mật khẩu mới</label><input type="password" id="cpNew"></div>
+            <p class="ck-err" id="cpErr"></p>
+            <button class="btn btn-amber" id="cpSave" type="button">Đổi mật khẩu</button>
+          </div>
+        </section>
+      </div>
+    </div>
+  </div>
+</main>
+
+<footer><div class="wrap"><div class="f-bottom">© 2026 KIMVIE. All rights reserved.</div></div></footer>
+
+<div class="modal" id="loginModal">
+  <div class="back" data-lx></div>
+  <div class="panel loginp">
+    <div class="ck-head"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M5 20a7 7 0 0 1 14 0"/></svg><h3 id="loginTitle">Đăng nhập KIMVIE</h3><button class="m-x" data-lx aria-label="Đóng">✕</button></div>
+    <div class="ck-body">
+      <form id="loginForm" novalidate>
+        <div class="ck-field" id="lgNameField" hidden><label for="lgName">Tên của bạn <em>*</em></label><input type="text" id="lgName" placeholder="Nguyễn Văn A" autocomplete="name"></div>
+        <div class="ck-field"><label for="lgUsername">Tên đăng nhập <em>*</em></label><input type="text" id="lgUsername" placeholder="vd: nguyenvana" autocomplete="username"></div>
+        <div class="ck-field" id="lgEmailField" hidden><label for="lgEmail">Email <em>*</em></label><input type="email" id="lgEmail" placeholder="ban@email.com" autocomplete="email"></div>
+        <div class="ck-field" id="lgPhoneField" hidden><label for="lgPhone">Số điện thoại</label><input type="tel" id="lgPhone" placeholder="09xx xxx xxx" autocomplete="tel"></div>
+        <div class="ck-field"><label for="lgPass">Mật khẩu <em>*</em></label><input type="password" id="lgPass" placeholder="••••••••" autocomplete="current-password"></div>
+        <p class="ck-err" id="lgErr" role="alert"></p>
+        <button class="btn btn-amber ck-cta" type="submit" id="loginSubmitBtn">Đăng nhập →</button>
+        <p class="demo-note" style="margin-top:14px" id="authModeHint">Chưa có tài khoản? <a href="#" id="authModeToggle" style="color:var(--amber2);font-weight:700">Đăng ký ngay</a></p>
+      </form>
+      <div id="profileBox" hidden>
+        <div class="profile-hero"><span class="profile-ava" id="pfAva">K</span><div><h4 id="pfName">Khách KIMVIE</h4><p id="pfMeta"></p></div></div>
+        <div class="idrow"><span>Tên đăng nhập</span><b id="pfUsername">—</b></div>
+        <div class="idrow"><span>Email</span><b id="pfEmail">—</b></div>
+        <div class="idrow"><span>Số điện thoại</span><b id="pfPhone">—</b></div>
+        <div class="seller-cta" id="sellerCta"><p>Bạn có sản phẩm làng nghề muốn bán trên KIMVIE?</p><a class="btn btn-line" href="index.html#seller" style="width:100%;justify-content:center">Đăng ký làm người bán</a></div>
+        <div class="seller-mini" id="sellerMini" hidden><span class="seller-mini-tag">Kênh người bán</span><h5 id="sellerMiniName"></h5><a class="btn btn-amber" href="index.html#seller" style="width:100%;justify-content:center">Vào trang quản lý →</a></div>
+        <a class="btn btn-amber ck-cta" href="account.html" style="margin-top:12px;justify-content:center">Trang tài khoản đầy đủ →</a>
+        <button class="btn btn-line ck-cta" id="logoutBtn" type="button" style="margin-top:10px">Đăng xuất</button>
+      </div>
+    </div>
+  </div>
+</div>
+<div id="toast"></div>
+
+<script src="config.js"></script>
+<script src="shared.js"></script>
+<script src="account.js"></script>
+</body>
+</html>

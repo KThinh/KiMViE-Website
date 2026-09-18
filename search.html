@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Kết quả tìm kiếm — KIMVIE</title>
+<link rel="icon" type="image/png" href="assets/logo.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,600;0,700;0,800;0,900;1,600&family=Be+Vietnam+Pro:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="styles.css">
+<link rel="stylesheet" href="pages.css">
+</head>
+<body>
+
+<header>
+  <div class="wrap nav">
+    <a class="brand" href="index.html"><span class="logo-mark" style="width:46px;height:40px;color:var(--gold-soft)" aria-hidden="true"></span><span class="name">KIMVIE</span></a>
+    <ul class="menu"><li><a href="index.html">Trang chủ</a></li><li><a href="shop.html">Shop</a></li></ul>
+    <div class="nav-right">
+      <form class="nav-search" id="navSearchForm" role="search"><input type="search" id="navSearchInput" placeholder="Tìm sản phẩm…"><button type="submit"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg></button></form>
+      <a class="ic" href="wishlist.html" title="Yêu thích"><svg viewBox="0 0 24 24" width="19" height="19" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M20.8 8.6c0 4.8-8.8 10.4-8.8 10.4S3.2 13.4 3.2 8.6a4.6 4.6 0 0 1 8.8-1.8 4.6 4.6 0 0 1 8.8 1.8Z"/></svg><span class="badge" id="wishBadge">0</span></a>
+      <a class="ic" href="cart.html" title="Giỏ hàng"><svg viewBox="0 0 24 24" width="19" height="19" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M5 7h14l-1.2 10.3a2 2 0 0 1-2 1.7H8.2a2 2 0 0 1-2-1.7Z"/><path d="M9 7a3 3 0 0 1 6 0"/></svg><span class="badge" id="cartBadge">0</span></a>
+      <a class="btn btn-navy login" id="loginBtn" href="#">Đăng nhập</a>
+    </div>
+  </div>
+</header>
+
+<main class="page-body">
+  <div class="wrap">
+    <div class="simple-hero"><div class="crumb"><a href="index.html">Trang chủ</a> / Tìm kiếm</div><h1 id="searchTitle">Kết quả tìm kiếm</h1></div>
+    <div class="p-grid wide" id="searchGrid" style="margin-top:24px"></div>
+    <div class="empty-state" id="searchEmpty" hidden>
+      <p>Không tìm thấy sản phẩm nào khớp với từ khoá này.</p>
+      <p style="margin-top:10px"><a href="shop.html" class="btn btn-line">Xem toàn bộ Shop</a></p>
+    </div>
+  </div>
+</main>
+
+<footer><div class="wrap"><div class="f-bottom">© 2026 KIMVIE. All rights reserved.</div></div></footer>
+
+<div class="modal" id="loginModal">
+  <div class="back" data-lx></div>
+  <div class="panel loginp">
+    <div class="ck-head"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M5 20a7 7 0 0 1 14 0"/></svg><h3 id="loginTitle">Đăng nhập KIMVIE</h3><button class="m-x" data-lx aria-label="Đóng">✕</button></div>
+    <div class="ck-body">
+      <form id="loginForm" novalidate>
+        <div class="ck-field" id="lgNameField" hidden><label for="lgName">Tên của bạn <em>*</em></label><input type="text" id="lgName" placeholder="Nguyễn Văn A" autocomplete="name"></div>
+        <div class="ck-field"><label for="lgUsername">Tên đăng nhập <em>*</em></label><input type="text" id="lgUsername" placeholder="vd: nguyenvana" autocomplete="username"></div>
+        <div class="ck-field" id="lgEmailField" hidden><label for="lgEmail">Email <em>*</em></label><input type="email" id="lgEmail" placeholder="ban@email.com" autocomplete="email"></div>
+        <div class="ck-field" id="lgPhoneField" hidden><label for="lgPhone">Số điện thoại</label><input type="tel" id="lgPhone" placeholder="09xx xxx xxx" autocomplete="tel"></div>
+        <div class="ck-field"><label for="lgPass">Mật khẩu <em>*</em></label><input type="password" id="lgPass" placeholder="••••••••" autocomplete="current-password"></div>
+        <p class="ck-err" id="lgErr" role="alert"></p>
+        <button class="btn btn-amber ck-cta" type="submit" id="loginSubmitBtn">Đăng nhập →</button>
+        <p class="demo-note" style="margin-top:14px" id="authModeHint">Chưa có tài khoản? <a href="#" id="authModeToggle" style="color:var(--amber2);font-weight:700">Đăng ký ngay</a></p>
+      </form>
+      <div id="profileBox" hidden>
+        <div class="profile-hero"><span class="profile-ava" id="pfAva">K</span><div><h4 id="pfName">Khách KIMVIE</h4><p id="pfMeta"></p></div></div>
+        <div class="idrow"><span>Tên đăng nhập</span><b id="pfUsername">—</b></div>
+        <div class="idrow"><span>Email</span><b id="pfEmail">—</b></div>
+        <div class="idrow"><span>Số điện thoại</span><b id="pfPhone">—</b></div>
+        <div class="seller-cta" id="sellerCta"><p>Bạn có sản phẩm làng nghề muốn bán trên KIMVIE?</p><a class="btn btn-line" href="index.html#seller" style="width:100%;justify-content:center">Đăng ký làm người bán</a></div>
+        <div class="seller-mini" id="sellerMini" hidden><span class="seller-mini-tag">Kênh người bán</span><h5 id="sellerMiniName"></h5><a class="btn btn-amber" href="index.html#seller" style="width:100%;justify-content:center">Vào trang quản lý →</a></div>
+        <a class="btn btn-amber ck-cta" href="account.html" style="margin-top:12px;justify-content:center">Trang tài khoản đầy đủ →</a>
+        <button class="btn btn-line ck-cta" id="logoutBtn" type="button" style="margin-top:10px">Đăng xuất</button>
+      </div>
+    </div>
+  </div>
+</div>
+<div id="toast"></div>
+
+<script src="config.js"></script>
+<script src="shared.js"></script>
+<script src="search.js"></script>
+</body>
+</html>
