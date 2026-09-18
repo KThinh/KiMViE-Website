@@ -103,7 +103,56 @@ maxPriceInput.addEventListener('change', () => {
 });
 document.getElementById('filterSale').addEventListener('change', e => { state.sale = e.target.checked; state.page = 1; loadShop(); });
 document.getElementById('filterNew').addEventListener('change', e => { state.isNew = e.target.checked; state.page = 1; loadShop(); });
-document.getElementById('sortSelect').addEventListener('change', e => { state.sort = e.target.value; state.page = 1; loadShop(); });
+
+/* dropdown "Sắp xếp" tự dựng (ARIA listbox) — khớp đúng thành phần đã dùng ở trang chủ,
+   thay vì <select> mặc định (mở popup theo giao diện hệ điều hành, không style được). */
+const SORT_LABELS = {
+  featured: 'Nổi bật', newest: 'Mới nhất', price_asc: 'Giá: thấp đến cao',
+  price_desc: 'Giá: cao đến thấp', rating: 'Đánh giá cao nhất', best_selling: 'Bán chạy nhất',
+};
+const sortBox = document.getElementById('sortBox');
+const sortBtn = document.getElementById('sortBtn');
+const sortMenu = document.getElementById('sortMenu');
+const sortValue = document.getElementById('sortValue');
+function closeSortMenu(){
+  sortMenu.hidden = true;
+  sortBox.dataset.open = 'false';
+  sortBtn.setAttribute('aria-expanded', 'false');
+}
+function openSortMenu(){
+  sortMenu.hidden = false;
+  sortBox.dataset.open = 'true';
+  sortBtn.setAttribute('aria-expanded', 'true');
+  const current = sortMenu.querySelector('[aria-selected="true"]');
+  (current || sortMenu.firstElementChild).focus();
+}
+function selectSort(value){
+  state.sort = value; state.page = 1;
+  sortValue.textContent = SORT_LABELS[value] || value;
+  sortMenu.querySelectorAll('[role="option"]').forEach(li =>
+    li.setAttribute('aria-selected', String(li.dataset.value === value)));
+  loadShop();
+}
+sortBtn.addEventListener('click', () => { sortMenu.hidden ? openSortMenu() : closeSortMenu(); });
+sortMenu.addEventListener('click', e => {
+  const li = e.target.closest('[role="option"]'); if(!li) return;
+  selectSort(li.dataset.value);
+  closeSortMenu();
+  sortBtn.focus();
+});
+sortMenu.addEventListener('keydown', e => {
+  const opts = [...sortMenu.querySelectorAll('[role="option"]')];
+  const idx = opts.indexOf(document.activeElement);
+  if(e.key === 'ArrowDown'){ e.preventDefault(); (opts[idx + 1] || opts[0]).focus(); }
+  else if(e.key === 'ArrowUp'){ e.preventDefault(); (opts[idx - 1] || opts[opts.length - 1]).focus(); }
+  else if(e.key === 'Enter' || e.key === ' '){
+    e.preventDefault();
+    const li = document.activeElement;
+    if(li && li.matches('[role="option"]')){ selectSort(li.dataset.value); closeSortMenu(); sortBtn.focus(); }
+  } else if(e.key === 'Escape'){ closeSortMenu(); sortBtn.focus(); }
+});
+document.addEventListener('click', e => { if(!sortBox.contains(e.target)) closeSortMenu(); });
+
 document.getElementById('clearFilters').addEventListener('click', () => {
   state.village = ''; state.color = ''; state.maxPrice = 4_000_000; state.sale = false; state.isNew = false; state.q = '';
   document.querySelectorAll('#villageChips .chip').forEach((x,i) => x.classList.toggle('on', i === 0));
@@ -118,6 +167,11 @@ document.getElementById('clearFilters').addEventListener('click', () => {
 if(state.village){ document.querySelectorAll('#villageChips .chip').forEach(c => c.classList.toggle('on', c.dataset.v === state.village)); }
 if(state.sale) document.getElementById('filterSale').checked = true;
 if(state.isNew) document.getElementById('filterNew').checked = true;
-document.getElementById('sortSelect').value = state.sort;
+selectSortInitial(state.sort);
+function selectSortInitial(value){
+  sortValue.textContent = SORT_LABELS[value] || value;
+  sortMenu.querySelectorAll('[role="option"]').forEach(li =>
+    li.setAttribute('aria-selected', String(li.dataset.value === value)));
+}
 
 loadShop();

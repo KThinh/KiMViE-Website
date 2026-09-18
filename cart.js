@@ -30,7 +30,7 @@ function renderCart(){
           '<div class="ci-actions"><a data-rm="' + idx + '">Xoá</a><a data-save="' + idx + '">Lưu vào yêu thích</a></div>' +
         '</div>' +
         '<div class="ck-qty"><button type="button" data-q="-1" data-i="' + idx + '">−</button><b>' + i.qty + '</b><button type="button" data-q="1" data-i="' + idx + '">+</button></div>' +
-        '<div class="ck-line" style="min-width:100px;text-align:right;font-weight:700;color:var(--pearl)">' + fmtVnd(i.price * i.qty) + '</div>' +
+        '<div class="ck-line">' + fmtVnd(i.price * i.qty) + '</div>' +
       '</div>'
     ).join('');
   }

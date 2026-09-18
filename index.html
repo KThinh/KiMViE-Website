@@ -262,10 +262,14 @@
     </a>
     <ul class="menu">
       <li><a href="#home" data-go="home" class="on">Trang chủ</a></li>
-      <li><a href="shop.html">Shop</a></li>
-      <li><a href="shop.html#categories">Danh mục</a></li>
-      <li><a href="shop.html?sort=newest">Mới về</a></li>
-      <li><a href="shop.html?sale=1">Giảm giá</a></li>
+      <li class="has-dropdown">
+        <a href="shop.html">Shop</a>
+        <ul class="submenu">
+          <li><a href="shop.html?sort=newest">Mới về</a></li>
+          <li><a href="shop.html?sale=1">Giảm giá</a></li>
+        </ul>
+      </li>
+      <li><a href="#expo" data-go="expo">Bản đồ làng nghề</a></li>
       <li><a href="#story" data-go="story">Bài viết</a></li>
       <li class="menu-seller" id="menuSellerItem" hidden><a href="#seller" data-go="seller">Kênh người bán</a></li>
       <li class="menu-login"><a href="#" id="loginMenuLink">Đăng nhập</a></li>

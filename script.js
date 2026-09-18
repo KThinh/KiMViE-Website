@@ -317,6 +317,27 @@ function discountOf(total){
   document.addEventListener('keydown', e => { if(e.key === 'Escape') closeCart(); });
 })();
 
+/* ===== menu "Shop" có dropdown con (Mới về / Giảm giá) =====
+   Desktop: hover mở submenu, bấm vào "Shop" đi thẳng tới trang Shop.
+   Mobile/không có hover: lần bấm đầu chỉ mở submenu, bấm lần 2 (hoặc bấm mục con) mới điều hướng. */
+(function(){
+  document.querySelectorAll('.menu li.has-dropdown > a').forEach(a => {
+    a.addEventListener('click', e => {
+      const li = a.closest('.has-dropdown');
+      const hasHover = window.matchMedia('(hover: hover)').matches && window.innerWidth > 768;
+      if(hasHover) return;
+      if(!li.classList.contains('open')){
+        e.preventDefault();
+        document.querySelectorAll('.menu li.has-dropdown.open').forEach(x => { if(x !== li) x.classList.remove('open'); });
+        li.classList.add('open');
+      }
+    });
+  });
+  document.addEventListener('click', e => {
+    if(!e.target.closest('.has-dropdown')) document.querySelectorAll('.menu li.has-dropdown.open').forEach(x => x.classList.remove('open'));
+  });
+})();
+
 /* ===== ô tìm kiếm trên header -> trang kết quả tìm kiếm riêng ===== */
 const navSearchForm = document.getElementById('navSearchForm');
 if(navSearchForm) navSearchForm.addEventListener('submit', e => {

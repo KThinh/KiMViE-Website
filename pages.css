@@ -2,6 +2,37 @@
    track-order/wishlist/search). Dùng chung token màu/font với styles.css (:root),
    chỉ bổ sung các layout mà styles.css chưa có. */
 
+/* ---------- Menu "Shop" có dropdown con (Mới về / Giảm giá) ---------- */
+.menu li.has-dropdown{position:relative}
+.menu li.has-dropdown > a{display:inline-flex;align-items:center;gap:5px}
+.menu li.has-dropdown > a::after{
+  content:"";width:6px;height:6px;border-right:1.5px solid currentColor;border-bottom:1.5px solid currentColor;
+  transform:rotate(45deg) translateY(-2px);opacity:.55;transition:transform .2s;
+}
+.menu li.has-dropdown.open > a::after{transform:rotate(-135deg) translateY(2px)}
+.menu .submenu{
+  position:absolute;top:100%;left:0;min-width:170px;margin:0;padding:8px;list-style:none;
+  background:var(--cream2);border:1px solid var(--line);border-radius:8px;
+  box-shadow:0 18px 40px rgba(0,0,0,.18);
+  opacity:0;visibility:hidden;transform:translateY(6px);pointer-events:none;
+  transition:opacity .2s,transform .2s,visibility .2s;z-index:90;
+}
+.menu li.has-dropdown:hover .submenu,
+.menu li.has-dropdown:focus-within .submenu,
+.menu li.has-dropdown.open .submenu{opacity:1;visibility:visible;transform:translateY(0);pointer-events:auto}
+.menu .submenu li{margin:0}
+.menu .submenu a{display:block;padding:9px 12px;border-radius:6px;font-size:13px;font-weight:500;color:var(--muted);white-space:nowrap;border:none}
+.menu .submenu a:hover{background:var(--amber-soft);color:var(--gold-soft)}
+@media (max-width:768px){
+  .menu li.has-dropdown > a::after{display:none}
+  .menu .submenu{
+    position:static;opacity:1;visibility:visible;transform:none;pointer-events:auto;
+    box-shadow:none;border:none;background:none;padding:0 0 0 14px;display:none;
+  }
+  .menu li.has-dropdown.open .submenu{display:block}
+  .menu .submenu a{padding:12px 4px;border-bottom:1px solid var(--line-soft);font-size:14px}
+}
+
 .simple-hero{padding:44px 0 8px}
 .simple-hero h1{font-family:var(--serif);font-size:clamp(26px,3vw,38px);font-weight:600;color:var(--pearl)}
 .simple-hero .crumb{font-size:12.5px;color:var(--muted-2);margin-bottom:10px}
@@ -28,7 +59,14 @@
 .shop-toolbar .count{font-size:13px;color:var(--muted)}
 .empty-state{text-align:center;padding:60px 20px;color:var(--muted)}
 .empty-state svg{color:var(--gold-soft);margin-bottom:14px}
-@media (max-width:900px){.shop-layout{grid-template-columns:1fr}.filter-rail{position:static}}
+@media (max-width:900px){
+  .shop-layout{grid-template-columns:1fr}
+  .filter-rail{position:static}
+  /* .chip-row mặc định (styles.css, ≤768px) tự bù trừ margin âm -22px để tràn lề đúng
+     cho các section nằm sát .wrap — không đúng khi chip nằm trong 1 card có padding
+     riêng như .filter-rail ở đây, gây tràn ngang toàn trang. Trả lại xuống dòng bình thường. */
+  .filter-rail .chip-row{width:auto;flex-wrap:wrap;overflow-x:visible;margin:0;padding:0;mask-image:none;-webkit-mask-image:none}
+}
 
 /* ---------- Product detail ---------- */
 .pd-layout{display:grid;grid-template-columns:1fr 1fr;gap:48px;align-items:start}
@@ -78,6 +116,11 @@
 .srow{display:flex;justify-content:space-between;font-size:13.5px;color:var(--muted);padding:6px 0}
 .srow.total{border-top:1px solid var(--line);margin-top:8px;padding-top:14px;font-size:16px;color:var(--pearl);font-weight:700}
 @media (max-width:900px){.cart-layout{grid-template-columns:1fr}}
+@media (max-width:560px){
+  .cart-line{gap:10px}
+  .cart-line img{width:60px;height:60px;flex:none}
+  .cart-line .ck-qty{transform:scale(.92);transform-origin:left center}
+}
 
 /* ---------- Checkout ---------- */
 .checkout-steps{display:flex;gap:8px;align-items:center;margin-bottom:32px;flex-wrap:wrap}
