@@ -498,7 +498,7 @@ document.getElementById('mtReviews').addEventListener('click', () => setMTab('re
 
 /* ===== "Điểm khác biệt" CTA buttons ===== */
 document.getElementById('newPass').addEventListener('click', openPP);
-document.getElementById('newId').addEventListener('click', () => { openProduct('1'); setMTab('card'); });
+document.getElementById('newId').addEventListener('click', () => { window.location.href = 'product.html?id=1'; });
 document.getElementById('newSnd').addEventListener('click', () => go('expo'));
 
 /* ===== product catalogue + modal ===== */
@@ -606,7 +606,9 @@ pModal.querySelectorAll('[data-x]').forEach(el => el.addEventListener('click', c
 document.addEventListener('keydown', e => {
   if(e.key === 'Escape'){ closeModal(); ppModal.classList.remove('open'); }
 });
-document.querySelectorAll('[data-p]').forEach(el => el.addEventListener('click', e => { e.preventDefault(); openProduct(el.dataset.p); }));
+/* Bấm vào sản phẩm -> chuyển hẳn sang trang product.html (KHÔNG mở popup pModal nữa —
+   pModal/openProduct() được giữ lại trong file nhưng không còn nơi nào gọi tới). */
+document.querySelectorAll('[data-p]').forEach(el => el.addEventListener('click', e => { e.preventDefault(); window.location.href = 'product.html?id=' + el.dataset.p; }));
 document.getElementById('mBuy').addEventListener('click', e => {
   e.preventDefault(); closeModal();
   if(curP){
@@ -782,7 +784,7 @@ async function kvSyncMarketFromApi(){
       const art = document.createElement('article');
       art.className = 'p-card'; art.dataset.p = id; art.dataset.v = sp.village_code;
       art.innerHTML = marketCardHTML(entry);
-      art.addEventListener('click', e => { if(!e.target.closest('.cart-btn')) openProduct(id); });
+      art.addEventListener('click', e => { if(!e.target.closest('.cart-btn')) window.location.href = 'product.html?id=' + id; });
       art.querySelector('.cart-btn').addEventListener('click', e => {
         e.stopPropagation(); addToCart(id, entry.name, entry.priceNum);
       });
@@ -1386,7 +1388,7 @@ const DZ_SECTIONS = [
   document.querySelector('.vnmap').addEventListener('click', e => {
     const pin = e.target.closest('.vpin'); if(pin){ renderDossier(pin.dataset.v); return; }
     const card = e.target.closest('.mapv-card'); if(card){ renderDossier(card.dataset.v); return; }
-    const vp = e.target.closest('.vprod'); if(vp && vp.dataset.p){ openProduct(vp.dataset.p); return; }
+    const vp = e.target.closest('.vprod'); if(vp && vp.dataset.p){ window.location.href = 'product.html?id=' + vp.dataset.p; return; }
     const tg = e.target.closest('.side-toggle');
     if(tg){
       tg.classList.toggle('on');
