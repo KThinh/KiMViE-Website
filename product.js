@@ -4,6 +4,10 @@
 const productId = new URLSearchParams(location.search).get('id');
 let product = null;
 let selectedColor = null, selectedSize = null;
+let galleryImages = [];   // ảnh sản phẩm (của gian hàng) + ảnh khách hàng gửi kèm đánh giá
+let galleryOwnCount = 0;  // số ảnh đầu tiên là ảnh sản phẩm — phần còn lại là ảnh đánh giá
+let galleryIndex = 0;
+let reviewsData = null;
 
 function starsHTML(n){
   const full = Math.round(n);
@@ -21,13 +25,21 @@ async function loadProduct(){
   selectedColor = product.colors[0] || null;
   selectedSize = product.sizes[0] || null;
 
-  const images = [product.image_url, ...product.images].filter(Boolean);
-  const mainImg = images[0] || '';
+  const ownImages = [product.image_url, ...product.images].filter(Boolean);
+  try{ reviewsData = await kvApi('/api/products/' + productId + '/reviews'); }catch(e){ reviewsData = null; }
+  const reviewImages = reviewsData ? reviewsData.items.flatMap(r => r.images) : [];
+  galleryImages = [...ownImages, ...reviewImages];
+  galleryOwnCount = ownImages.length;
+  galleryIndex = 0;
 
   root.innerHTML =
     '<div>' +
-      '<div class="pd-gallery-main">' + (mainImg ? '<img id="pdMainImg" src="' + mainImg + '" alt="' + esc(product.name) + '">' : 'Chưa có ảnh') + '</div>' +
-      (images.length > 1 ? '<div class="pd-thumbs">' + images.map((im,i) => '<img src="' + im + '" data-i="' + i + '" class="' + (i===0?'on':'') + '">').join('') + '</div>' : '') +
+      '<div class="pd-gallery-main" id="pdGalleryMain">' +
+        (galleryImages.length ? '<img id="pdMainImg" src="' + galleryImages[0] + '" alt="' + esc(product.name) + '">' : 'Chưa có ảnh') +
+        '<span class="pd-gallery-tag" id="pdGalleryTag" hidden>Ảnh từ khách hàng</span>' +
+        (galleryImages.length > 1 ? '<button class="pd-gallery-nav prev" id="pdGalleryPrev" type="button" aria-label="Ảnh trước">‹</button><button class="pd-gallery-nav next" id="pdGalleryNext" type="button" aria-label="Ảnh sau">›</button>' : '') +
+      '</div>' +
+      (galleryImages.length > 1 ? '<div class="pd-thumbs">' + galleryImages.map((im,i) => '<img src="' + im + '" data-i="' + i + '" class="' + (i===0?'on':'') + (i>=galleryOwnCount?' review-thumb':'') + '">').join('') + '</div>' : '') +
     '</div>' +
     '<div class="pd-info">' +
       '<h1>' + esc(product.name) + '</h1>' +
@@ -62,19 +74,54 @@ async function loadProduct(){
       '<p style="margin-top:8px"><b>Chính sách đổi trả:</b> Đổi trả trong 7 ngày nếu sản phẩm lỗi do vận chuyển hoặc sản xuất, còn nguyên tem/nhãn.</p>' +
     '</div>';
 
-  wireGallery(images);
+  wireGallery();
   wireOptions();
   wireActions();
-  loadReviews();
+  renderReviews();
   loadRelated();
 }
 
-function wireGallery(images){
-  document.querySelectorAll('.pd-thumbs img').forEach(t => t.addEventListener('click', () => {
-    document.getElementById('pdMainImg').src = images[+t.dataset.i];
-    document.querySelectorAll('.pd-thumbs img').forEach(x => x.classList.remove('on'));
-    t.classList.add('on');
-  }));
+function showGalleryImage(i){
+  if(!galleryImages.length) return;
+  galleryIndex = (i + galleryImages.length) % galleryImages.length;
+  document.getElementById('pdMainImg').src = galleryImages[galleryIndex];
+  document.querySelectorAll('.pd-thumbs img').forEach((x,idx) => x.classList.toggle('on', idx === galleryIndex));
+  const isReview = galleryIndex >= galleryOwnCount;
+  const tag = document.getElementById('pdGalleryTag');
+  if(tag) tag.hidden = !isReview;
+  const main = document.getElementById('pdGalleryMain');
+  if(main) main.classList.toggle('showing-review', isReview);
+  const thumb = document.querySelector('.pd-thumbs img.on');
+  if(thumb) thumb.scrollIntoView({inline: 'center', block: 'nearest', behavior: 'smooth'});
+}
+
+/* Cho phép vuốt trái/phải trên khung ảnh chính để chuyển ảnh — gồm cả ảnh sản phẩm
+   lẫn ảnh khách hàng gửi kèm đánh giá, không chỉ bấm vào ảnh nhỏ bên dưới. */
+function wireGallery(){
+  document.querySelectorAll('.pd-thumbs img').forEach(t => t.addEventListener('click', () => showGalleryImage(+t.dataset.i)));
+  const prev = document.getElementById('pdGalleryPrev'), next = document.getElementById('pdGalleryNext');
+  if(prev) prev.addEventListener('click', () => showGalleryImage(galleryIndex - 1));
+  if(next) next.addEventListener('click', () => showGalleryImage(galleryIndex + 1));
+
+  const main = document.getElementById('pdGalleryMain');
+  if(!main || galleryImages.length < 2) return;
+  let startX = null;
+  main.addEventListener('touchstart', e => { startX = e.touches[0].clientX; }, {passive: true});
+  main.addEventListener('touchend', e => {
+    if(startX == null) return;
+    const dx = e.changedTouches[0].clientX - startX;
+    if(Math.abs(dx) > 40) showGalleryImage(galleryIndex + (dx < 0 ? 1 : -1));
+    startX = null;
+  });
+  // vuốt bằng chuột (desktop) — kéo trái/phải trên ảnh cũng chuyển được
+  let downX = null;
+  main.addEventListener('mousedown', e => { downX = e.clientX; });
+  main.addEventListener('mouseup', e => {
+    if(downX == null) return;
+    const dx = e.clientX - downX;
+    if(Math.abs(dx) > 40) showGalleryImage(galleryIndex + (dx < 0 ? 1 : -1));
+    downX = null;
+  });
 }
 function wireOptions(){
   const cp = document.getElementById('colorPick');
@@ -105,11 +152,38 @@ function wireActions(){
   });
 }
 
-async function loadReviews(){
+async function refreshReviews(){
+  try{ reviewsData = await kvApi('/api/products/' + productId + '/reviews'); }catch(e){ return; }
+  renderReviews();
+  rebuildGallery();
+}
+
+/* dựng lại danh sách ảnh gallery (ảnh sản phẩm + ảnh đánh giá mới) sau khi có đánh
+   giá mới kèm ảnh, giữ nguyên ảnh sản phẩm đứng đầu */
+function rebuildGallery(){
+  const ownImages = galleryImages.slice(0, galleryOwnCount);
+  const reviewImages = reviewsData ? reviewsData.items.flatMap(r => r.images) : [];
+  galleryImages = [...ownImages, ...reviewImages];
+  const thumbsBox = document.querySelector('.pd-thumbs');
+  const mainBox = document.getElementById('pdGalleryMain');
+  if(!mainBox) return;
+  if(galleryImages.length > 1 && !mainBox.querySelector('.pd-gallery-nav')){
+    mainBox.insertAdjacentHTML('beforeend', '<button class="pd-gallery-nav prev" id="pdGalleryPrev" type="button" aria-label="Ảnh trước">‹</button><button class="pd-gallery-nav next" id="pdGalleryNext" type="button" aria-label="Ảnh sau">›</button>');
+    document.getElementById('pdGalleryPrev').addEventListener('click', () => showGalleryImage(galleryIndex - 1));
+    document.getElementById('pdGalleryNext').addEventListener('click', () => showGalleryImage(galleryIndex + 1));
+  }
+  const thumbsHTML = galleryImages.map((im,i) => '<img src="' + im + '" data-i="' + i + '" class="' + (i===galleryIndex?'on':'') + (i>=galleryOwnCount?' review-thumb':'') + '">').join('');
+  if(thumbsBox){ thumbsBox.innerHTML = thumbsHTML; }
+  else if(galleryImages.length > 1){
+    mainBox.insertAdjacentHTML('afterend', '<div class="pd-thumbs">' + thumbsHTML + '</div>');
+  }
+  document.querySelectorAll('.pd-thumbs img').forEach(t => t.addEventListener('click', () => showGalleryImage(+t.dataset.i)));
+}
+
+async function renderReviews(){
   const box = document.getElementById('tab-reviews');
-  let data;
-  try{ data = await kvApi('/api/products/' + productId + '/reviews'); }
-  catch(e){ box.innerHTML = '<p>Không tải được đánh giá.</p>'; return; }
+  const data = reviewsData;
+  if(!data){ box.innerHTML = '<p>Không tải được đánh giá.</p>'; return; }
 
   const user = await window.kvReady;
   let html = '<div class="rating-summary"><span class="big">' + data.average_rating.toFixed(1) + '</span><div><div style="color:var(--gold)">' + starsHTML(data.average_rating) + '</div><span style="font-size:12.5px;color:var(--muted)">' + data.review_count + ' đánh giá</span></div></div>';
@@ -119,14 +193,20 @@ async function loadReviews(){
   if(!data.items.length){
     html += '<p style="color:var(--muted);margin-top:20px">Chưa có đánh giá nào cho sản phẩm này.</p>';
   } else {
-    html += '<div style="margin-top:24px">' + data.items.map(r =>
-      '<div class="review-row"><div class="stars">' + starsHTML(r.rating) + '</div><b>' + esc(r.buyer_name) + '</b> <span style="color:var(--muted-2);font-size:12px">' + new Date(r.created_at).toLocaleDateString('vi-VN') + '</span>' +
-      (r.comment ? '<p style="margin-top:6px;color:var(--muted)">' + esc(r.comment) + '</p>' : '') +
-      (r.images.length ? '<div class="rv-imgs">' + r.images.map(im => '<img src="' + im + '">').join('') + '</div>' : '') +
-      '</div>'
-    ).join('') + '</div>';
+    let imgCursor = galleryOwnCount;
+    html += '<div style="margin-top:24px">' + data.items.map(r => {
+      const row = '<div class="review-row"><div class="stars">' + starsHTML(r.rating) + '</div><b>' + esc(r.buyer_name) + '</b> <span style="color:var(--muted-2);font-size:12px">' + new Date(r.created_at).toLocaleDateString('vi-VN') + '</span>' +
+        (r.comment ? '<p style="margin-top:6px;color:var(--muted)">' + esc(r.comment) + '</p>' : '') +
+        (r.images.length ? '<div class="rv-imgs">' + r.images.map(im => '<img src="' + im + '" data-gallery-i="' + (imgCursor++) + '">').join('') + '</div>' : '') +
+        '</div>';
+      return row;
+    }).join('') + '</div>';
   }
   box.innerHTML = html;
+  box.querySelectorAll('.rv-imgs img[data-gallery-i]').forEach(img => img.addEventListener('click', () => {
+    showGalleryImage(+img.dataset.galleryI);
+    document.getElementById('pdGalleryMain').scrollIntoView({behavior: 'smooth', block: 'center'});
+  }));
   wireReviewForm();
 }
 
@@ -168,7 +248,7 @@ function wireReviewForm(){
         rating, comment: document.getElementById('rvComment').value.trim() || null, images
       })});
       showToast('✦ Cảm ơn bạn đã đánh giá!');
-      loadReviews();
+      refreshReviews();
     }catch(e){ err.textContent = e.message; }
   });
 }

@@ -163,6 +163,22 @@ document.getElementById('clearFilters').addEventListener('click', () => {
   state.page = 1; loadShop();
 });
 
+/* Thu gọn/mở rộng bộ lọc trên mobile (ẩn mặc định theo CSS ở @media max-width:900px,
+   .filter-rail chỉ hiện khi có class .open) */
+(function(){
+  const btn = document.getElementById('filterToggleBtn');
+  const rail = document.getElementById('categories');
+  if(!btn || !rail) return;
+  btn.addEventListener('click', () => {
+    const isOpen = rail.classList.toggle('open');
+    btn.setAttribute('aria-expanded', String(isOpen));
+  });
+  if(location.hash === '#categories'){
+    rail.classList.add('open');
+    btn.setAttribute('aria-expanded', 'true');
+  }
+})();
+
 /* khởi tạo theo query string ban đầu (vd. từ footer/nav: shop.html?village=bt) */
 if(state.village){ document.querySelectorAll('#villageChips .chip').forEach(c => c.classList.toggle('on', c.dataset.v === state.village)); }
 if(state.sale) document.getElementById('filterSale').checked = true;
