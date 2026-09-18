@@ -5,11 +5,14 @@
 /* ---------- Menu "Shop" có dropdown con (Mới về / Giảm giá) ---------- */
 .menu li.has-dropdown{position:relative}
 .menu li.has-dropdown > a{display:inline-flex;align-items:center;gap:5px}
-.menu li.has-dropdown > a::after{
+/* Dùng ::before (không phải ::after) cho mũi tên xổ xuống — styles.css đã dùng
+   .menu a.on::after làm gạch chân vàng cho mục đang chọn; nếu cùng dùng ::after,
+   trình duyệt gộp chung 2 rule vào 1 pseudo-element, ra hình thoi vàng lạ dưới chữ. */
+.menu li.has-dropdown > a::before{
   content:"";width:6px;height:6px;border-right:1.5px solid currentColor;border-bottom:1.5px solid currentColor;
-  transform:rotate(45deg) translateY(-2px);opacity:.55;transition:transform .2s;
+  transform:rotate(45deg) translateY(-1px);opacity:.55;transition:transform .2s;order:2;
 }
-.menu li.has-dropdown.open > a::after{transform:rotate(-135deg) translateY(2px)}
+.menu li.has-dropdown.open > a::before{transform:rotate(-135deg) translateY(1px)}
 .menu .submenu{
   position:absolute;top:100%;left:0;min-width:170px;margin:0;padding:8px;list-style:none;
   background:var(--cream2);border:1px solid var(--line);border-radius:8px;
@@ -24,7 +27,7 @@
 .menu .submenu a{display:block;padding:9px 12px;border-radius:6px;font-size:13px;font-weight:500;color:var(--muted);white-space:nowrap;border:none}
 .menu .submenu a:hover{background:var(--amber-soft);color:var(--gold-soft)}
 @media (max-width:768px){
-  .menu li.has-dropdown > a::after{display:none}
+  .menu li.has-dropdown > a::before{display:none}
   .menu .submenu{
     position:static;opacity:1;visibility:visible;transform:none;pointer-events:auto;
     box-shadow:none;border:none;background:none;padding:0 0 0 14px;display:none;
