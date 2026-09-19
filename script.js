@@ -1482,6 +1482,10 @@ document.querySelectorAll('[data-village]').forEach(a => a.addEventListener('cli
   const lgPhoneField = document.getElementById('lgPhoneField');
   const authModeHint = document.getElementById('authModeHint');
   const loginSubmitBtn = document.getElementById('loginSubmitBtn');
+  const forgotForm = document.getElementById('forgotForm');
+  const forgotPassRow = document.getElementById('forgotPassRow');
+  const fpErr = document.getElementById('fpErr');
+  const forgotSubmitBtn = document.getElementById('forgotSubmitBtn');
 
   let user = null;
   let authMode = 'login';   // 'login' | 'register'
@@ -1528,6 +1532,7 @@ document.querySelectorAll('[data-village]').forEach(a => a.addEventListener('cli
     lgNameField.hidden = !isRegister;
     lgEmailField.hidden = !isRegister;
     lgPhoneField.hidden = !isRegister;
+    if(forgotPassRow) forgotPassRow.hidden = isRegister;
     document.getElementById('loginTitle').textContent = isRegister ? 'Tạo tài khoản KIMVIE' : 'Đăng nhập KIMVIE';
     loginSubmitBtn.textContent = isRegister ? 'Đăng ký →' : 'Đăng nhập →';
     authModeHint.innerHTML = isRegister
@@ -1536,6 +1541,50 @@ document.querySelectorAll('[data-village]').forEach(a => a.addEventListener('cli
     bindAuthToggle();
     lgErr.textContent = '';
   }
+
+  function showForgotView(){
+    if(!forgotForm) return;
+    const prefill = document.getElementById('lgUsername').value.trim();
+    form.hidden = true;
+    forgotForm.hidden = false;
+    sellerRegisterBox.hidden = true;
+    document.getElementById('fpUsername').value = prefill;
+    document.getElementById('fpNewPass').value = '';
+    document.getElementById('fpConfirmPass').value = '';
+    fpErr.textContent = '';
+    document.getElementById('loginTitle').textContent = 'Quên mật khẩu';
+  }
+  function showLoginView(){
+    if(forgotForm) forgotForm.hidden = true;
+    form.hidden = false;
+    setAuthMode('login');
+  }
+  const forgotPassLink = document.getElementById('forgotPassLink');
+  if(forgotPassLink) forgotPassLink.addEventListener('click', e => { e.preventDefault(); showForgotView(); });
+  const forgotBackLink = document.getElementById('forgotBackLink');
+  if(forgotBackLink) forgotBackLink.addEventListener('click', e => { e.preventDefault(); showLoginView(); });
+  if(forgotForm) forgotForm.addEventListener('submit', async e => {
+    e.preventDefault();
+    fpErr.textContent = '';
+    const username = document.getElementById('fpUsername').value.trim();
+    const newPass = document.getElementById('fpNewPass').value;
+    const confirmPass = document.getElementById('fpConfirmPass').value;
+    if(!username){ fpErr.textContent = 'Vui lòng nhập tên đăng nhập.'; return; }
+    if(newPass.length < 6){ fpErr.textContent = 'Mật khẩu mới cần ít nhất 6 ký tự.'; return; }
+    if(newPass !== confirmPass){ fpErr.textContent = 'Mật khẩu nhập lại không khớp.'; return; }
+    forgotSubmitBtn.disabled = true;
+    try{
+      await kvApi('/api/auth/reset-password', {method:'POST', body: JSON.stringify({username, new_password: newPass, confirm_password: confirmPass})});
+      showToast('✦ Đặt lại mật khẩu thành công — mời bạn đăng nhập lại.');
+      showLoginView();
+      document.getElementById('lgUsername').value = username;
+      document.getElementById('lgPass').focus();
+    }catch(err){
+      fpErr.textContent = err.message;
+    }finally{
+      forgotSubmitBtn.disabled = false;
+    }
+  });
 
   function showProfileView(){
     document.getElementById('loginTitle').textContent = 'Tài khoản của bạn';
@@ -1549,6 +1598,7 @@ document.querySelectorAll('[data-village]').forEach(a => a.addEventListener('cli
     const logged = !!user;
     form.hidden = logged;
     sellerRegisterBox.hidden = true;
+    if(forgotForm) forgotForm.hidden = true;
     if(logged){
       document.getElementById('pfName').textContent = user.name;
       document.getElementById('pfAva').textContent = (user.name.trim()[0] || 'K').toUpperCase();

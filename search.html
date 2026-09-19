@@ -51,9 +51,18 @@
         <div class="ck-field" id="lgEmailField" hidden><label for="lgEmail">Email <em>*</em></label><input type="email" id="lgEmail" placeholder="ban@email.com" autocomplete="email"></div>
         <div class="ck-field" id="lgPhoneField" hidden><label for="lgPhone">Số điện thoại</label><input type="tel" id="lgPhone" placeholder="09xx xxx xxx" autocomplete="tel"></div>
         <div class="ck-field"><label for="lgPass">Mật khẩu <em>*</em></label><input type="password" id="lgPass" placeholder="••••••••" autocomplete="current-password"></div>
+        <p class="demo-note" id="forgotPassRow" style="margin:-8px 0 2px;text-align:right"><a href="#" id="forgotPassLink" style="color:var(--muted);font-size:13px;text-decoration:underline">Quên mật khẩu?</a></p>
         <p class="ck-err" id="lgErr" role="alert"></p>
         <button class="btn btn-amber ck-cta" type="submit" id="loginSubmitBtn">Đăng nhập →</button>
         <p class="demo-note" style="margin-top:14px" id="authModeHint">Chưa có tài khoản? <a href="#" id="authModeToggle" style="color:var(--amber2);font-weight:700">Đăng ký ngay</a></p>
+      </form>
+      <form id="forgotForm" novalidate hidden>
+        <div class="ck-field"><label for="fpUsername">Tên đăng nhập <em>*</em></label><input type="text" id="fpUsername" placeholder="vd: nguyenvana" autocomplete="username"></div>
+        <div class="ck-field"><label for="fpNewPass">Mật khẩu mới <em>*</em></label><input type="password" id="fpNewPass" placeholder="••••••••" autocomplete="new-password"></div>
+        <div class="ck-field"><label for="fpConfirmPass">Nhập lại mật khẩu mới <em>*</em></label><input type="password" id="fpConfirmPass" placeholder="••••••••" autocomplete="new-password"></div>
+        <p class="ck-err" id="fpErr" role="alert"></p>
+        <button class="btn btn-amber ck-cta" type="submit" id="forgotSubmitBtn">Đặt lại mật khẩu →</button>
+        <p class="demo-note" style="margin-top:14px"><a href="#" id="forgotBackLink" style="color:var(--amber2);font-weight:700">← Quay lại đăng nhập</a></p>
       </form>
       <div id="profileBox" hidden>
         <div class="profile-hero"><span class="profile-ava" id="pfAva">K</span><div><h4 id="pfName">Khách KIMVIE</h4><p id="pfMeta"></p></div></div>
