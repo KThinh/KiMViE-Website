@@ -67,6 +67,7 @@ function kvCartAdd(item){
   if(existing) existing.qty += (item.qty || 1);
   else items.push(Object.assign({qty: 1}, item));
   kvCartSave(items);
+  kvStamp('cart');
   return items;
 }
 function kvCartCount(){
@@ -124,6 +125,23 @@ window.kvReady = (async function(){
     return null;
   }
 })();
+
+/* ===== hộ chiếu di sản: ghi dấu từ các trang con (giao diện hộ chiếu nằm ở index.html) =====
+   Dấu lưu trên server theo tài khoản — chưa đăng nhập thì bỏ qua. */
+const KV_STAMP_NAMES = {relic:'Hiện Vật', cart:'Giữ Lửa'};
+async function kvStamp(id){
+  await window.kvReady;
+  if(!kvUser || !KV_STAMP_NAMES[id]) return;
+  try{
+    const cur = await kvApi('/api/passport');
+    if(cur.stamps && cur.stamps[id]) return;
+    const res = await kvApi('/api/passport/stamps', {method:'POST', body: JSON.stringify({stamp_id: id})});
+    const n = Object.keys(res.stamps || {}).length;
+    setTimeout(() => showToast(n >= 7 ? '🎉 Đủ 7 dấu — bạn là <b>Người Giữ Lửa</b>! Mở hộ chiếu ở trang chủ để nhận ưu đãi'
+                                      : '❖ Nhận dấu <b>' + KV_STAMP_NAMES[id] + '</b> (' + n + '/7) — xem trong Hộ chiếu di sản'), 1400);
+  }catch(e){ /* không chặn thao tác chính nếu lỗi */ }
+}
+window.stamp = kvStamp;
 
 /* Bắt buộc đăng nhập mới được dùng trang này (cart/checkout/account/wishlist/track-order) */
 window.kvRequireLogin = async function(){

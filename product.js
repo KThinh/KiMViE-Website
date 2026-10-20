@@ -21,6 +21,7 @@ async function loadProduct(){
   catch(e){ root.innerHTML = '<p>Không tìm thấy sản phẩm này — có thể đã bị gỡ khỏi Sàn thương mại.</p>'; return; }
 
   document.title = product.name + ' — KIMVIE';
+  kvStamp('relic');
   document.getElementById('crumbName').textContent = product.name;
   selectedColor = product.colors[0] || null;
   selectedSize = product.sizes[0] || null;

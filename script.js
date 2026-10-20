@@ -375,8 +375,15 @@ const STAMPS = [
  {id:'read',name:'Thư Làng',icon:'s-lac',vb:'0 0 160 100',how:'Đọc bài viết Câu chuyện thương hiệu'},
  {id:'cart',name:'Giữ Lửa',icon:'s-fire',vb:'0 0 60 60',how:'Thêm một sản phẩm vào giỏ hàng'}
 ];
-let earned = JSON.parse(localStorage.getItem('kvStamps') || '{}');
-let ppSeen = parseInt(localStorage.getItem('kvPPSeen') || '0', 10);   // số dấu đã xem — chấm đỏ chỉ báo dấu MỚI
+/* Con dấu lưu trên server theo từng tài khoản (GET/POST/DELETE /api/passport) — chưa đăng
+   nhập thì không có hộ chiếu. Số dấu "đã xem" (chấm đỏ) chỉ là tiện ích giao diện nên lưu
+   localStorage nhưng tách khoá theo id tài khoản. */
+let earned = {};
+let ppSeen = 0;
+let ppUserId = null;
+let ppLoading = Promise.resolve();
+localStorage.removeItem('kvStamps'); localStorage.removeItem('kvPPSeen');   // dữ liệu cũ dùng chung mọi tài khoản
+function ppSeenKey(){ return 'kvPPSeen:' + ppUserId; }
 const ppModal = document.getElementById('ppModal'), ppGrid = document.getElementById('ppGrid');
 
 /* hiệu ứng chúc mừng (confetti) */
@@ -396,6 +403,9 @@ function celebrate(n){
 }
 
 function renderPassport(){
+  const btn = document.getElementById('ppBtn');
+  btn.style.display = ppUserId == null ? 'none' : '';
+  if(ppUserId == null) ppModal.classList.remove('open');
   const n = Object.keys(earned).length;
   ppGrid.innerHTML = STAMPS.map(s => '<div class="stamp' + (earned[s.id] ? ' got' : '') + '" data-stamp="' + s.id + '" title="Bấm để xem cách đạt được">'
     + '<svg class="art" width="30" height="30" viewBox="' + s.vb + '"><use href="#' + s.icon + '"/></svg>'
@@ -429,32 +439,69 @@ ppGrid.addEventListener('click', e => {
   box.classList.add('on');
 });
 
-window.stamp = function(id){
-  if(earned[id]) return;
-  const s = STAMPS.find(x => x.id === id); if(!s) return;
-  earned[id] = Date.now(); localStorage.setItem('kvStamps', JSON.stringify(earned));
+/* gọi lại mỗi khi đăng nhập / đăng xuất / đổi tài khoản */
+window.kvPassportSync = function(){
+  const u = window.kvCurrentUser && kvCurrentUser();
+  const uid = u ? u.id : null;
+  earned = {};
+  ppUserId = uid;
+  ppSeen = uid == null ? 0 : (parseInt(localStorage.getItem(ppSeenKey()) || '0', 10) || 0);
   renderPassport();
+  if(uid == null){ ppLoading = Promise.resolve(); return ppLoading; }
+  ppLoading = kvApi('/api/passport').then(res => {
+    if(ppUserId !== uid) return;                       // đã đổi tài khoản trong lúc chờ
+    earned = res.stamps || {};
+    renderPassport();
+  }).catch(() => {});
+  return ppLoading;
+};
+
+window.stamp = async function(id){
+  const s = STAMPS.find(x => x.id === id); if(!s) return;
+  await ppLoading;                                     // tránh nhận trùng dấu khi hộ chiếu chưa tải xong
+  const uid = ppUserId;
+  if(uid == null || earned[id]) return;                // chưa đăng nhập -> không ghi dấu
+  earned[id] = Date.now();
+  renderPassport();
+  try{
+    const res = await kvApi('/api/passport/stamps', {method:'POST', body: JSON.stringify({stamp_id: id})});
+    if(ppUserId !== uid) return;
+    earned = res.stamps || earned;
+    renderPassport();
+  }catch(e){
+    if(ppUserId === uid){ delete earned[id]; renderPassport(); }
+    return;
+  }
   const n = Object.keys(earned).length;
   celebrate(n >= 7 ? 80 : 28);
   showToast(n >= 7 ? '🎉 Đủ 7 dấu — bạn là <b>Người Giữ Lửa</b>! Mở hộ chiếu nhận ưu đãi'
                    : '❖ Nhận dấu <b>' + s.name + '</b> (' + n + '/7) — xem trong Hộ chiếu di sản');
 };
 function openPP(){
+  if(ppUserId == null){
+    showToast('Vui lòng đăng nhập để mở Hộ chiếu di sản ✦');
+    const lb = document.getElementById('loginBtn'); if(lb) lb.click();
+    return;
+  }
   ppSeen = Object.keys(earned).length;                 // đánh dấu đã xem — tắt chấm đỏ thông báo
-  localStorage.setItem('kvPPSeen', String(ppSeen));
+  localStorage.setItem(ppSeenKey(), String(ppSeen));
   renderPassport(); ppModal.classList.add('open');
 }
 document.getElementById('ppBtn').addEventListener('click', openPP);
 ppModal.querySelectorAll('[data-ppx]').forEach(el => el.addEventListener('click', () => ppModal.classList.remove('open')));
-document.getElementById('ppReset').addEventListener('click', e => {
-  e.preventDefault(); earned = {}; localStorage.removeItem('kvStamps');
-  ppSeen = 0; localStorage.removeItem('kvPPSeen');
+document.getElementById('ppReset').addEventListener('click', async e => {
+  e.preventDefault();
+  if(ppUserId == null) return;
+  try{ await kvApi('/api/passport', {method:'DELETE'}); }
+  catch(err){ showToast(err.message); return; }
+  earned = {};
+  ppSeen = 0; localStorage.removeItem(ppSeenKey());
   renderPassport();
   showToast('Hộ chiếu đã làm mới — bắt đầu hành trình nào ✦');
 });
 document.querySelectorAll('.ev-book').forEach(b => b.addEventListener('click', e => {
   e.preventDefault();
-  if(!earned.ws){ stamp('ws'); } else { showToast('Đã ghi nhận đặt chỗ (demo) ✦'); }
+  showToast('Đã ghi nhận đặt chỗ (demo) ✦');
 }));
 renderPassport();
 
@@ -1497,6 +1544,7 @@ document.querySelectorAll('[data-village]').forEach(a => a.addEventListener('cli
     user = u;
     CURRENT_USER = u;
     paint();
+    if(window.kvPassportSync) kvPassportSync();
   }
 
   function paint(){
