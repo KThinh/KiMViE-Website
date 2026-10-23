@@ -2000,6 +2000,7 @@ document.querySelectorAll('[data-village]').forEach(a => a.addEventListener('cli
     document.getElementById('spPrice').value = p.price;
     document.getElementById('spStock').value = p.stock;
     document.getElementById('spDesc').value = p.description || '';
+    document.getElementById('spStory').value = p.story || '';
     spImgName.textContent = p.image_url ? 'Đã có ảnh — chọn ảnh khác nếu muốn đổi' : 'Chưa chọn ảnh';
     setPreview(p.image_url || '');
     imgCleared = false;
@@ -2063,13 +2064,14 @@ document.querySelectorAll('[data-village]').forEach(a => a.addEventListener('cli
     const price = parseInt(document.getElementById('spPrice').value, 10);
     const stock = parseInt(document.getElementById('spStock').value, 10);
     const description = document.getElementById('spDesc').value.trim();
+    const story = document.getElementById('spStory').value.trim();
     if(!name || !village_code || !price || price <= 0 || isNaN(stock) || stock < 0){
       spErr.textContent = 'Vui lòng điền đầy đủ các mục có dấu * với giá trị hợp lệ.';
       return;
     }
     spErr.textContent = '';
     const editId = spEditId.value;
-    const payload = {name, village_code, price, stock, description};
+    const payload = {name, village_code, price, stock, description, story};
     if(imgCleared) payload.image_url = '';
     else if(pendingImg) payload.image_url = pendingImg;
     try{

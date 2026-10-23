@@ -66,7 +66,13 @@ async function loadProduct(){
     '</div>';
 
   document.getElementById('pdTabs').hidden = false;
-  document.getElementById('tab-desc').innerHTML = '<p style="white-space:pre-line;color:var(--muted);line-height:1.8">' + esc(product.description || 'Chưa có mô tả.') + '</p>';
+  document.getElementById('tab-desc').innerHTML = '<p class="pd-longtext">' + esc(product.description || 'Chưa có mô tả.') + '</p>';
+  document.getElementById('tabBtnStory').hidden = !product.story;
+  document.getElementById('tab-story').innerHTML = product.story
+    ? '<div class="pd-story"><span class="pd-story-kicker">✦ Câu chuyện phía sau sản phẩm ✦</span>' +
+      '<p class="pd-longtext">' + esc(product.story) + '</p>' +
+      '<p class="pd-story-sign">— ' + esc(product.shop_name) + ' · ' + esc(product.village_name) + '</p></div>'
+    : '';
   document.getElementById('tab-specs').innerHTML =
     '<div class="acct-card">' +
       (product.material ? '<p><b>Chất liệu:</b> ' + esc(product.material) + '</p>' : '') +
