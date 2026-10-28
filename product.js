@@ -44,7 +44,11 @@ async function loadProduct(){
     '</div>' +
     '<div class="pd-info">' +
       '<h1>' + esc(product.name) + '</h1>' +
-      '<div class="pd-rating">' + starsHTML(product.rating) + ' <b>' + product.rating.toFixed(1) + '</b> (' + product.review_count + ' đánh giá) · Đã bán ' + product.sold_count + '</div>' +
+      '<div class="pd-rating">' +
+        (product.review_count > 0
+          ? starsHTML(product.rating) + ' <b>' + product.rating.toFixed(1) + '</b> (' + product.review_count + ' đánh giá)'
+          : 'Chưa có đánh giá') +
+        ' · Đã bán ' + product.sold_count + '</div>' +
       '<div class="pd-price">' +
         (product.is_sale ? '<span class="price-old">' + fmtVnd(product.original_price) + '</span>' : '') +
         '<span class="price">' + fmtVnd(product.price) + '</span>' +
@@ -193,7 +197,10 @@ async function renderReviews(){
   if(!data){ box.innerHTML = '<p>Không tải được đánh giá.</p>'; return; }
 
   const user = await window.kvReady;
-  let html = '<div class="rating-summary"><span class="big">' + data.average_rating.toFixed(1) + '</span><div><div style="color:var(--gold)">' + starsHTML(data.average_rating) + '</div><span style="font-size:12.5px;color:var(--muted)">' + data.review_count + ' đánh giá</span></div></div>';
+  // chưa có đánh giá nào thì products.rating chỉ là giá trị mặc định 5.0 — không hiện như điểm thật
+  let html = data.review_count > 0
+    ? '<div class="rating-summary"><span class="big">' + data.average_rating.toFixed(1) + '</span><div><div style="color:var(--gold)">' + starsHTML(data.average_rating) + '</div><span style="font-size:12.5px;color:var(--muted)">' + data.review_count + ' đánh giá</span></div></div>'
+    : '';
 
   html += '<div id="reviewFormBox">' + reviewFormHTML(data.my_review) + '</div>';
 

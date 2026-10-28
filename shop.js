@@ -28,7 +28,8 @@ function productCardHTML(p){
     '</div>' +
     '<div>' + badges + '</div>' +
     '<h4>' + esc(p.name) + '</h4><div class="pl">' + esc(p.village_name) + ' · ' + esc(p.shop_name) + '</div>' +
-    '<span class="sold">★ ' + p.rating.toFixed(1) + ' (' + p.review_count + ') · Đã bán ' + p.sold_count + (p.stock === 0 ? ' · Hết hàng' : '') + '</span>' +
+    '<span class="sold">' + (p.review_count > 0 ? '★ ' + p.rating.toFixed(1) + ' (' + p.review_count + ')' : 'Chưa có đánh giá') +
+      ' · Đã bán ' + p.sold_count + (p.stock === 0 ? ' · Hết hàng' : '') + '</span>' +
     '<div class="p-foot">' + priceHTML + '<button class="cart-btn" aria-label="Thêm vào giỏ hàng" type="button" ' + (p.stock === 0 ? 'disabled' : '') + '>' + CART_BTN_SVG + '</button></div>'
   );
 }
