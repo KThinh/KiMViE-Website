@@ -201,7 +201,7 @@
 .ship-option{display:flex;justify-content:space-between;align-items:center;border:1px solid var(--line);border-radius:8px;padding:14px 16px;margin-bottom:10px;cursor:pointer}
 .ship-option.on{border-color:var(--gold);background:var(--amber-soft)}
 .pay-seller-block{border:1px solid var(--line);border-radius:8px;padding:20px;margin-bottom:16px}
-.pay-seller-block img.qr{width:180px;height:180px;object-fit:contain;background:#fff;border:1px solid var(--line);border-radius:8px;display:block;margin:12px auto}
+.pay-seller-block img.qr{width:220px;max-width:100%;height:auto;display:block;margin:12px auto}
 .pay-status{font-size:12.5px;font-weight:700;padding:4px 10px;border-radius:999px;display:inline-block}
 .pay-status.pending{background:rgba(217,148,63,.16);color:var(--gold-soft)}
 .pay-status.completed{background:rgba(46,82,51,.16);color:var(--jade)}

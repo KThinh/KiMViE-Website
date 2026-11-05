@@ -113,12 +113,15 @@ document.getElementById('placeOrderBtn').addEventListener('click', async () => {
   finally{ btn.disabled = false; }
 });
 
+const KV_PAYMENT_QR = 'assets/qr_code.png';
+
 function paymentBlockHTML(p){
   return (
     '<div class="pay-seller-block" data-seller="' + p.seller_id + '">' +
       '<div style="display:flex;justify-content:space-between;align-items:center"><b>' + esc(p.shop_name) + '</b><span class="pay-status ' + p.status + '">' + payStatusLabel(p) + '</span></div>' +
       '<p style="font-size:13px;color:var(--muted);margin-top:6px">Số tiền cần chuyển: <b style="color:var(--gold-soft)">' + fmtVnd(p.amount) + '</b></p>' +
-      (p.qr_image_url ? '<img class="qr" src="' + p.qr_image_url + '">' : '<p style="color:var(--muted);text-align:center">Gian hàng chưa cập nhật mã QR — vui lòng liên hệ trực tiếp để thanh toán.</p>') +
+      // All products use the shared KIMVIE payment QR (MoMo) instead of per-seller QR images
+      '<img class="qr" src="' + KV_PAYMENT_QR + '" alt="Mã QR thanh toán MoMo">' +
       '<button class="btn btn-amber" data-confirm="' + p.seller_id + '" type="button" style="width:100%;justify-content:center" ' + (p.status!=='pending'||p.buyer_confirmed_at ? 'disabled':'') + '>' +
         (p.buyer_confirmed_at ? '✓ Bạn đã xác nhận chuyển khoản' : 'Tôi đã chuyển khoản') + '</button>' +
     '</div>'

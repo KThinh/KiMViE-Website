@@ -37,7 +37,8 @@ async function load(){
         '<div class="pay-seller-block" data-seller="' + p.seller_id + '">' +
           '<div style="display:flex;justify-content:space-between"><b>' + esc(p.shop_name) + '</b><span class="pay-status ' + p.status + '">' + (p.buyer_confirmed_at ? 'Chờ người bán xác nhận' : 'Chờ thanh toán') + '</span></div>' +
           '<p style="font-size:13px;color:var(--muted);margin-top:6px">Số tiền: <b>' + fmtVnd(p.amount) + '</b></p>' +
-          (p.qr_image_url ? '<img class="qr" src="' + p.qr_image_url + '">' : '') +
+          // Shared KIMVIE payment QR (MoMo) for every product
+          '<img class="qr" src="assets/qr_code.png" alt="Mã QR thanh toán MoMo">' +
           '<button class="btn btn-amber" data-confirm="' + p.seller_id + '" type="button" style="width:100%;justify-content:center" ' + (p.buyer_confirmed_at?'disabled':'') + '>' + (p.buyer_confirmed_at ? '✓ Bạn đã xác nhận' : 'Tôi đã chuyển khoản') + '</button>' +
         '</div>'
       ).join('') + '</div>';

@@ -1155,7 +1155,7 @@ footer{color:rgba(250,245,233,.78)}
 .ck-field input:focus,.ck-field select:focus,.ck-field textarea:focus{outline:none;border-color:var(--gold);box-shadow:0 0 0 3px rgba(217,148,63,.16)}
 .ck-err{font-size:12.5px;color:var(--vermilion);min-height:18px;margin:2px 0 4px}
 .ck-qr{display:flex;gap:20px;align-items:center;border:1px dashed var(--gold);border-radius:10px;padding:18px;background:rgba(250,245,233,.6)}
-.ck-qr img{width:170px;height:170px;object-fit:contain;background:#fff;border:1px solid var(--line);border-radius:8px;padding:8px;flex:none}
+.ck-qr img{width:190px;height:auto;flex:none}
 .ck-bank{flex:1;min-width:0}
 .ck-brow{display:flex;justify-content:space-between;gap:12px;font-size:12.5px;color:var(--muted);padding:6px 0;border-bottom:1px dashed var(--line-soft)}
 .ck-brow b{color:var(--pearl);text-align:right}
@@ -1174,7 +1174,7 @@ footer{color:rgba(250,245,233,.78)}
 .ck-done b{color:var(--gold-soft)}
 @media (max-width:560px){
   .ck-qr{flex-direction:column}
-  .ck-qr img{width:200px;height:200px}
+  .ck-qr img{width:220px;height:auto}
   .ck-row{flex-wrap:wrap}
   .ck-line{min-width:0}
   .art-next .btn{width:100%;justify-content:center}
