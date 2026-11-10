@@ -81,7 +81,7 @@ async function loadProduct(){
     '<div class="acct-card">' +
       (product.material ? '<p><b>Chất liệu:</b> ' + esc(product.material) + '</p>' : '') +
       (product.size_guide ? '<p style="margin-top:8px"><b>Hướng dẫn chọn size:</b> ' + esc(product.size_guide) + '</p>' : '') +
-      '<p style="margin-top:14px"><b>Chính sách giao hàng:</b> Giao hàng tiêu chuẩn 3–5 ngày hoặc hỏa tốc 1–2 ngày (chọn ở bước thanh toán).</p>' +
+      '<p style="margin-top:14px"><b>Chính sách giao hàng:</b> Giao hàng tiêu chuẩn 3–5 ngày, phí 30.000đ.</p>' +
       '<p style="margin-top:8px"><b>Chính sách đổi trả:</b> Đổi trả trong 7 ngày nếu sản phẩm lỗi do vận chuyển hoặc sản xuất, còn nguyên tem/nhãn.</p>' +
     '</div>';
 

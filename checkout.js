@@ -2,7 +2,7 @@
    gian hàng (mỗi seller có QR riêng, cần cả buyer & seller cùng xác nhận). */
 
 const VOUCHERS = {GIULUA10:10, TINHHOA15:15, FREESHIP:'FREESHIP'}; // chỉ để hiện tạm, số thật lấy từ server
-const SHIP_FEES = {standard: 20000, express: 45000};
+const SHIP_FEES = {standard: 30000};
 let addresses = [];
 let selectedAddress = null;
 let shippingMethod = 'standard';
@@ -85,7 +85,7 @@ function renderReview(){
   document.getElementById('reviewVoucher').value = localStorage.getItem('kvVoucher') || '';
   document.getElementById('reviewSummary').innerHTML =
     '<div class="srow"><span>Tạm tính</span><span>' + fmtVnd(subtotal) + '</span></div>' +
-    '<div class="srow"><span>Phí vận chuyển (' + (shippingMethod==='express'?'Hoả tốc':'Tiêu chuẩn') + ')</span><span>' + fmtVnd(shipFee) + '</span></div>' +
+    '<div class="srow"><span>Phí vận chuyển (Tiêu chuẩn)</span><span>' + fmtVnd(shipFee) + '</span></div>' +
     '<div class="srow total"><span>Tổng cộng (tạm tính)</span><b>' + fmtVnd(subtotal + shipFee) + '</b></div>' +
     '<p style="font-size:11.5px;color:var(--muted-2);margin-top:6px">Số tiền cuối cùng (đã áp voucher nếu có) do hệ thống tính khi đặt hàng.</p>';
 }
